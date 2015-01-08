@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<script>
+    document.onreadystatechange = function () {
+        if (document.readyState == "complete") {
+            var Book = new EPUB.Book("area");
+        }
+    }
+</script>
+<body>
+<div id="area" style="height: 800px; width: 630px; padding:15px; position: absolute;background:#cccccc;"></div>
+</body>
+<script src="bower_components/rsvp/rsvp.min.js"></script>
+<script src="js/base.js"></script>
+<script src="js/book.js"></script>
+<script src="js/paragraph.js"></script>
+<script src="js/request.js"></script>
+</html>
