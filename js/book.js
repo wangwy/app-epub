@@ -11,9 +11,10 @@ EPUB.Book = function (elem, bookUrl) {
   this.currentPositionX = 0;
   this.currentPositionY = EPUB.FONTSIZE;
   this.offset = 0;
+  this.chapterPros = 0;
   this.initialize();
   this.scanElements();
-  this.renderPage(0);
+  this.display(0);
 };
 
 EPUB.Book.prototype.getEl = function (elem) {
@@ -56,6 +57,8 @@ EPUB.Book.prototype.scanElements = function () {
       that.typeSetting(txt);
     }
   });
+  this.displayedPages = this.pages.length;
+
 };
 
 EPUB.Book.prototype.typeSetting = function (txt) {
@@ -111,9 +114,9 @@ EPUB.Book.prototype.typeSetting = function (txt) {
 
 EPUB.Book.prototype.changeLineOrPage = function (width, height, length) {
   var offset = 0;
-  if(length > 1){
+  if (length > 1) {
     offset = this.wordWidth * length;
-  }else{
+  } else {
     offset = this.fontSize;
   }
   //换行计算
@@ -124,13 +127,13 @@ EPUB.Book.prototype.changeLineOrPage = function (width, height, length) {
   //换页计算
   if (this.currentPositionY + this.fontSize + this.lineGap > height) {
     this.currentPositionY = this.fontSize;
-    this.pageCount += 1;
     this.currentPage = new Array();
     this.pages.push(this.currentPage);
   }
 };
 
-EPUB.Book.prototype.renderPage = function (index) {
+EPUB.Book.prototype.display = function (index) {
+  this.el.innerHTML = "";
   var page = this.pages[index];
   var textHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" + this.el.style.width + "\" height=\"" + this.el.style.height + "\"  font-family=\"" + this.fontFamily + "\">";
   var preGlyph;
@@ -140,9 +143,26 @@ EPUB.Book.prototype.renderPage = function (index) {
     textHTML += "<text font-size='" + this.fontSize + "' x='" + preGlyph.rect.px + "' y='" + preGlyph.rect.py + "'>" + glyph.txt + "</text>";
   }
   textHTML += "</svg>";
-  this.el.removeChild(this.hiddenEl);
   this.el.innerHTML = textHTML;
 };
+
+EPUB.Book.prototype.nextPage = function () {
+  if (this.chapterPros < this.displayedPages-1) {
+    this.chapterPros++;
+    this.display(this.chapterPros);
+  } else {
+    alert("已经是最后一页！");
+  }
+};
+
+EPUB.Book.prototype.prevPage = function () {
+  if (this.chapterPros > 0) {
+    this.chapterPros--;
+    this.display(this.chapterPros)
+  } else {
+    alert("已经是第一页！");
+  }
+}
 
 function Rect(x, y, w, h) {
   this.px = x;
