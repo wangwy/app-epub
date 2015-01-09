@@ -5,6 +5,7 @@ EPUB.Book = function (elem, bookUrl) {
   this.el = this.getEl(elem);
   this.fontSize = EPUB.FONTSIZE;
   this.fontFamily = EPUB.FONTFAMILY;
+  this.wordWidth = EPUB.WORDWIDTH;
   this.paragraph = new EPUB.Paragraph();
   this.lineGap = EPUB.LINEGAP;
   this.currentPositionX = 0;
@@ -48,7 +49,7 @@ EPUB.Book.prototype.scanElements = function () {
   this.pages.push(this.currentPage);
   var items = this.hiddenEl.children;
   var epubText = Array.prototype.slice.call(items);
-  epubText.forEach(function (value, index) {
+  epubText.forEach(function (value) {
     var tag = value.tagName;
     if (tag == "P") {
       var txt = value.innerHTML;
@@ -74,9 +75,9 @@ EPUB.Book.prototype.typeSetting = function (txt) {
     } else {
       if (this.paragraph.isDbcCase(charCode)) {
         if (!isParaHead)
-          this.currentPositionX += this.fontSize * (11.0 / 18.0);
+          this.currentPositionX += this.wordWidth;
 
-        w = this.fontSize * (11.0 / 18.0);
+        w = this.wordWidth;
       }
       else {
         if (!isParaHead)
@@ -86,17 +87,17 @@ EPUB.Book.prototype.typeSetting = function (txt) {
       }
       var rect, glyph;
       if (world) {
-        w = this.fontSize * (11.0 / 18.0);
+        w = this.wordWidth;
         this.changeLineOrPage(width, height, world.length);
         rect = new Rect(this.currentPositionX, this.currentPositionY, w, h);
         glyph = new Glyph(world, rect, this.offset);
         this.currentPage.push(glyph);
-        this.currentPositionX += this.fontSize * (11.0 / 18.0) * world.length;
+        this.currentPositionX += this.wordWidth * world.length;
         world = "";
       }
       w = this.fontSize;
       isParaHead = false;
-      this.changeLineOrPage(width, height, 1);
+      this.changeLineOrPage(width, height, "");
 
       rect = new Rect(this.currentPositionX, this.currentPositionY, w, h);
       glyph = new Glyph(char, rect, this.offset);
@@ -109,8 +110,14 @@ EPUB.Book.prototype.typeSetting = function (txt) {
 };
 
 EPUB.Book.prototype.changeLineOrPage = function (width, height, length) {
+  var offset = 0;
+  if(length > 1){
+    offset = this.wordWidth * length;
+  }else{
+    offset = this.fontSize;
+  }
   //换行计算
-  if (this.currentPositionX + this.fontSize * length > width) {
+  if (this.currentPositionX + offset > width) {
     this.currentPositionY += (this.fontSize + this.lineGap);
     this.currentPositionX = 0;
   }
