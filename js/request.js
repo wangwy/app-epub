@@ -1,7 +1,6 @@
 /**
  * Created by wangwy on 15-1-7.
  */
-var EPUB = EPUB || {};
 EPUB.request = {};
 EPUB.request.loadFile = function(url,type){
   var deferred = new RSVP.defer();
