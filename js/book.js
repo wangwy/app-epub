@@ -21,7 +21,7 @@ EPUB.Book = function (elem, bookUrl) {
 
 EPUB.Book.prototype.beforeDisplay = function(){
   var book = this;
-  book.loadOpfFile("../books/moby-dick/").then(function (context) {
+  book.loadOpfFile(this.format.bookUrlOptions.href).then(function (context) {
     book.bookData = book.format.formatOpfFile(context);
     console.log(book.bookData);
   });

@@ -3,6 +3,7 @@
  */
 EPUB.Format = function (baseUrl) {
   this.baseUrl = baseUrl || '';
+  this.bookUrlOptions = this.formatUrl(this.baseUrl);
 };
 
 /**
