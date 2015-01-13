@@ -1,0 +1,12 @@
+{
+  "name": "app-epub",
+  "version": "1.0.0",
+  "repository": "https://github.com/wangwy/app-epub",
+  "devDependencies": {
+    "colors": "~0.6.2",
+    "connect": "~2.14.4",
+    "optimist": "~0.6.1",
+    "portfinder": "~0.2.1"
+  },
+  "scripts": {"start": "node server.js"}
+}

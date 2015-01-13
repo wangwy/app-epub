@@ -1,8 +1,8 @@
 /**
  * Created by wangwy on 15-1-9.
  */
-EPUB.app = {};
-EPUB.app.init = (function ($) {
+EPUB.App = {};
+EPUB.App.init = (function ($) {
   var Book;
 
   function init(elem, bookUrl) {

@@ -1,8 +1,8 @@
 /**
  * Created by wangwy on 15-1-7.
  */
-EPUB.request = {};
-EPUB.request.loadFile = function(url,type){
+EPUB.Request = {};
+EPUB.Request.loadFile = function(url,type){
   var deferred = new RSVP.defer();
   var xhr = new XMLHttpRequest();
   xhr.open("GET",url,true);

@@ -12,9 +12,19 @@ EPUB.Book = function (elem, bookUrl) {
   this.currentPositionY = EPUB.FONTSIZE;
   this.offset = 0;
   this.chapterPros = 0;
-  this.initialize();
-  this.scanElements();
-  this.display(0);
+  this.format = new EPUB.Format(bookUrl);
+  this.beforeDisplay();
+  /*this.initialize();
+   this.scanElements();
+   this.display(0);*/
+};
+
+EPUB.Book.prototype.beforeDisplay = function(){
+  var book = this;
+  book.loadOpfFile("../books/moby-dick/").then(function (context) {
+    book.bookData = book.format.formatOpfFile(context);
+    console.log(book.bookData);
+  });
 };
 
 EPUB.Book.prototype.getEl = function (elem) {
@@ -147,7 +157,7 @@ EPUB.Book.prototype.display = function (index) {
 };
 
 EPUB.Book.prototype.nextPage = function () {
-  if (this.chapterPros < this.displayedPages-1) {
+  if (this.chapterPros < this.displayedPages - 1) {
     this.chapterPros++;
     this.display(this.chapterPros);
   } else {
@@ -162,7 +172,25 @@ EPUB.Book.prototype.prevPage = function () {
   } else {
     alert("已经是第一页！");
   }
-}
+};
+
+/**
+ * 通过/META-INF/container.xml获得rootfile节点里full-path属性所指的文件(OPS/package.opf)
+ * @param bookPath
+ * @returns {*}
+ */
+EPUB.Book.prototype.loadOpfFile = function (bookPath) {
+  var book = this;
+  var containerPath = bookPath + "META-INF/container.xml",
+      opfFileXml;
+
+  opfFileXml = EPUB.Request.loadFile(containerPath, 'xml').then(function (context) {
+    return book.format.formatContainerXML(context);
+  }).then(function (paths) {
+    return EPUB.Request.loadFile(bookPath + paths.packagePath, 'xml');
+  });
+  return opfFileXml;
+};
 
 function Rect(x, y, w, h) {
   this.px = x;
