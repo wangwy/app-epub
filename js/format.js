@@ -172,7 +172,7 @@ EPUB.Format.prototype.getXMLTextByTag = function (xml, tag) {
  * @returns {{}}
  */
 EPUB.Format.prototype.formatManifest = function (xml) {
-  var manifest = {}, baseUrl = this.baseUrl;
+  var manifest = {}, baseUrl = this.baseUrl + "OPS/";
 
   var selected = xml.querySelectorAll("item"),
       items = Array.prototype.slice.call(selected);
