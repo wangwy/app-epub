@@ -15,10 +15,10 @@ EPUB.Book.prototype.beforeDisplay = function () {
   var book = this;
   book.loadOpfFile(this.format.bookUrlOptions.href).then(function (context) {
     var bookData = book.format.formatOpfFile(context);
-        book.manifest = bookData.manifest;
-        book.spine = bookData.spine;
+    book.manifest = bookData.manifest;
+    book.spine = bookData.spine;
     return true;
-  }).then(function(){
+  }).then(function () {
     book.display("next");
   });
 };
@@ -27,16 +27,18 @@ EPUB.Book.prototype.beforeDisplay = function () {
  * 页面展示
  * @param mark
  */
-EPUB.Book.prototype.display = function(mark){
+EPUB.Book.prototype.display = function (mark) {
   var that = this;
   var num;
   var chapterXml = EPUB.Request.loadFile(that.manifest[that.spine[that.spineNum].id].url, 'xml');
   chapterXml.then(function (context) {
     return that.render.initialize(context);
+  }).then(function (context) {
+    return that.render.getAllTextNodeContextAndRender(context);
   }).then(function () {
-    if(mark === "next"){
+    if (mark === "next") {
       num = 1;
-    }else if(mark === "prev"){
+    } else if (mark === "prev") {
       num = that.render.pages.length;
     }
     that.render.display(num);
@@ -64,12 +66,12 @@ EPUB.Book.prototype.loadOpfFile = function (bookPath) {
 /**
  * 下一页
  */
-EPUB.Book.prototype.nextPage = function(){
+EPUB.Book.prototype.nextPage = function () {
   var next;
   next = this.render.nextPage();
-  if(!next){
+  if (!next) {
     this.spineNum++;
-    if(this.spineNum < this.spine.length){
+    if (this.spineNum < this.spine.length) {
       this.display("next");
     }
   }
@@ -78,12 +80,12 @@ EPUB.Book.prototype.nextPage = function(){
 /**
  * 上一页
  */
-EPUB.Book.prototype.prevPage = function(){
+EPUB.Book.prototype.prevPage = function () {
   var prev;
   prev = this.render.prevPage();
-  if(!prev){
+  if (!prev) {
     this.spineNum--;
-    if(this.spineNum >= 0){
+    if (this.spineNum >= 0) {
       this.display("prev");
     }
   }
