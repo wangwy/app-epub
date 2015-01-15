@@ -69,6 +69,8 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
 EPUB.Render.prototype.typeSetting = function (txt) {
   var width = parseInt(this.el.style.width.slice(0, -2));
   var height = parseInt(this.el.style.height.slice(0, -2));
+  //保证字符串是以空格结束，以便计算单词
+  txt = txt.charAt(txt.length-1) === " " ? txt : txt + " ";
   var w, h = this.fontSize;
   var world = "";
   for (var i = 0; i < txt.length; i++) {
