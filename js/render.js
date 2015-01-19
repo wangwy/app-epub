@@ -3,14 +3,9 @@
  */
 EPUB.Render = function (elem) {
   this.el = this.getEl(elem);
-  this.fontSize = EPUB.FONTSIZE;
-  this.fontFamily = EPUB.FONTFAMILY;
   this.wordWidth = EPUB.WORDWIDTH;
   this.paragraph = new EPUB.Paragraph();
   this.lineGap = EPUB.LINEGAP;
-  this.currentPositionX = 0;
-  this.currentPositionY = EPUB.FONTSIZE;
-  this.offset = 0;
 };
 
 /**
@@ -30,7 +25,8 @@ EPUB.Render.prototype.initialize = function (context) {
   var deferred = new RSVP.defer();
   var documentBody = context.body;
   this.displayedPage = 1;
-  this.currentPositionY = this.fontSize;
+  this.currentPositionY = 12;
+  this.currentPositionX = 0;
   this.currentPage = new Array();
   this.pages = new Array();
   this.pages.push(this.currentPage);
@@ -49,11 +45,11 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
     var node = nodes[i], nodeType = node.nodeType;
     if (node.nodeName == "p" || node.nodeName == "h1") {
       //一段结束，换行
-      this.currentPositionY += (this.fontSize + this.lineGap * 2);
-      this.currentPositionX = this.fontSize;
+      this.currentPositionY += (EPUB.ELEMENTS[node.nodeName].fontSize + this.lineGap * 2);
+      this.currentPositionX = EPUB.ELEMENTS[node.nodeName].fontSize;
     }
     if (nodeType == 3 && !(/^\s+$/.test(node.nodeValue))) {
-      this.typeSetting(node.textContent);
+      this.typeSetting(node);
     } else if (nodeType == 1 || nodeType == 9 || nodeType == 11) {
       this.getAllTextNodeContextAndRender(node);
     }
@@ -66,12 +62,12 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
  * 将文本拆分并排版
  * @param txt
  */
-EPUB.Render.prototype.typeSetting = function (txt) {
+EPUB.Render.prototype.typeSetting = function (ele) {
   var width = parseInt(this.el.style.width.slice(0, -2));
   var height = parseInt(this.el.style.height.slice(0, -2));
+  var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentElement.tagName];
   //保证字符串是以空格结束，以便计算单词
-  txt = txt.charAt(txt.length-1) === " " ? txt : txt + " ";
-  var w, h = this.fontSize;
+  txt = txt.charAt(txt.length - 1) === " " ? txt : txt + " ";
   var world = "";
   for (var i = 0; i < txt.length; i++) {
     var char = txt.charAt(i);
@@ -82,27 +78,23 @@ EPUB.Render.prototype.typeSetting = function (txt) {
     } else {
       if (this.paragraph.isDbcCase(charCode)) {
         this.currentPositionX += this.wordWidth;
-        w = this.wordWidth;
       }
       else {
-        this.currentPositionX += this.fontSize;
-        w = this.fontSize;
+        this.currentPositionX += eleStyle.fontSize;
       }
       var rect, glyph;
       if (world) {
-        w = this.wordWidth;
-        this.changeLineOrPage(width, height, world.length);
-        rect = new Rect(this.currentPositionX, this.currentPositionY, w, h);
-        glyph = new Glyph(world, rect, this.offset);
+        this.changeLineOrPage(width, height, eleStyle, world.length);
+        rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY);
+        glyph = new Glyph(world, rect);
         this.currentPage.push(glyph);
         this.currentPositionX += this.wordWidth * world.length;
         world = "";
       }
-      w = this.fontSize;
-      this.changeLineOrPage(width, height, "");
+      this.changeLineOrPage(width, height, eleStyle, "");
 
-      rect = new Rect(this.currentPositionX, this.currentPositionY, w, h);
-      glyph = new Glyph(char, rect, this.offset);
+      rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY);
+      glyph = new Glyph(char, rect);
       this.currentPage.push(glyph);
     }
 
@@ -115,21 +107,21 @@ EPUB.Render.prototype.typeSetting = function (txt) {
  * @param height
  * @param length
  */
-EPUB.Render.prototype.changeLineOrPage = function (width, height, length) {
+EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, length) {
   var offset = 0;
   if (length > 1) {
     offset = this.wordWidth * length;
   } else {
-    offset = this.fontSize;
+    offset = eleStyle.fontSize;
   }
   //换行计算
   if (this.currentPositionX + offset > width) {
-    this.currentPositionY += (this.fontSize + this.lineGap);
+    this.currentPositionY += (eleStyle.fontSize + this.lineGap);
     this.currentPositionX = 0;
   }
   //换页计算
-  if (this.currentPositionY + this.fontSize + this.lineGap > height) {
-    this.currentPositionY = this.fontSize;
+  if (this.currentPositionY + eleStyle.fontSize + this.lineGap > height) {
+    this.currentPositionY = eleStyle.fontSize;
     this.currentPage = new Array();
     this.pages.push(this.currentPage);
   }
@@ -139,20 +131,20 @@ EPUB.Render.prototype.changeLineOrPage = function (width, height, length) {
  * 页面展示
  * @param index
  */
-EPUB.Render.prototype.display = function (index) {
-  this.el.innerHTML = "";
-  this.displayedPage = index;
-  var page = this.pages[this.displayedPage - 1];
-  var textHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" + this.el.style.width + "\" height=\"" + this.el.style.height + "\"  font-family=\"" + this.fontFamily + "\">";
-  var preGlyph;
-  for (var i = 0; i < page.length; i++) {
-    var glyph = page[i];
-    preGlyph = glyph;
-    textHTML += "<text font-size='" + this.fontSize + "' x='" + preGlyph.rect.px + "' y='" + preGlyph.rect.py + "'>" + glyph.txt + "</text>";
-  }
-  textHTML += "</svg>";
-  this.el.innerHTML = textHTML;
-};
+ EPUB.Render.prototype.display = function (index) {
+ this.el.innerHTML = "";
+ this.displayedPage = index;
+ var page = this.pages[this.displayedPage - 1];
+ var textHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" + this.el.style.width + "\" height=\"" + this.el.style.height + "\">";
+ var preGlyph;
+ for (var i = 0; i < page.length; i++) {
+ var glyph = page[i];
+ preGlyph = glyph;
+ textHTML += "<text   font-family=\"" + preGlyph.rect.fontFamily + "\" font-size='" + preGlyph.rect.fontSize + "' x='" + preGlyph.rect.px + "' y='" + preGlyph.rect.py + "'>" + glyph.txt + "</text>";
+ }
+ textHTML += "</svg>";
+ this.el.innerHTML = textHTML;
+ };
 
 /**
  * 下一页
@@ -181,15 +173,14 @@ EPUB.Render.prototype.prevPage = function () {
 };
 
 
-function Rect(x, y, w, h) {
+function Rect(fontFamily, fontSize, x, y) {
+  this.fontFamily = fontFamily;
+  this.fontSize = fontSize;
   this.px = x;
   this.py = y;
-  this.w = w;
-  this.h = h;
 }
 
-function Glyph(txt, rect, offset) {
+function Glyph(txt, rect) {
   this.txt = txt;
   this.rect = rect;
-  this.offset = offset;
 }
