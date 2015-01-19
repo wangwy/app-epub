@@ -2,7 +2,7 @@
  * Created by wangwy on 15-1-7.
  */
 EPUB.Book = function (elem, bookUrl) {
-  this.spineNum = 6;
+  this.spineNum = 1;
   this.render = new EPUB.Render(elem);
   this.format = new EPUB.Format(bookUrl);
   this.beforeDisplay();
@@ -34,7 +34,7 @@ EPUB.Book.prototype.display = function (mark) {
   chapterXml.then(function (context) {
     return that.render.initialize(context);
   }).then(function (context) {
-    return that.render.getAllTextNodeContextAndRender(context);
+    return that.render.getPagesNum(context);
   }).then(function () {
     if (mark === "next") {
       num = 1;
@@ -70,9 +70,11 @@ EPUB.Book.prototype.nextPage = function () {
   var next;
   next = this.render.nextPage();
   if (!next) {
-    this.spineNum++;
     if (this.spineNum < this.spine.length) {
+      this.spineNum++;
       this.display("next");
+    } else {
+      alert("已经是最后一页");
     }
   }
 };
@@ -84,9 +86,11 @@ EPUB.Book.prototype.prevPage = function () {
   var prev;
   prev = this.render.prevPage();
   if (!prev) {
-    this.spineNum--;
-    if (this.spineNum >= 0) {
+    if (this.spineNum > 0) {
+      this.spineNum--;
       this.display("prev");
+    } else {
+      alert("已经是第一页");
     }
   }
 };

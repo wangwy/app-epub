@@ -4,7 +4,6 @@
 var EPUB = EPUB || {};
 EPUB.VERSION = "1.0.0";
 EPUB.LINEGAP = 10;
-EPUB.WORDWIDTH = 11;
 
 EPUB.ELEMENTS = {
   "p": {
@@ -21,6 +20,14 @@ EPUB.ELEMENTS = {
   },
   "h1": {
     fontSize: 22,
+    fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
+  },
+  "h2": {
+    fontSize: 20,
+    fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
+  },
+  "img": {
+    fontSize: 20,
     fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
   }
 };

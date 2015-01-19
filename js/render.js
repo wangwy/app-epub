@@ -3,9 +3,9 @@
  */
 EPUB.Render = function (elem) {
   this.el = this.getEl(elem);
-  this.wordWidth = EPUB.WORDWIDTH;
   this.paragraph = new EPUB.Paragraph();
   this.lineGap = EPUB.LINEGAP;
+  this.format = new EPUB.Format();
 };
 
 /**
@@ -22,7 +22,6 @@ EPUB.Render.prototype.getEl = function (elem) {
  * @param context
  */
 EPUB.Render.prototype.initialize = function (context) {
-  var deferred = new RSVP.defer();
   var documentBody = context.body;
   this.displayedPage = 1;
   this.currentPositionY = 12;
@@ -30,9 +29,19 @@ EPUB.Render.prototype.initialize = function (context) {
   this.currentPage = new Array();
   this.pages = new Array();
   this.pages.push(this.currentPage);
-  deferred.resolve(documentBody);
 
-  return deferred.promise;
+  return documentBody;
+};
+
+/**
+ * 获取一个章节分为几页
+ * @param elem
+ * @returns {Array.length|*}
+ */
+EPUB.Render.prototype.getPagesNum = function(elem){
+  this.getAllTextNodeContextAndRender(elem);
+  this.displayedPages = this.pages.length;
+  return this.displayedPages;
 };
 
 /**
@@ -43,10 +52,13 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
   var nodes = elem.childNodes;
   for (var i = 0; i < nodes.length; i++) {
     var node = nodes[i], nodeType = node.nodeType;
-    if (node.nodeName == "p" || node.nodeName == "h1") {
+    if (node.nodeName == "p" || node.nodeName == "h1" || node.nodeName == "h2" || node.nodeName == "img") {
       //一段结束，换行
       this.currentPositionY += (EPUB.ELEMENTS[node.nodeName].fontSize + this.lineGap * 2);
       this.currentPositionX = EPUB.ELEMENTS[node.nodeName].fontSize;
+      if(node.nodeName == "img"){
+        this.imageSetting(node);
+      }
     }
     if (nodeType == 3 && !(/^\s+$/.test(node.nodeValue))) {
       this.typeSetting(node);
@@ -54,8 +66,13 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
       this.getAllTextNodeContextAndRender(node);
     }
   }
-
   this.displayedPages = this.pages.length;
+};
+
+EPUB.Render.prototype.imageSetting = function(ele){
+  var url = this.format.formatUrl(ele.src);
+  var image = new imageNode(url.path);
+  this.currentPage.push(image);
 };
 
 /**
@@ -77,7 +94,7 @@ EPUB.Render.prototype.typeSetting = function (ele) {
       continue;
     } else {
       if (this.paragraph.isDbcCase(charCode)) {
-        this.currentPositionX += this.wordWidth;
+        this.currentPositionX += eleStyle.fontSize/2 + 3;
       }
       else {
         this.currentPositionX += eleStyle.fontSize;
@@ -88,7 +105,7 @@ EPUB.Render.prototype.typeSetting = function (ele) {
         rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY);
         glyph = new Glyph(world, rect);
         this.currentPage.push(glyph);
-        this.currentPositionX += this.wordWidth * world.length;
+        this.currentPositionX += (eleStyle.fontSize/2 + 3) * world.length;
         world = "";
       }
       this.changeLineOrPage(width, height, eleStyle, "");
@@ -110,7 +127,7 @@ EPUB.Render.prototype.typeSetting = function (ele) {
 EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, length) {
   var offset = 0;
   if (length > 1) {
-    offset = this.wordWidth * length;
+    offset = (eleStyle.fontSize/2 + 3) * length;
   } else {
     offset = eleStyle.fontSize;
   }
@@ -136,11 +153,13 @@ EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, leng
  this.displayedPage = index;
  var page = this.pages[this.displayedPage - 1];
  var textHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" + this.el.style.width + "\" height=\"" + this.el.style.height + "\">";
- var preGlyph;
  for (var i = 0; i < page.length; i++) {
  var glyph = page[i];
- preGlyph = glyph;
- textHTML += "<text   font-family=\"" + preGlyph.rect.fontFamily + "\" font-size='" + preGlyph.rect.fontSize + "' x='" + preGlyph.rect.px + "' y='" + preGlyph.rect.py + "'>" + glyph.txt + "</text>";
+   if(glyph.type == "text"){
+     textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
+   }else if(glyph.type == "image"){
+     textHTML += "<image xlink:href='"+glyph.src+"'  height=\"600\" width=\"400\"/>";
+   }
  }
  textHTML += "</svg>";
  this.el.innerHTML = textHTML;
@@ -172,7 +191,14 @@ EPUB.Render.prototype.prevPage = function () {
   }
 };
 
-
+/**
+ * 文本节点属性
+ * @param fontFamily
+ * @param fontSize
+ * @param x
+ * @param y
+ * @constructor
+ */
 function Rect(fontFamily, fontSize, x, y) {
   this.fontFamily = fontFamily;
   this.fontSize = fontSize;
@@ -180,7 +206,23 @@ function Rect(fontFamily, fontSize, x, y) {
   this.py = y;
 }
 
+/**
+ * 文本节点
+ * @param txt
+ * @param rect
+ * @constructor
+ */
 function Glyph(txt, rect) {
   this.txt = txt;
   this.rect = rect;
+  this.type = "text";
+}
+
+/**
+ * 图片节点
+ * @param src
+ */
+function imageNode(src){
+  this.src = src;
+  this.type = "image";
 }
