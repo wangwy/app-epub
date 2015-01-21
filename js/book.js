@@ -2,7 +2,7 @@
  * Created by wangwy on 15-1-7.
  */
 EPUB.Book = function (elem, bookUrl) {
-  this.spineNum = 1;
+  this.spineNum = 6;
   this.render = new EPUB.Render(elem);
   this.format = new EPUB.Format(bookUrl);
   this.beforeDisplay();

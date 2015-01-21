@@ -20,10 +20,10 @@ EPUB.Request.loadFile = function(url,type){
         var r;
         if(type == 'xml'){
           r = this.responseXML;
-        }else if(type = 'json'){
+        }else if(type == 'json'){
           r = JSON.parse(this.response);
         }else{
-          r = this.response;
+          r = this.responseText;
         }
         deferred.resolve(r);
       }
