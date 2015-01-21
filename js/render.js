@@ -6,7 +6,6 @@ EPUB.Render = function (elem) {
   this.paragraph = new EPUB.Paragraph();
   this.lineGap = EPUB.LINEGAP;
   this.format = new EPUB.Format();
-  this.imagesAll = {};
 };
 
 /**
@@ -23,6 +22,7 @@ EPUB.Render.prototype.getEl = function (elem) {
  * @param context
  */
 EPUB.Render.prototype.initialize = function (context) {
+  this.imagesAll = {};
   var that = this;
   var deffer = new RSVP.defer();
   var documentBody = context.body;
