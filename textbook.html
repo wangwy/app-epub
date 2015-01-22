@@ -4,6 +4,29 @@
     <meta charset="utf-8">
     <title>电子书</title>
     <link href="css/main.css" rel="stylesheet">
+    <style type="text/css">
+        search > a {
+            display: inline !important;
+            margin: 0px !important;
+            border: 0px !important;
+            border-right: solid #808080 1px !important;
+            padding: 10px 10px !important;
+            font: 14px/20px "宋体", "Arail" !important;
+            height: 20px !important;
+            background: #333 !important;
+            color: #fff !important;
+            text-decoration: none !important;
+        }
+
+        search > a:visited {
+            color: #000000 !important;
+            text-decoration: none !important;
+        }
+
+        search > a:hover {
+            text-decoration: underline !important;
+        }
+    </style>
 </head>
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/rsvp/rsvp.min.js"></script>
@@ -14,6 +37,7 @@
 <script src="js/paragraph.js"></script>
 <script src="js/request.js"></script>
 <script src="js/render.js"></script>
+<script src="js/notation.js"></script>
 <body class="tbbody">
 <div class="container">
     <div class="md_book">
