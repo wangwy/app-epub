@@ -5,10 +5,13 @@ EPUB.App = {};
 EPUB.App.init = (function ($) {
   var Book;
   var Notation;
+  var Selection;
   function init(elem, bookUrl) {
     Book = new EPUB.Book(elem, bookUrl);
     Notation = new EPUB.Notation();
     Notation.initNotation();
+//    Selection = new EPUB.Selections();
+//    Selection.initSelection();
     $(function(){
       controls();
     });

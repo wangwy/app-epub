@@ -1,5 +1,6 @@
 /**
  * Created by wangwy on 15-1-8.
+ * 段落内容判断
  */
 EPUB.Paragraph = function () {
 };

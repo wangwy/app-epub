@@ -1,5 +1,6 @@
 /**
  * Created by wangwy on 15-1-7.
+ * 书本的基本功能操作
  */
 EPUB.Book = function (elem, bookUrl) {
   this.spineNum = 6;
@@ -42,6 +43,9 @@ EPUB.Book.prototype.display = function (mark) {
       num = that.render.pages.length;
     }
     that.render.display(num);
+  }).then(function(){
+    that.Selections = new EPUB.Selections();
+    that.Selections.initSelection();
   });
 };
 

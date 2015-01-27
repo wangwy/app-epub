@@ -1,5 +1,6 @@
 /**
  * Created by wangwy on 15-1-13.
+ * 段落内容渲染
  */
 EPUB.Render = function (elem) {
   this.el = this.getEl(elem);
@@ -33,7 +34,7 @@ EPUB.Render.prototype.initialize = function (context) {
   this.pages = new Array();
   this.pages.push(this.currentPage);
   var items = context.querySelectorAll("img");
-  if(items.length > 0){
+  if (items.length > 0) {
     var images = Array.prototype.slice.call(items);
     var count = images.length;
     images.forEach(function (value) {
@@ -48,12 +49,13 @@ EPUB.Render.prototype.initialize = function (context) {
             height: image.height,
             width: image.width
           };
-        }if(count == 0){
+        }
+        if (count == 0) {
           deffer.resolve(documentBody);
         }
       };
     });
-  }else{
+  } else {
     deffer.resolve(documentBody);
   }
   return deffer.promise;
@@ -115,6 +117,7 @@ EPUB.Render.prototype.typeSetting = function (ele) {
   //保证字符串是以空格结束，以便计算单词
   txt = txt.charAt(txt.length - 1) === " " ? txt : txt + " ";
   var world = "";
+  var worldWidth = 0;
   for (var i = 0; i < txt.length; i++) {
     var char = txt.charAt(i);
     var charCode = txt.charCodeAt(i);
@@ -124,14 +127,16 @@ EPUB.Render.prototype.typeSetting = function (ele) {
     } else {
       if (this.paragraph.isDbcCase(charCode)) {
         this.currentPositionX += eleStyle.fontSize / 2 + 3;
+        worldWidth = eleStyle.fontSize / 2 + 3;
       }
       else {
         this.currentPositionX += eleStyle.fontSize;
+        worldWidth = eleStyle.fontSize
       }
       var rect, glyph;
       if (world) {
         this.changeLineOrPage(width, height, eleStyle, world.length);
-        rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY);
+        rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, worldWidth * world.length, eleStyle.fontSize);
         glyph = new Glyph(world, rect);
         this.currentPage.push(glyph);
         this.currentPositionX += (eleStyle.fontSize / 2 + 3) * world.length;
@@ -139,7 +144,7 @@ EPUB.Render.prototype.typeSetting = function (ele) {
       }
       this.changeLineOrPage(width, height, eleStyle, "");
 
-      rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY);
+      rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, worldWidth, eleStyle.fontSize);
       glyph = new Glyph(char, rect);
       this.currentPage.push(glyph);
     }
@@ -185,7 +190,7 @@ EPUB.Render.prototype.display = function (index) {
   for (var i = 0; i < page.length; i++) {
     var glyph = page[i];
     if (glyph.type == "text") {
-      textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
+      textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '"+glyph.rect.width+"' data-height = '"+glyph.rect.height+"' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
     } else if (glyph.type == "image") {
       textHTML += "<image xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "'/>";
     }
@@ -228,11 +233,13 @@ EPUB.Render.prototype.prevPage = function () {
  * @param y
  * @constructor
  */
-function Rect(fontFamily, fontSize, x, y) {
+function Rect(fontFamily, fontSize, x, y, width, height) {
   this.fontFamily = fontFamily;
   this.fontSize = fontSize;
   this.px = x;
   this.py = y;
+  this.width = width;
+  this.height = height;
 }
 
 /**

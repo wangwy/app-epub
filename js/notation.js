@@ -1,5 +1,6 @@
 /**
  * Created by wangwy on 15-1-22.
+ * 鼠标选择后弹出复制、标记等功能菜单
  */
 EPUB.Notation = function () {
   this.searchs = {
@@ -11,6 +12,11 @@ EPUB.Notation = function () {
   this.string = "";
 };
 
+/**
+ * 功能菜单显示
+ * @param x
+ * @param y
+ */
 EPUB.Notation.prototype.show = function (x, y) {
   var that = this;
   var nodes = Array.prototype.slice.call(this.node.querySelectorAll('a[search]'));
@@ -32,12 +38,18 @@ EPUB.Notation.prototype.show = function (x, y) {
   this.node.style.top = y + "px";
 };
 
+/**
+ * 功能菜单隐藏
+ */
 EPUB.Notation.prototype.hide = function () {
   this.node.style.left = "0px";
   this.node.style.top = "0px";
   this.node.style.display = "none";
 };
 
+/**
+ * 功能菜单创建
+ */
 EPUB.Notation.prototype.create = function () {
   var that = this;
   this.node = document.createElement("search");
@@ -60,6 +72,9 @@ EPUB.Notation.prototype.create = function () {
   document.documentElement.appendChild(this.node);
 };
 
+/**
+ * 初始化功能菜单
+ */
 EPUB.Notation.prototype.initNotation = function () {
   var that = this;
   this.create();
@@ -81,6 +96,10 @@ EPUB.Notation.prototype.initNotation = function () {
   }, false);
 };
 
+/**
+ * 获取选中文本
+ * @returns {string}
+ */
 EPUB.Notation.prototype.getString = function () {
   var s = window.getSelection(), r, c;
   if (s.rangeCount) {

@@ -26,6 +26,14 @@
         search > a:hover {
             text-decoration: underline !important;
         }
+
+        ::selection {
+            background: #ffffff; /* Safari */
+        }
+
+        ::-moz-selection {
+            background: #ffffff; /* Firefox */
+        }
     </style>
 </head>
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -38,6 +46,7 @@
 <script src="js/request.js"></script>
 <script src="js/render.js"></script>
 <script src="js/notation.js"></script>
+<script src="js/selection.js"></script>
 <body class="tbbody">
 <div class="container">
     <div class="md_book">
@@ -101,7 +110,7 @@
 <script>
     document.onreadystatechange = function () {
         if (document.readyState == "complete") {
-            EPUB.App.init("area","books/moby-dick/");
+            EPUB.App.init("area", "books/moby-dick/");
         }
     }
 </script>

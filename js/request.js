@@ -1,5 +1,6 @@
 /**
  * Created by wangwy on 15-1-7.
+ * 与后台的请求
  */
 EPUB.Request = {};
 EPUB.Request.loadFile = function(url,type){

@@ -1,5 +1,6 @@
 /**
  * Created by wangwy on 15-1-12.
+ * 初始化书本等信息
  */
 EPUB.Format = function (baseUrl) {
   this.baseUrl = baseUrl || '';
