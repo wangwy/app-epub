@@ -5,6 +5,7 @@
 EPUB.Render = function (elem) {
   this.el = this.getEl(elem);
   this.paragraph = new EPUB.Paragraph();
+  this.selections = new EPUB.Selections();
   this.lineGap = EPUB.LINEGAP;
   this.format = new EPUB.Format();
 };
@@ -26,7 +27,7 @@ EPUB.Render.prototype.initialize = function (context) {
   this.imagesAll = {};
   var that = this;
   var deffer = new RSVP.defer();
-  var documentBody = context.body;
+  var documentBody = context.getElementsByTagName("body")[0];
   this.displayedPage = 1;
   this.currentPositionY = 12;
   this.currentPositionX = 0;
@@ -39,7 +40,6 @@ EPUB.Render.prototype.initialize = function (context) {
     var count = images.length;
     images.forEach(function (value) {
       var image = new Image();
-      image.src = value.src;
       var url = that.format.formatUrl(value.src);
       image.onload = function () {
         count--;
@@ -54,6 +54,7 @@ EPUB.Render.prototype.initialize = function (context) {
           deffer.resolve(documentBody);
         }
       };
+      image.src = url.origin + that.bookUrl + value.getAttribute("src");
     });
   } else {
     deffer.resolve(documentBody);
@@ -113,7 +114,7 @@ EPUB.Render.prototype.imageSetting = function (ele) {
 EPUB.Render.prototype.typeSetting = function (ele) {
   var width = parseInt(this.el.style.width.slice(0, -2));
   var height = parseInt(this.el.style.height.slice(0, -2));
-  var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentElement.tagName];
+  var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName];
   //保证字符串是以空格结束，以便计算单词
   txt = txt.charAt(txt.length - 1) === " " ? txt : txt + " ";
   var world = "";
@@ -183,6 +184,7 @@ EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, leng
  * @param index
  */
 EPUB.Render.prototype.display = function (index) {
+  var deferred = new RSVP.defer();
   this.el.innerHTML = "";
   this.displayedPage = index;
   var page = this.pages[this.displayedPage - 1];
@@ -197,6 +199,8 @@ EPUB.Render.prototype.display = function (index) {
   }
   textHTML += "</svg>";
   this.el.innerHTML = textHTML;
+ // return deferred.promise;
+  this.selections.initSelection();
 };
 
 /**

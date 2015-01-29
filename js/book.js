@@ -43,9 +43,6 @@ EPUB.Book.prototype.display = function (mark) {
       num = that.render.pages.length;
     }
     that.render.display(num);
-  }).then(function(){
-    that.Selections = new EPUB.Selections();
-    that.Selections.initSelection();
   });
 };
 
@@ -62,6 +59,7 @@ EPUB.Book.prototype.loadOpfFile = function (bookPath) {
   opfFileXml = EPUB.Request.loadFile(containerPath, 'xml').then(function (context) {
     return book.format.formatContainerXML(context);
   }).then(function (paths) {
+    book.render.bookUrl = paths.bookUrl;
     return EPUB.Request.loadFile(bookPath + paths.packagePath, 'xml');
   });
   return opfFileXml;

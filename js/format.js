@@ -62,7 +62,7 @@ EPUB.Format.prototype.formatUrl = function (url) {
       uri.path = withoutProtocol.slice(firstSlash);
     }
 
-    uri.origin = uri.protocol + "://" + uri.host;
+    uri.origin = uri.protocol + "://" + uri.host +"/";
     uri.directory = this.formatFolder(uri.path);
     uri.base = uri.origin + uri.directory;
   } else {
@@ -100,10 +100,12 @@ EPUB.Format.prototype.formatContainerXML = function (containerXML) {
   var rootfile, fullpath, encoding;
   rootfile = containerXML.querySelector("rootfile");
   fullpath = rootfile.getAttribute("full-path");
+  this.bookUrl = this.baseUrl + this.formatUrl(fullpath).base;
   encoding = containerXML.xmlEncoding;
   return {
     'packagePath': fullpath,
-    'encoding': encoding
+    'encoding': encoding,
+    'bookUrl': this.bookUrl
   }
 };
 
@@ -173,7 +175,7 @@ EPUB.Format.prototype.getXMLTextByTag = function (xml, tag) {
  * @returns {{}}
  */
 EPUB.Format.prototype.formatManifest = function (xml) {
-  var manifest = {}, baseUrl = this.baseUrl + "OPS/";
+  var manifest = {}, that = this;
 
   var selected = xml.querySelectorAll("item"),
       items = Array.prototype.slice.call(selected);
@@ -186,7 +188,7 @@ EPUB.Format.prototype.formatManifest = function (xml) {
 
     manifest[id] = {
       'href': href,
-      'url': baseUrl + href,
+      'url': that.bookUrl + href,
       'type': type,
       'properties': properties
     }

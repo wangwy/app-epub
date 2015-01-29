@@ -2,17 +2,18 @@
  * Created by wangwy on 15-1-23.
  * 重写浏览器选择背景
  */
+var EPUB = EPUB || {};
 EPUB.Selections = function () {
   this.selectionElements = [];
   this.rects = [];
-  this.svg = document.getElementsByTagName("svg")[0];
-  this.svgPosition = this.getPosition(this.svg);
 };
 
 /**
  * 初始化选择的操作
  */
 EPUB.Selections.prototype.initSelection = function () {
+  this.svg = document.getElementsByTagName("svg")[0];
+  this.svgPosition = this.getPosition(this.svg);
   var that = this;
 
   function handle(e) {
@@ -128,7 +129,7 @@ EPUB.Selections.prototype.getPosition = function (elem) {
     if (elem.offsetParent === null) {
       break;
     }
-    elem = elem.offsetParent;
+    elem = elem.parentNode;
   }
   return position;
 };
