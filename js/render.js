@@ -45,7 +45,7 @@ EPUB.Render.prototype.initialize = function (context) {
         count--;
         if (!that.imagesAll.hasOwnProperty(url.filename)) {
           that.imagesAll[url.filename] = {
-            src: url.path,
+            src: url.origin + that.bookUrl + value.getAttribute("src"),
             height: image.height,
             width: image.width
           };
@@ -82,7 +82,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
   var nodes = elem.childNodes;
   for (var i = 0; i < nodes.length; i++) {
     var node = nodes[i], nodeType = node.nodeType;
-    if (node.nodeName == "p" || node.nodeName == "h1" || node.nodeName == "h2" || node.nodeName == "img") {
+    if (EPUB.ELEMENTS.hasOwnProperty(node.nodeName)) {
       //一段结束，换行
       this.currentPositionY += (EPUB.ELEMENTS[node.nodeName].fontSize + this.lineGap * 2);
       this.currentPositionX = EPUB.ELEMENTS[node.nodeName].fontSize;
@@ -199,7 +199,6 @@ EPUB.Render.prototype.display = function (index) {
   }
   textHTML += "</svg>";
   this.el.innerHTML = textHTML;
- // return deferred.promise;
   this.selections.initSelection();
 };
 

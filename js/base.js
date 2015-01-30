@@ -26,6 +26,10 @@ EPUB.ELEMENTS = {
     fontSize: 20,
     fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
   },
+  "h3": {
+    fontSize: 18,
+    fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
+  },
   "img": {
     fontSize: 20,
     fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"

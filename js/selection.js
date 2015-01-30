@@ -13,13 +13,13 @@ EPUB.Selections = function () {
  */
 EPUB.Selections.prototype.initSelection = function () {
   this.svg = document.getElementsByTagName("svg")[0];
-  this.svgPosition = this.getPosition(this.svg);
+  this.svgPosition = this.svg.getBoundingClientRect();
   var that = this;
 
   function handle(e) {
     //选择区域终点坐标
-    that.endXY = {x: e.x, y: e.y};
-    if (that.unChangeXY.y >= that.endXY.y) {
+    that.endXY = {x: e.clientX, y: e.clientY};
+    if (that.unChangeXY.y > that.endXY.y) {
       that.startXY = that.endXY;
       that.endXY = that.unChangeXY;
     } else {
@@ -33,7 +33,7 @@ EPUB.Selections.prototype.initSelection = function () {
 
   this.svg.addEventListener("mousedown", function (e) {
     //选择区域起点坐标
-    that.startXY = {x: e.x, y: e.y};
+    that.startXY = {x: e.clientX, y: e.clientY};
     //鼠标点击区域坐标
     that.unChangeXY = that.startXY;
     if (that.rects.length > 0) {
@@ -69,15 +69,16 @@ EPUB.Selections.prototype.reInitSelections = function () {
 EPUB.Selections.prototype.getSelectionElements = function () {
   var items = Array.prototype.slice.call(this.svg.querySelectorAll('text')), that = this;
   items.forEach(function (value) {
-    var eleY = parseInt(value.getAttribute("y"), 10) + parseInt(that.svgPosition.top, 10) - 10;
-    if (eleY >= that.startXY.y && eleY <= that.endXY.y) {
+    var lineHeight = parseInt(value.getAttribute("data-height"), 10);
+    var eleY = parseInt(value.getAttribute("y"), 10) + parseInt(that.svgPosition.top, 10);
+    if (eleY >= (that.startXY.y - lineHeight) && eleY <= (that.endXY.y + lineHeight)) {
       that.selectionElements.push(value);
     }
     if (that.selectionElements.length > 0) {
       that.selectionElements.forEach(function (value) {
         var eleX = parseInt(value.getAttribute("x"), 10) + parseInt(that.svgPosition.left, 10),
             eleY = parseInt(value.getAttribute("y"), 10) + parseInt(that.svgPosition.top, 10);
-        if ((that.endXY.y - eleY < 20 && eleX - that.endXY.x > 11) || (that.startXY.y - eleY > -20 && that.startXY.x - eleX > 11)) {
+        if ((that.endXY.y < eleY && eleX - that.endXY.x > 11) || (that.startXY.y > (eleY - lineHeight) && that.startXY.x - eleX > 11)) {
           that.arryRemove(that.selectionElements, value);
         }
       });
@@ -112,26 +113,6 @@ EPUB.Selections.prototype.inserRects = function () {
       this.svg.insertBefore(this.rects[i], this.selectionElements[i]);
     }
   }
-};
-
-/**
- * 获取节点的偏移量
- * @param elem
- * @returns {{}}
- */
-EPUB.Selections.prototype.getPosition = function (elem) {
-  var position = {};
-  position.left = 0;
-  position.top = 0;
-  while (true) {
-    position.left += elem.offsetLeft;
-    position.top += elem.offsetTop;
-    if (elem.offsetParent === null) {
-      break;
-    }
-    elem = elem.parentNode;
-  }
-  return position;
 };
 
 /**
