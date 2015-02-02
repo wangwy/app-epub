@@ -3,13 +3,10 @@
  * 鼠标选择后弹出复制、标记等功能菜单
  */
 EPUB.Notation = function () {
-  this.searchs = {
-    "复制": {},
-    "分享": {},
-    "笔记": {},
-    "删除": {}
-  };
+  this.svgSelected = [];
+  this.showPostion = {};
   this.string = "";
+  this.create();
 };
 
 /**
@@ -66,9 +63,10 @@ EPUB.Notation.prototype.create = function () {
     e.stopPropagation();
     that.hide();
   }, false);
-  for (var search in this.searchs) {
-    this.node.innerHTML += "<a>" + search + "</a>"
-  }
+  this.node.innerHTML += "<a id='copy-button' data-clipboard-text = '222222222222222222'> 复制 </a>";
+  this.node.innerHTML += "<a> 分享 </a>";
+  this.node.innerHTML += "<a> 笔记 </a>";
+  this.node.innerHTML += "<a> 删除 </a>";
   document.documentElement.appendChild(this.node);
 };
 
@@ -76,24 +74,15 @@ EPUB.Notation.prototype.create = function () {
  * 初始化功能菜单
  */
 EPUB.Notation.prototype.initNotation = function () {
-  var that = this;
-  this.create();
-  window.addEventListener("click", function (e) {
-    var node = e.target, x = e.pageX, y = e.pageY;
-    if (node.nodeName == "#document") {
-      that.hide();
-    } else if (node == that.node || node.className == "ujs_search_link") {
-      e.stopPropagation();
-      e.preventDefault();
-    } else {
-      that.string = that.getString();
-      if (that.string != "") {
-        that.show(x, y);
-      } else {
-        that.hide();
-      }
-    }
-  }, false);
+  if (this.svgSelected.length > 0) {
+    this.show(this.showPostion.x, this.showPostion.y);
+    var copyText = this.getString();
+    var copyButton = document.getElementById("copy-button");
+    copyButton.setAttribute("data-clipboard-text", copyText);
+    var client = new ZeroClipboard(copyButton);
+  } else {
+    this.hide();
+  }
 };
 
 /**
@@ -101,11 +90,12 @@ EPUB.Notation.prototype.initNotation = function () {
  * @returns {string}
  */
 EPUB.Notation.prototype.getString = function () {
-  var s = window.getSelection(), r, c;
-  if (s.rangeCount) {
-    r = s.getRangeAt(0);
-    c = r.cloneContents();
-    return c.textContent ? c.textContent : "";
+  var s = "";
+  if (this.svgSelected.length > 0) {
+    var item = Array.prototype.slice.call(this.svgSelected);
+    item.forEach(function (value) {
+      s += value.innerHTML;
+    });
   }
-  return "";
+  return s;
 };

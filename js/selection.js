@@ -5,6 +5,7 @@
 var EPUB = EPUB || {};
 EPUB.Selections = function () {
   this.selectionElements = [];
+  this.notation = new EPUB.Notation();
   this.rects = [];
 };
 
@@ -36,16 +37,14 @@ EPUB.Selections.prototype.initSelection = function () {
     that.startXY = {x: e.clientX, y: e.clientY};
     //鼠标点击区域坐标
     that.unChangeXY = that.startXY;
-    if (that.rects.length > 0) {
-      that.rects.forEach(function (value) {
-        that.svg.removeChild(value);
-      });
-      that.rects = [];
-    }
+    that.reInitSelections();
     that.svg.addEventListener("mousemove", handle, false);
   }, false);
   this.svg.addEventListener("mouseup", function () {
     that.svg.removeEventListener("mousemove", handle, false);
+    that.notation.svgSelected = that.selectionElements;
+    that.notation.showPostion = that.endXY;
+    that.notation.initNotation();
   });
 };
 
