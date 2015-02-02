@@ -82,9 +82,9 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
   var nodes = elem.childNodes;
   for (var i = 0; i < nodes.length; i++) {
     var node = nodes[i], nodeType = node.nodeType;
-    if (EPUB.ELEMENTS.hasOwnProperty(node.nodeName)) {
+    if (EPUB.ELEMENTS.hasOwnProperty(node.nodeName) && node.nodeName != "span") {
       //一段结束，换行
-      this.currentPositionY += (EPUB.ELEMENTS[node.nodeName].fontSize + this.lineGap * 2);
+      this.currentPositionY += (EPUB.ELEMENTS[node.nodeName].fontSize + this.lineGap);
       this.currentPositionX = EPUB.ELEMENTS[node.nodeName].fontSize;
       if (node.nodeName == "img") {
         this.imageSetting(node);

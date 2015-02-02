@@ -70,18 +70,15 @@ EPUB.Selections.prototype.getSelectionElements = function () {
   var items = Array.prototype.slice.call(this.svg.querySelectorAll('text')), that = this;
   items.forEach(function (value) {
     var lineHeight = parseInt(value.getAttribute("data-height"), 10);
-    var eleY = parseInt(value.getAttribute("y"), 10) + parseInt(that.svgPosition.top, 10);
-    if (eleY >= (that.startXY.y - lineHeight) && eleY <= (that.endXY.y + lineHeight)) {
+    var eleY = parseInt(value.getAttribute("y"), 10) + parseInt(that.svgPosition.top, 10),
+        eleX = parseInt(value.getAttribute("x"), 10) + parseInt(that.svgPosition.left, 10);
+    if ((that.endXY.y - that.startXY.y) <= lineHeight && (that.startXY.x - eleX) < 11 && (that.endXY.x - eleX) > 11 && eleY > that.startXY.y && eleY <= (that.endXY.y + lineHeight)) {
       that.selectionElements.push(value);
     }
-    if (that.selectionElements.length > 0) {
-      that.selectionElements.forEach(function (value) {
-        var eleX = parseInt(value.getAttribute("x"), 10) + parseInt(that.svgPosition.left, 10),
-            eleY = parseInt(value.getAttribute("y"), 10) + parseInt(that.svgPosition.top, 10);
-        if ((that.endXY.y < eleY && eleX - that.endXY.x > 11) || (that.startXY.y > (eleY - lineHeight) && that.startXY.x - eleX > 11)) {
-          that.arryRemove(that.selectionElements, value);
-        }
-      });
+    else if ((eleY > (that.startXY.y + lineHeight) && eleY <= (that.endXY.y - lineHeight) ||
+        eleY > that.startXY.y && eleY <= (that.startXY.y + lineHeight) && (that.startXY.x - eleX) < 11 ||
+        eleY > (that.endXY.y - lineHeight) && eleY <= (that.endXY.y + lineHeight) && (that.endXY.x - eleX) > 11) && (that.endXY.y - that.startXY.y > lineHeight)) {
+      that.selectionElements.push(value);
     }
   });
 };
@@ -113,19 +110,4 @@ EPUB.Selections.prototype.inserRects = function () {
       this.svg.insertBefore(this.rects[i], this.selectionElements[i]);
     }
   }
-};
-
-/**
- * 移除数组中的元素
- * @param array       数组
- * @param value       要移除的元素
- * @returns {boolean} 是否成功移除
- */
-EPUB.Selections.prototype.arryRemove = function (array, value) {
-  var num = array.indexOf(value);
-  if (num >= 0) {
-    array.splice(num, 1);
-    return true;
-  }
-  return false;
 };
