@@ -63,7 +63,7 @@ EPUB.Notation.prototype.create = function () {
     e.stopPropagation();
     that.hide();
   }, false);
-  this.node.innerHTML += "<a id='copy-button' data-clipboard-text = '222222222222222222'> 复制 </a>";
+  this.node.innerHTML += "<a id='copy-button'> 复制 </a>";
   this.node.innerHTML += "<a> 分享 </a>";
   this.node.innerHTML += "<a> 笔记 </a>";
   this.node.innerHTML += "<a> 删除 </a>";
