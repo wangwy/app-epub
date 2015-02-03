@@ -14,6 +14,8 @@ EPUB.Selections = function () {
  */
 EPUB.Selections.prototype.initSelection = function () {
   this.svg = document.getElementsByTagName("svg")[0];
+  //禁用浏览器选重
+  this.svg.onmousedown = function(e){return false};
   this.svgPosition = this.svg.getBoundingClientRect();
   var that = this;
 

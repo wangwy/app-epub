@@ -130,7 +130,6 @@ EPUB.Notation.prototype.createDialog = function () {
 
   var textArea = document.createElement("textarea");
   textArea.setAttribute("id", "comment-content");
-  textArea.setAttribute("class", "init");
   form.appendChild(textArea);
 
   var div = document.createElement("div");
