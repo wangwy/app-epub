@@ -7,6 +7,7 @@ EPUB.Notation = function () {
   this.showPostion = {};
   this.string = "";
   this.create();
+  this.createDialog();
 };
 
 /**
@@ -65,7 +66,7 @@ EPUB.Notation.prototype.create = function () {
   }, false);
   this.node.innerHTML += "<a id='copy-button'> 复制 </a>";
   this.node.innerHTML += "<a> 分享 </a>";
-  this.node.innerHTML += "<a> 笔记 </a>";
+  this.node.innerHTML += "<a id='show-dialog'> 笔记 </a>";
   this.node.innerHTML += "<a> 删除 </a>";
   document.documentElement.appendChild(this.node);
 };
@@ -74,12 +75,17 @@ EPUB.Notation.prototype.create = function () {
  * 初始化功能菜单
  */
 EPUB.Notation.prototype.initNotation = function () {
+  var that = this;
   if (this.svgSelected.length > 0) {
     this.show(this.showPostion.x, this.showPostion.y);
     var copyText = this.getString();
     var copyButton = document.getElementById("copy-button");
     copyButton.setAttribute("data-clipboard-text", copyText);
     var client = new ZeroClipboard(copyButton);
+    var showDialog = document.getElementById("show-dialog");
+    showDialog.addEventListener('click', function () {
+      that.showDialog(that.showPostion.x, that.showPostion.y);
+    });
   } else {
     this.hide();
   }
@@ -94,8 +100,82 @@ EPUB.Notation.prototype.getString = function () {
   if (this.svgSelected.length > 0) {
     var item = Array.prototype.slice.call(this.svgSelected);
     item.forEach(function (value) {
-      s += value.innerHTML;
+      s += value.textContent;
     });
   }
   return s;
+};
+
+/**
+ * 创建笔记窗口
+ */
+EPUB.Notation.prototype.createDialog = function () {
+  var that = this;
+  this.dialogNode = document.createElement('div');
+  this.dialogNode.style.position = "absolute";
+  this.dialogNode.style.left = "0px";
+  this.dialogNode.style.top = "0px";
+  this.dialogNode.style.display = "none";
+  this.dialogNode.setAttribute("class", "u-inputpanel");
+  this.dialogNode.setAttribute("id", "popup-comment");
+  var h2 = document.createElement("h2");
+  h2.textContent = "批注";
+  this.dialogNode.appendChild(h2);
+
+  var p = document.createElement("p");
+  p.setAttribute("class", "txt");
+  this.dialogNode.appendChild(p);
+
+  var form = document.createElement("form");
+
+  var textArea = document.createElement("textarea");
+  textArea.setAttribute("id", "comment-content");
+  textArea.setAttribute("class", "init");
+  form.appendChild(textArea);
+
+  var div = document.createElement("div");
+  div.setAttribute("class", "btn");
+
+  var input = document.createElement("input");
+  input.setAttribute("id", "button-finish-comment");
+  input.setAttribute("type", "button");
+  input.setAttribute("class", "u-btn3");
+  input.setAttribute("value", "完成");
+  input.addEventListener("click",function(e){
+    that.hideDialog();
+  });
+  div.appendChild(input);
+  form.appendChild(div);
+  this.dialogNode.appendChild(form);
+
+  var a = document.createElement("a");
+  a.setAttribute("id", "button-close-comment");
+  a.setAttribute("class", "icn-close2");
+  a.textContent = "×";
+  a.addEventListener("click",function(e){
+    that.hideDialog();
+  });
+  this.dialogNode.appendChild(a);
+  document.documentElement.appendChild(this.dialogNode);
+};
+
+/**
+ * 显示笔记窗口
+ * @param x
+ * @param y
+ */
+EPUB.Notation.prototype.showDialog = function(x,y){
+  this.dialogNode.getElementsByClassName("txt")[0].textContent = this.getString();
+  this.dialogNode.style.left = x + "px";
+  this.dialogNode.style.top = y + "px";
+  this.dialogNode.style.display = "block";
+};
+
+/**
+ * 隐藏笔记窗口
+ */
+EPUB.Notation.prototype.hideDialog = function(){
+  this.dialogNode.style.left = "0px";
+  this.dialogNode.style.top = "0px";
+  this.dialogNode.style.display = "none";
 };
