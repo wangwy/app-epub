@@ -3,7 +3,10 @@
  * 鼠标选择后弹出复制、标记等功能菜单
  */
 EPUB.Notation = function () {
+  this.pages = [];
+  this.svg = [];
   this.svgSelected = [];
+  this.bacRects = [];
   this.showPostion = {};
   this.string = "";
   this.create();
@@ -75,6 +78,7 @@ EPUB.Notation.prototype.create = function () {
  * 初始化功能菜单
  */
 EPUB.Notation.prototype.initNotation = function () {
+  this.pageIndex = localStorage.getItem("pageIndex");
   var that = this;
   if (this.svgSelected.length > 0) {
     this.show(this.showPostion.x, this.showPostion.y);
@@ -140,7 +144,7 @@ EPUB.Notation.prototype.createDialog = function () {
   input.setAttribute("type", "button");
   input.setAttribute("class", "u-btn3");
   input.setAttribute("value", "完成");
-  input.addEventListener("click",function(e){
+  input.addEventListener("click", function (e) {
     that.hideDialog();
   });
   div.appendChild(input);
@@ -151,7 +155,7 @@ EPUB.Notation.prototype.createDialog = function () {
   a.setAttribute("id", "button-close-comment");
   a.setAttribute("class", "icn-close2");
   a.textContent = "×";
-  a.addEventListener("click",function(e){
+  a.addEventListener("click", function (e) {
     that.hideDialog();
   });
   this.dialogNode.appendChild(a);
@@ -163,18 +167,47 @@ EPUB.Notation.prototype.createDialog = function () {
  * @param x
  * @param y
  */
-EPUB.Notation.prototype.showDialog = function(x,y){
+EPUB.Notation.prototype.showDialog = function (x, y) {
+  var items = Array.prototype.slice.call(this.bacRects);
+  items.forEach(function (value) {
+    value.setAttribute("fill", "red");
+    var y = parseInt(value.getAttribute("y")) + parseInt(value.getAttribute("height"));
+    value.setAttribute("height", "2");
+    value.setAttribute("y", y);
+  });
   this.dialogNode.getElementsByClassName("txt")[0].textContent = this.getString();
   this.dialogNode.style.left = x + "px";
   this.dialogNode.style.top = y + "px";
   this.dialogNode.style.display = "block";
+  this.selectedOffset();
 };
 
 /**
  * 隐藏笔记窗口
  */
-EPUB.Notation.prototype.hideDialog = function(){
+EPUB.Notation.prototype.hideDialog = function () {
   this.dialogNode.style.left = "0px";
   this.dialogNode.style.top = "0px";
   this.dialogNode.style.display = "none";
 };
+
+EPUB.Notation.prototype.selectedOffset = function () {
+  var startOffset = endOffset = 0,
+      svgArray = Array.prototype.slice.call(this.svg.children);
+  for (var i = 0; i < this.pageIndex-1; i++) {
+    startOffset += this.pages[i].length;
+  }
+  startOffset += svgArray.indexOf(this.svgSelected[0]);
+
+  endOffset = startOffset + this.svgSelected.length;
+console.log(startOffset);
+console.log(endOffset);
+  localStorage.setItem("startOffset",startOffset);
+  localStorage.setItem("endOffset",endOffset);
+  return {
+    "startOffset": startOffset,
+    "endOffset": endOffset
+  };
+};
+
+

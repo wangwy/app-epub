@@ -3,7 +3,8 @@
  * 重写浏览器选择背景
  */
 var EPUB = EPUB || {};
-EPUB.Selections = function () {
+EPUB.Selections = function (pages) {
+  this.pages = pages;
   this.selectionElements = [];
   this.notation = new EPUB.Notation();
   this.rects = [];
@@ -44,8 +45,11 @@ EPUB.Selections.prototype.initSelection = function () {
   }, false);
   this.svg.addEventListener("mouseup", function () {
     that.svg.removeEventListener("mousemove", handle, false);
+    that.notation.svg = that.svg;
     that.notation.svgSelected = that.selectionElements;
+    that.notation.bacRects = that.rects;
     that.notation.showPostion = that.endXY;
+    that.notation.pages = that.pages;
     that.notation.initNotation();
   });
 };
