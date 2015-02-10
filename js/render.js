@@ -71,7 +71,6 @@ EPUB.Render.prototype.getPagesNum = function (elem) {
   this.getAllTextNodeContextAndRender(elem);
   this.displayedPages = this.pages.length;
   this.selections = new EPUB.Selections(this.pages);
-  this.isNotation();
   return this.displayedPages;
 };
 
@@ -193,14 +192,7 @@ EPUB.Render.prototype.display = function (index) {
   for (var i = 0; i < page.length; i++) {
     var glyph = page[i];
     if (glyph.type == "text") {
-      if(index-1 == this.notationPage && i >= this.notationStart && i < this.notationEnd){
-        var bacRect = page[i-1];
-        console.log(bacRect.txt);
-        textHTML += "<rect   height='2' width = '"+14 * (bacRect.txt.length)+"' x='" + bacRect.rect.px + "' y='" + bacRect.rect.py + "' fill='red'></rect>";
-        textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
-      }else{
-        textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
-      }
+      textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
     } else if (glyph.type == "image") {
       textHTML += "<image xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "'/>";
     }
@@ -209,23 +201,69 @@ EPUB.Render.prototype.display = function (index) {
   this.el.innerHTML = textHTML;
   this.selections.initSelection();
 };
+/*EPUB.Render.prototype.display = function (index) {
+ this.el.innerHTML = "";
+ this.displayedPage = index;
+ localStorage.setItem("pageIndex", index);
+ var page = this.pages[this.displayedPage - 1];
+ var textHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" + this.el.style.width + "\" height=\"" + this.el.style.height + "\">";
+ for (var i = 0; i < page.length; i++) {
+ var glyph = page[i];
+ if (glyph.type == "text") {
+ if(index-1 == this.notationPage && i >= this.notationStart-1 && i < this.notationEnd-1){
+ textHTML += "<rect   height='2' width = '"+glyph.rect.width+"' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "' fill='red'></rect>";
+ textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
+ }else{
+ textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
+ }
+ } else if (glyph.type == "image") {
+ textHTML += "<image xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "'/>";
+ }
+ }
+ textHTML += "</svg>";
+ this.el.innerHTML = textHTML;
+ this.selections.initSelection();
+ };*/
 
-EPUB.Render.prototype.isNotation = function () {
-  var startOffset = localStorage.getItem("startOffset");
-  var endOffset = localStorage.getItem("endOffset");
-  var pageLength = 0;
-  for(var i = 0, length = this.pages.length; i < length; i++){
-    pageLength += this.pages[i].length;
-    if(pageLength > startOffset) {
-      pageLength -= this.pages[i].length;
-      this.notationPage = i;
-      this.notationStart = startOffset - pageLength;
-      this.notationEnd = endOffset - pageLength;
-      break;
-    }
-  }
+/*EPUB.Render.prototype.display = function(index){
+ this.el.innerHTML = "";
+ this.displayedPage = index;
+ localStorage.setItem("pageIndex", index);
+ var page = this.pages[this.displayedPage - 1];
+ var svgElem = document.createElement("svg");
+ this.el.appendChild(svgElem);
+ svgElem.setAttribute("xmlns","http://www.w3.org/2000/svg");
+ svgElem.setAttribute("version","1.1");
+ svgElem.setAttribute("width",this.el.style.width);
+ svgElem.setAttribute("height",this.el.style.height);
+ for(var i = 0; i < page.length; i++){
+ var glyph = page[i];
+ var textElem = document.createElement("text");
+ textElem.setAttribute("font-family",glyph.rect.fontFamily);
+ textElem.setAttribute("font-size",glyph.rect.fontSize);
+ textElem.setAttribute("x",glyph.rect.px);
+ textElem.setAttribute("y",glyph.rect.py);
+ textElem.textContent = glyph.txt;
+ svgElem.appendChild(textElem);
+ }
+ };*/
 
-};
+/*EPUB.Render.prototype.isNotation = function () {
+ var startOffset = localStorage.getItem("startOffset");
+ var endOffset = localStorage.getItem("endOffset");
+ var pageLength = 0;
+ for(var i = 0, length = this.pages.length; i < length; i++){
+ pageLength += this.pages[i].length;
+ if(pageLength > startOffset) {
+ pageLength -= this.pages[i].length;
+ this.notationPage = i;
+ this.notationStart = startOffset - pageLength;
+ this.notationEnd = endOffset - pageLength;
+ break;
+ }
+ }
+
+ };*/
 
 /**
  * 下一页

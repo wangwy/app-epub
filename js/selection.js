@@ -15,8 +15,12 @@ EPUB.Selections = function (pages) {
  */
 EPUB.Selections.prototype.initSelection = function () {
   this.svg = document.getElementsByTagName("svg")[0];
+  this.notation.svg = this.svg;
+  this.notation.pages = this.pages;
+  this.notation.pageIndex = localStorage.getItem("pageIndex");
+  this.notation.showNotation();
   //禁用浏览器选重
-  this.svg.onmousedown = function(e){return false};
+  this.svg.onmousedown = function(){return false};
   this.svgPosition = this.svg.getBoundingClientRect();
   var that = this;
 
@@ -45,11 +49,9 @@ EPUB.Selections.prototype.initSelection = function () {
   }, false);
   this.svg.addEventListener("mouseup", function () {
     that.svg.removeEventListener("mousemove", handle, false);
-    that.notation.svg = that.svg;
     that.notation.svgSelected = that.selectionElements;
     that.notation.bacRects = that.rects;
     that.notation.showPostion = that.endXY;
-    that.notation.pages = that.pages;
     that.notation.initNotation();
   });
 };
@@ -101,6 +103,7 @@ EPUB.Selections.prototype.createRects = function () {
       rect.setAttribute("width", value.getAttribute("data-width"));
       rect.setAttribute("height", value.getAttribute("data-height"));
       rect.setAttribute("fill", "yellow");
+      rect.setAttribute("class","svgBackRect");
       that.rects.push(rect);
     });
   }
@@ -110,9 +113,9 @@ EPUB.Selections.prototype.createRects = function () {
  * 将背景矩形插入到svg标签
  */
 EPUB.Selections.prototype.inserRects = function () {
-  if (this.selectionElements.length > 0) {
-    for (var i = 0; i < this.selectionElements.length; i++) {
-      this.svg.insertBefore(this.rects[i], this.selectionElements[i]);
+  if (this.rects.length > 0) {
+    for (var i = 0; i < this.rects.length; i++) {
+      this.svg.insertBefore(this.rects[i], this.svg.firstChild);
     }
   }
 };

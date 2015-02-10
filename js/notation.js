@@ -78,7 +78,6 @@ EPUB.Notation.prototype.create = function () {
  * 初始化功能菜单
  */
 EPUB.Notation.prototype.initNotation = function () {
-  this.pageIndex = localStorage.getItem("pageIndex");
   var that = this;
   if (this.svgSelected.length > 0) {
     this.show(this.showPostion.x, this.showPostion.y);
@@ -144,8 +143,8 @@ EPUB.Notation.prototype.createDialog = function () {
   input.setAttribute("type", "button");
   input.setAttribute("class", "u-btn3");
   input.setAttribute("value", "完成");
-  input.addEventListener("click", function (e) {
-    that.hideDialog();
+  input.addEventListener("click", function () {
+    that.sendNotation();
   });
   div.appendChild(input);
   form.appendChild(div);
@@ -168,18 +167,10 @@ EPUB.Notation.prototype.createDialog = function () {
  * @param y
  */
 EPUB.Notation.prototype.showDialog = function (x, y) {
-  var items = Array.prototype.slice.call(this.bacRects);
-  items.forEach(function (value) {
-    value.setAttribute("fill", "red");
-    var y = parseInt(value.getAttribute("y")) + parseInt(value.getAttribute("height"));
-    value.setAttribute("height", "2");
-    value.setAttribute("y", y);
-  });
   this.dialogNode.getElementsByClassName("txt")[0].textContent = this.getString();
   this.dialogNode.style.left = x + "px";
   this.dialogNode.style.top = y + "px";
   this.dialogNode.style.display = "block";
-  this.selectedOffset();
 };
 
 /**
@@ -191,23 +182,116 @@ EPUB.Notation.prototype.hideDialog = function () {
   this.dialogNode.style.display = "none";
 };
 
+/**
+ *向服务器发送数据请求
+ */
+EPUB.Notation.prototype.sendNotation = function () {
+  var data = {}, that = this;
+  var items = Array.prototype.slice.call(this.bacRects);
+  items.forEach(function (value) {
+    var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    underRect.setAttribute("x", value.getAttribute("x"));
+    underRect.setAttribute("y", parseInt(value.getAttribute("y")) + parseInt(value.getAttribute("height")));
+    underRect.setAttribute("width", value.getAttribute("width"));
+    underRect.setAttribute("height", "2");
+    underRect.setAttribute("fill", "red");
+    underRect.setAttribute("class", "svgBackRect");
+    that.svg.removeChild(value);
+    that.svg.insertBefore(underRect, that.svg.firstChild);
+  });
+  this.bacRects.length = 0;
+  var offset = this.selectedOffset();
+  var sendNotationText = document.getElementById("comment-content").textContent;
+  data.offset = offset;
+  data.context = sendNotationText;
+  EPUB.STORENOTATION.push(data);
+  this.hideDialog();
+};
+
+/**
+ * 获取选取元素在页面里的开始节点与结束节点
+ * @returns {{startOffset: number, endOffset: *}}
+ */
 EPUB.Notation.prototype.selectedOffset = function () {
-  var startOffset = endOffset = 0,
-      svgArray = Array.prototype.slice.call(this.svg.children);
-  for (var i = 0; i < this.pageIndex-1; i++) {
+  var startOffset = 0, endOffset = 0,
+      svgArray = Array.prototype.slice.call(this.svg.children),
+      backRect = this.svg.getElementsByClassName("svgBackRect");
+  for (var i = 0; i < this.pageIndex - 1; i++) {
     startOffset += this.pages[i].length;
   }
-  startOffset += svgArray.indexOf(this.svgSelected[0]);
+  startOffset += svgArray.indexOf(this.svgSelected[0]) - backRect.length;
 
   endOffset = startOffset + this.svgSelected.length;
-console.log(startOffset);
-console.log(endOffset);
-  localStorage.setItem("startOffset",startOffset);
-  localStorage.setItem("endOffset",endOffset);
+  localStorage.setItem("startOffset", startOffset);
+  localStorage.setItem("endOffset", endOffset);
   return {
     "startOffset": startOffset,
     "endOffset": endOffset
   };
 };
 
+EPUB.Notation.prototype.showNotation = function () {
+  var that = this;
+  if (EPUB.STORENOTATION.length > 0) {
+    var pageEndLength = pageStartLength = 0;
+    for (var i = 0; i < this.pageIndex; i++) {
+      pageEndLength += this.pages[i].length;
+      pageStartLength = pageEndLength - this.pages[i].length;
+    }
+    EPUB.STORENOTATION.forEach(function (value) {
+      if (pageStartLength <= value.offset.startOffset && pageEndLength >= value.offset.endOffset) {
+        var page = that.pages[that.pageIndex - 1];
 
+        var notationStart = value.offset.startOffset - pageStartLength;
+        var notationEnd = value.offset.endOffset - pageStartLength;
+        for (var j = 0; j < page.length; j++) {
+          if (j >= notationStart && j < notationEnd) {
+            var glyph = page[j];
+            var rectElem = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rectElem.setAttribute("x", glyph.rect.px);
+            rectElem.setAttribute("y", glyph.rect.py);
+            rectElem.setAttribute("width", glyph.rect.width);
+            rectElem.setAttribute("height", "2");
+            rectElem.setAttribute("fill", "red");
+            rectElem.setAttribute("class", "svgBackRect");
+            that.svg.insertBefore(rectElem, that.svg.firstChild);
+          }
+        }
+        return true;
+      }
+    });
+  }
+};
+/*
+ EPUB.Notation.prototype.showNotation = function () {
+ var that = this;
+ if (this.isNotation()) {
+ if (this.pageIndex - 1 == this.notationPage) {
+ var page = this.pages[this.pageIndex - 1];
+ for (var j = 0; j < page.length; j++) {
+ if (j >= this.notationStart && j < this.notationEnd) {
+ var glyph = page[j];
+ var rectElem = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+ rectElem.setAttribute("x", glyph.rect.px);
+ rectElem.setAttribute("y", glyph.rect.py);
+ rectElem.setAttribute("width", glyph.rect.width);
+ rectElem.setAttribute("height", "2");
+ rectElem.setAttribute("fill", "red");
+ rectElem.setAttribute("class", "svgBackRect");
+ this.svg.insertBefore(rectElem, this.svg.firstChild);
+ }
+ }
+ *//*var info = page[this.notationEnd-1];
+ var infoRect = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+ infoRect.setAttribute("cx", info.rect.px+10);
+ infoRect.setAttribute("cy", info.rect.py);
+ infoRect.setAttribute("r", "5");
+ infoRect.setAttribute("fill", "red");
+ infoRect.setAttribute("class", "svgBackRect");
+ infoRect.addEventListener("click",function(e){
+ that.showDialog(info.rect.px, info.rect.py);
+ });
+ this.svg.insertBefore(infoRect, this.svg.firstChild);*//*
+ }
+ }
+ };*/
