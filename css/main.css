@@ -7,6 +7,62 @@
     src:url(../fonts/FZY3JW--GB1-0.eot) format("eot"),url(../fonts/FZY3JW--GB1-0.woff) format("woff"),
 	 url(../fonts/FZY3JW--GB1-0.ttf) format("truetype"), url(../fonts/FZY3JW--GB1-0.svg) format("svg");
 }
+.u-note-1 {
+    background: #ffffc4;
+    border-color: #c48b40;
+}
+
+.u-note {
+    position: fixed;
+    padding: 5px 6px 5px 15px;
+    color: #a04e00;
+    font-size: 14px;
+    background: #fff0cc;
+    border: 1px solid #d0873f;
+    line-height: 20px;
+    border-radius: 3px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .3);
+    z-index: 50;
+}
+
+.u-note .note-wrap {
+    max-width: 330px;
+    min-height: 20px;
+    max-height: 100px;
+    padding-right: 9px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+.u-note p{max-width:330px;word-break:break-word;overflow:hidden;}
+.u-note .arr {
+    position: absolute;
+    left: 50%;
+    margin-left: -8px;
+    width: 16px;
+    height: 8px;
+}
+
+.u-note .arr {
+    bottom: -8px;
+}
+
+.u-note .arr .t0, .u-note .arr .t1{
+    position: absolute;
+    left: 0;
+}
+
+.u-note .arr .t0 {
+    border: 7px solid transparent;
+    border-top-color: #fff0cc;
+    z-index: 1;
+}
+
+.u-note .arr .t1 {
+    left: -1px;
+    border: 8px solid transparent;
+    border-top-color: #d0873f;
+}
+
 .u-inputpanel {
     position: absolute;
     width: 400px;

@@ -11,6 +11,7 @@ EPUB.Notation = function () {
   this.string = "";
   this.create();
   this.createDialog();
+  this.createText();
 };
 
 /**
@@ -110,6 +111,40 @@ EPUB.Notation.prototype.getString = function () {
 };
 
 /**
+ * 创建显示笔记内容窗口
+ */
+EPUB.Notation.prototype.createText = function () {
+  this.textNode = document.createElement('div');
+  this.textNode.style.position = "absolute";
+  this.textNode.style.left = "0px";
+  this.textNode.style.top = "0px";
+  this.textNode.style.display = "none";
+  this.textNode.setAttribute("class", "u-note u-note-1");
+  this.textNode.setAttribute("id", "popup-note");
+
+  var div1 = document.createElement('div');
+  this.textNode.appendChild(div1);
+  div1.setAttribute("class", "note-wrap");
+
+  var p = document.createElement('p');
+  div1.appendChild(p);
+
+  var div2 = document.createElement('div');
+  this.textNode.appendChild(div2);
+  div2.setAttribute("class", "arr");
+
+  var span1 = document.createElement('span');
+  div2.appendChild(span1);
+  span1.setAttribute("class", "t0");
+
+  var span2 = document.createElement('span');
+  div2.appendChild(span2);
+  span2.setAttribute("class", "t1");
+
+  document.documentElement.appendChild(this.textNode);
+};
+
+/**
  * 创建笔记窗口
  */
 EPUB.Notation.prototype.createDialog = function () {
@@ -162,6 +197,19 @@ EPUB.Notation.prototype.createDialog = function () {
 };
 
 /**
+ * 显示笔记内容窗口
+ * @param x
+ * @param y
+ * @param text
+ */
+EPUB.Notation.prototype.showText = function (x, y, text) {
+  this.textNode.getElementsByTagName("p")[0].textContent = text;
+  this.textNode.style.left = x + "px";
+  this.textNode.style.top = y + "px";
+  this.textNode.style.display = "block";
+};
+
+/**
  * 显示笔记窗口
  * @param x
  * @param y
@@ -174,9 +222,19 @@ EPUB.Notation.prototype.showDialog = function (x, y) {
 };
 
 /**
+ * 隐藏笔记内容窗口
+ */
+EPUB.Notation.prototype.hideText = function () {
+  this.textNode.style.left = "0px";
+  this.textNode.style.top = "0px";
+  this.textNode.style.display = "none";
+};
+
+/**
  * 隐藏笔记窗口
  */
 EPUB.Notation.prototype.hideDialog = function () {
+  document.getElementById("comment-content").value = "";
   this.dialogNode.style.left = "0px";
   this.dialogNode.style.top = "0px";
   this.dialogNode.style.display = "none";
@@ -239,11 +297,11 @@ EPUB.Notation.prototype.showNotation = function () {
       pageStartLength = pageEndLength - this.pages[i].length;
     }
     EPUB.STORENOTATION.forEach(function (value) {
-      if (pageStartLength <= value.offset.startOffset && pageEndLength >= value.offset.endOffset) {
+      if (pageStartLength <= value.offset.startOffset && pageEndLength >= (value.offset.startOffset + value.offset.textlength)) {
         var page = that.pages[that.pageIndex - 1];
 
         var notationStart = value.offset.startOffset - pageStartLength;
-        var notationEnd = value.offset.endOffset - pageStartLength;
+        var notationEnd = value.offset.startOffset + value.offset.textlength - pageStartLength;
         for (var j = 0; j < page.length; j++) {
           if (j >= notationStart && j < notationEnd) {
             var glyph = page[j];
@@ -257,7 +315,19 @@ EPUB.Notation.prototype.showNotation = function () {
             that.svg.insertBefore(rectElem, that.svg.firstChild);
           }
         }
-        return true;
+        var lastNode = page[notationEnd];
+        var circleElem = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circleElem.setAttribute("cx", lastNode.rect.px);
+        circleElem.setAttribute("cy", lastNode.rect.py);
+        circleElem.setAttribute("r", "5");
+        circleElem.setAttribute("fill", "red");
+        circleElem.addEventListener("mouseover",function(e){
+          that.showText(e.x, e.y, value.context);
+        });
+        circleElem.addEventListener("mouseout",function(){
+          that.hideText();
+        });
+        that.svg.insertBefore(circleElem, that.svg.lastChild);
       }
     });
   }
