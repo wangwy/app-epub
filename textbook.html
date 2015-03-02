@@ -2,8 +2,9 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>电子书</title>
+    <title>电子图书</title>
     <link href="css/main.css" rel="stylesheet">
+    <link href="css/textBook.css" rel="stylesheet">
     <style type="text/css">
         search > a {
             display: inline !important;
@@ -40,29 +41,10 @@
     <script src="js/notation.js"></script>
     <script src="js/selection.js"></script>
     <script src="js/events.js"></script>
+
 </head>
 <body class="tbbody">
 <div class="container">
-    <div class="md_book">
-        <div class="book_page_wrapper "
-             style="left:-1299px;width:433px;height:577px;background:#ebe7df;position:absolute;">
-        </div>
-        <div class="book_page_wrapper"
-             style="left:-866px;width:433px;height:577px;background:#ebe7df;position:absolute;">
-        </div>
-        <div class="book_page_wrapper book_page_wrapr"
-             style="left:-333px;width:667px;height:889px;background:#FFF;position:absolute; padding: 10px;" id="area">
-        </div>
-        <div class="book_page_wrapper"
-             style="left:433px;width:433px;height:577px;background:#ebe7df;position:absolute;">
-        </div>
-        <div class="book_page_wrapper"
-             style="left:866px;width:433px;height:577px;background:#ebe7df;position:absolute;">
-        </div>
-        <div class="book_page_wrapper"
-             style="left:1299px;width:433px;height:577px;background:#ebe7df;position:absolute;">
-        </div>
-    </div>
     <div class="l_fct">
         <ul class="le_other">
             <li class="le_back">
@@ -74,21 +56,79 @@
             <li class="le_share">
                 <img src="images/share.png">
             </li>
+            <li class="btn_menu">
+                <img src="images/menu.png">
+            </li>
         </ul>
+    </div>
+    <div class="md_book">
+        <div class="book_page_wrapr">
+            <div class="tbbox">
+                <div class="tbparagra" style="width:667px;height:889px;background:#FFF;position:absolute; padding: 10px;" id="area"></div>
+
+                <div class="menubox">
+                    <div class="tablistcon">
+                        <ul id="test2_li_now_">
+                            <li class="now">
+                                <span class="tab_menu">目录</span>
+                            </li>
+                            <li>
+                                <span class="tab_tag">书签</span>
+                            </li>
+                            <li style="border:none;">
+                                <span class="tab_note">笔记</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tabcon">
+                        <div id="test2_1" class="tablistx block">
+                            <ul class="menuconlist">
+                                <li>
+                                    <span>版本信息</span>
+                                    <span class="menuconum">1</span>
+                                </li>
+                                <li>
+                                    <span>一级目录一级目录一级目录一级目录</span>
+                                    <span class="menuconum">1</span>
+                                </li>
+                                <li>
+                                    <span>一级目录一级目录</span>
+                                    <span class="menuconum">1</span>
+                                </li>
+                                <li>
+                                    <span>一级目录一级目录</span>
+                                    <span class="menuconum">1</span>
+                                </li>
+                                <li>
+                                    <span>一级目录一级目录</span>
+                                    <span class="menuconum">1</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="test2_2" class="tablistx">
+                            <span>杂家，代表人物吕不韦，代表作《吕氏春秋》。</span>
+                        </div>
+                        <div id="test2_3" class="tablistx">
+                            <span>兵家，代表人物孙武、孙膑，代表作《孙子》、《孙膑兵法》。</span>
+                        </div>
+                        <div id="test2_4" class="tablistx">
+                            <span>纵横家，代表人物苏秦、张仪，代表作《战国纵横家书》。</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="r_fct">
         <ul class="btn_cntrl">
             <li class="btn_zoom">
-                <img src="images/zoom.PNG">
-            </li>
-            <li class="btn_menu">
-                <img src="images/menu.png">
+                <img src="images/zoom.png" title="目录">
             </li>
             <li class="btn_tag">
-                <img src="images/tag.png">
+                <img src="images/tag.png" title="书签">
             </li>
             <li class="btn_note">
-                <img src="images/note.png">
+                <img src="images/note.png" title="笔记">
             </li>
         </ul>
         <ul class="page">
@@ -101,6 +141,7 @@
         </ul>
     </div>
 </div>
+</body>
 <script>
     document.onreadystatechange = function () {
         if (document.readyState == "complete") {
@@ -108,5 +149,4 @@
         }
     }
 </script>
-</body>
 </html>

@@ -1,0 +1,120 @@
+
+.u-note-1 {
+    background: #ffffc4;
+    border-color: #c48b40;
+}
+
+.u-note {
+    position: fixed;
+    padding: 5px 6px 5px 15px;
+    color: #a04e00;
+    font-size: 14px;
+    background: #fff0cc;
+    border: 1px solid #d0873f;
+    line-height: 20px;
+    border-radius: 3px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .3);
+    z-index: 50;
+}
+
+.u-note .note-wrap {
+    max-width: 330px;
+    min-height: 20px;
+    max-height: 100px;
+    padding-right: 9px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+.u-note p{max-width:330px;word-break:break-word;overflow:hidden;}
+.u-note .arr {
+    position: absolute;
+    left: 50%;
+    margin-left: -8px;
+    width: 16px;
+    height: 8px;
+}
+
+.u-note .arr {
+    bottom: -8px;
+}
+
+.u-note .arr .t0, .u-note .arr .t1{
+    position: absolute;
+    left: 0;
+}
+
+.u-note .arr .t0 {
+    border: 7px solid transparent;
+    border-top-color: #fff0cc;
+    z-index: 1;
+}
+
+.u-note .arr .t1 {
+    left: -1px;
+    border: 8px solid transparent;
+    border-top-color: #d0873f;
+}
+
+.u-inputpanel {
+    position: absolute;
+    width: 400px;
+    padding: 0 10px 10px;
+    background: #f4f1ec;
+    border: 1px solid #cdc6bf;
+    border-radius: 4px;
+    z-index: 200;
+}
+
+.u-inputpanel .txt {
+    color: #333;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+.u-inputpanel .icn-close2 {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.u-inputpanel h2 {
+    line-height: 40px;
+    color: #978b80;
+    font-size: 18px;
+    font-weight: 400;
+    padding: 0;
+    margin: 0;
+}
+
+.u-inputpanel form {
+    margin: 10px 0 0;
+}
+
+.u-inputpanel textarea {
+    width: 388px;
+    height: 110px;
+    margin-bottom: 5px;
+    padding: 5px;
+    border: 1px solid #cdc6bf;
+    box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+.u-inputpanel .btn {
+    text-align: right;
+    right: 10px;
+    bottom: 10px;
+}
+
+.u-btn3 {
+    height: 28px;
+    padding: 0 20px;
+    background: #fa7a20;
+    border: 1px solid #d84f25;
+    border-radius: 2px;
+    color: #fff;
+    line-height: 20px;
+    cursor: pointer;
+}
