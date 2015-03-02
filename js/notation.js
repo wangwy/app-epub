@@ -288,6 +288,9 @@ EPUB.Notation.prototype.selectedOffset = function () {
   };
 };
 
+/**
+ * 当页面第一次被加载时，显示批注信息
+ */
 EPUB.Notation.prototype.showNotation = function () {
   var that = this;
   if (EPUB.STORENOTATION.length > 0) {

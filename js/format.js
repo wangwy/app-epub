@@ -62,7 +62,7 @@ EPUB.Format.prototype.formatUrl = function (url) {
       uri.path = withoutProtocol.slice(firstSlash);
     }
 
-    uri.origin = uri.protocol + "://" + uri.host +"/";
+    uri.origin = uri.protocol + "://" + uri.host + "/";
     uri.directory = this.formatFolder(uri.path);
     uri.base = uri.origin + uri.directory;
   } else {
@@ -191,6 +191,10 @@ EPUB.Format.prototype.formatManifest = function (xml) {
       'url': that.bookUrl + href,
       'type': type,
       'properties': properties
+    };
+
+    if (item.getAttribute('media-type') == "application/x-dtbncx+xml") {
+      that.formatToc(href);
     }
   });
 
@@ -219,4 +223,43 @@ EPUB.Format.prototype.formatSpine = function (xml) {
   });
 
   return spine;
+};
+
+EPUB.Format.prototype.formatToc = function (path) {
+  var that = this,
+      url = this.bookUrl + path;
+  this.toc = [];
+  EPUB.Request.loadFile(url, 'xml').then(function (contents) {
+    var navMap = contents.getElementsByTagName("navMap")[0];
+
+    function getTOC(nodes, parent) {
+      var list = [];
+      var items = Array.prototype.slice.call(nodes);
+      items.forEach(function (item) {
+        var id = item.getAttribute('id'),
+            content = item.getElementsByTagName("content")[0],
+            href = that.bookUrl + content.getAttribute('src'),
+            navLabel = item.getElementsByTagName("navLabel")[0],
+            text = navLabel.textContent ? navLabel.textContent : "",
+            subitems = item.getElementsByTagName("navPoint") || false,
+            subs = false,
+            childof = (item.parentNode == parent);
+
+        if(!childof) return;
+
+        if(subitems){
+          subs = getTOC(subitems, item)
+        }
+
+        list.push({
+          "id":id,
+          "href": href,
+          "label": text,
+          "subitems": subs
+        });
+      });
+      return list;
+    }
+    that.toc = getTOC(navMap.getElementsByTagName("navPoint"), navMap);
+  });
 };

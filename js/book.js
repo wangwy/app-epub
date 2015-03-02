@@ -6,6 +6,9 @@ EPUB.Book = function (elem, bookUrl) {
   this.spineNum = 6;
   this.render = new EPUB.Render(elem);
   this.format = new EPUB.Format(bookUrl);
+  this.el = this.render.el;
+  this.events = new EPUB.Events(this, this.el);
+  this.createEvent("book:tocReady");
   this.beforeDisplay();
 };
 
@@ -42,6 +45,7 @@ EPUB.Book.prototype.display = function (mark) {
     } else if (mark === "prev") {
       num = that.render.pages.length;
     }
+    that.tell("book:tocReady");
     that.render.display(num);
   });
 };
@@ -95,4 +99,8 @@ EPUB.Book.prototype.prevPage = function () {
       alert("已经是第一页");
     }
   }
+};
+
+EPUB.Book.prototype.getTOC = function(){
+  return this.format.toc;
 };
