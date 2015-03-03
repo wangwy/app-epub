@@ -7,6 +7,7 @@
     src:url(../fonts/FZY3JW--GB1-0.eot) format("eot"),url(../fonts/FZY3JW--GB1-0.woff) format("woff"),
 	 url(../fonts/FZY3JW--GB1-0.ttf) format("truetype"), url(../fonts/FZY3JW--GB1-0.svg) format("svg");
 }
+
 body{margin:0px;padding:0px;font:12px/1 Arial, Helvetica, sans-serif;background:#F7F2E8;width:100%;height:100%;min-width:1200px;}
 /*index*/
 img{vertical-align:top;border:0px;}
@@ -830,7 +831,8 @@ ul{list-style-type:none;}
 .md_book{position:absolute;left:50%;text-align:center;}
 .tbbox{padding:20px;font:16px/1.5 Arial, Helvetica, sans-serif;}
 .tbparagra{text-align:left;text-indent:2em;}
-.book_page_wrapr{width:750px;height:973px;background:#FFF;position:absolute;left:-375px;}
+.book_page_wrapr{width:750px;height:973px;background:#FFF;position:absolute;left:-375px;overflow:hidden;}
+.menubox_zz{width:750px;height:973px;background:#b6b6b6;position:absolute;top:0%;left:0%;opacity:0.6;filter:alpha(opacity=60);-khtml-opacity: 0.6;}
 .l_fct{margin-left:15px;margin-top:15px;float:left;}
 .l_fct li{cursor:pointer;}
 .r_fct{position:absolute;left:50%;margin-left:395px;margin-top:15px;}
@@ -850,7 +852,8 @@ ul{list-style-type:none;}
 	display:block;
 	width:630px;
 	height:970px;
-	right:0px;top:0px;
+	right:-630px;
+	top:0px;
 	background:#fafafa;
 	}
 .tablistcon{
@@ -1026,8 +1029,57 @@ ul{list-style-type:none;}
 	position:fixed;
 	width:100%;
 	height:100%;
-	left:0%;top:0%;
-	opacity:0.4;
-	filter:alpha(opacity=40);
-	-khtml-opacity: 0.4;
+	left:0%;
+	top:0%;
+	opacity:0.6;
+	filter:alpha(opacity=60);
+	-khtml-opacity: 0.6;
+	}
+.pup_con{
+	height:280px;
+	width:500px;
+	background:#fff;
+	z-index:9999;
+	position:relative;
+	margin:auto;
+	top:200px;
+	text-align:center;
+	}
+.pup_close{
+	float:right;
+	margin:5px 5px 0px 0px;
+	height:10px;
+	cursor:pointer;
+	}
+.pup_title{
+	text-align:left;
+	float:left;
+	margin:18px 0px 0px 35px;
+	font:18px/1 "黑体";
+	}
+.pup_hight{
+	text-align:left;
+	float:left;
+	position:absolute;
+	margin:60px 0px 0px 35px;
+	font:16px/1 "宋体";
+	color:#7d3a08;
+	}
+.pup_text{
+	text-align:left;
+	float:left;
+	margin:90px 0px 0px -45px;
+	height:130px;
+	width:432px;
+	background-color:#f8f8f8;
+	border:1px solid #e5e0d8;
+	padding:8px;
+	font:14px/1 "宋体";
+	color:#a29f9f;
+	}
+.pup_save{
+	float:right;
+	margin:10px 30px 0px 0px;
+	color:#905e42;
+	font:14px/1 "宋体";
 	}

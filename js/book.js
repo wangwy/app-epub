@@ -47,6 +47,9 @@ EPUB.Book.prototype.display = function (mark) {
     }
     that.tell("book:tocReady");
     that.render.display(num);
+
+    console.log(that.spineNum);
+    console.log(that.render.displayedPage);
   });
 };
 
@@ -83,6 +86,8 @@ EPUB.Book.prototype.nextPage = function () {
       alert("已经是最后一页");
     }
   }
+  console.log(this.spineNum);
+  console.log(this.render.displayedPage);
 };
 
 /**
@@ -99,8 +104,39 @@ EPUB.Book.prototype.prevPage = function () {
       alert("已经是第一页");
     }
   }
+  console.log(this.spineNum);
+  console.log(this.render.displayedPage);
 };
 
+/**
+ * 获得目录列表
+ * @returns {Array}
+ */
 EPUB.Book.prototype.getTOC = function(){
   return this.format.toc;
+};
+
+/**
+ * 创建目录
+ * @param doc
+ */
+EPUB.Book.prototype.createToc = function(doc){
+  var tocDiv = document.getElementById("test2_1");
+  tocDiv.setAttribute("class","tablistx block");
+  tocDiv.innerHTML = "";
+
+  var ul = document.createElement("ul");
+  ul.setAttribute("class","menuconlist");
+  tocDiv.appendChild(ul);
+
+  if(doc instanceof Array){
+    doc.forEach(function(item){
+      var li = document.createElement("li");
+      ul.appendChild(li);
+      var a = document.createElement("a");
+      a.href = item.href;
+      a.textContent = item.label;
+      li.appendChild(a);
+    });
+  }
 };

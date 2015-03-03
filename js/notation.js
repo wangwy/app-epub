@@ -147,7 +147,7 @@ EPUB.Notation.prototype.createText = function () {
 /**
  * 创建笔记窗口
  */
-EPUB.Notation.prototype.createDialog = function () {
+/*EPUB.Notation.prototype.createDialog = function () {
   var that = this;
   this.dialogNode = document.createElement('div');
   this.dialogNode.style.position = "absolute";
@@ -194,6 +194,74 @@ EPUB.Notation.prototype.createDialog = function () {
   });
   this.dialogNode.appendChild(a);
   document.documentElement.appendChild(this.dialogNode);
+};*/
+
+EPUB.Notation.prototype.createDialog = function () {
+  var that = this;
+  var div1 = document.createElement("div");
+  div1.setAttribute("id","pup");
+
+ var div2 = document.createElement('div');
+  div2.setAttribute("id","back");
+  div1.appendChild(div2);
+
+  this.dialogNode = document.createElement('div');
+  this.dialogNode.style.position = "absolute";
+  this.dialogNode.style.left = "0px";
+  this.dialogNode.style.top = "0px";
+  this.dialogNode.style.display = "none";
+  this.dialogNode.setAttribute("class", "pup_con");
+  div1.appendChild(this.dialogNode);
+
+  var img = document.createElement('img');
+  img.setAttribute("src","images/pup_close.png");
+  img.setAttribute("class","pup_close");
+  img.addEventListener("click",function(){
+    that.hideDialog();
+  });
+  this.dialogNode.appendChild(img);
+
+  var p1 = document.createElement("p");
+  p1.textContent = "笔记";
+  p1.setAttribute("class","pup_title");
+  this.dialogNode.appendChild(p1);
+
+  var p2 = document.createElement("p");
+  p2.setAttribute("class", "pup_hight");
+  this.dialogNode.appendChild(p2);
+
+  var textArea = document.createElement("textarea");
+  textArea.setAttribute("id", "comment-content");
+  textArea.setAttribute("class","pup_text");
+  textArea.textContent = "留下你的笔记";
+  this.dialogNode.appendChild(textArea);
+
+  var p3 = document.createElement("p");
+  p3.setAttribute("class", "pup_save");
+  p3.textContent = "回车键保存";
+  this.dialogNode.appendChild(p3);
+  /*
+  var input = document.createElement("input");
+  input.setAttribute("id", "button-finish-comment");
+  input.setAttribute("type", "button");
+  input.setAttribute("class", "u-btn3");
+  input.setAttribute("value", "完成");
+  input.addEventListener("click", function () {
+    that.sendNotation();
+  });
+  div.appendChild(input);
+  form.appendChild(div);
+  this.dialogNode.appendChild(form);
+
+  var a = document.createElement("a");
+  a.setAttribute("id", "button-close-comment");
+  a.setAttribute("class", "icn-close2");
+  a.textContent = "×";
+  a.addEventListener("click", function (e) {
+    that.hideDialog();
+  });
+  this.dialogNode.appendChild(a);*/
+  document.documentElement.appendChild(div1);
 };
 
 /**
@@ -215,7 +283,8 @@ EPUB.Notation.prototype.showText = function (x, y, text) {
  * @param y
  */
 EPUB.Notation.prototype.showDialog = function (x, y) {
-  this.dialogNode.getElementsByClassName("txt")[0].textContent = this.getString();
+  this.dialogNode.getElementsByClassName("pup_hight")[0].textContent = this.getString();
+  document.getElementById("back").setAttribute("class","pup_bg");
   this.dialogNode.style.left = x + "px";
   this.dialogNode.style.top = y + "px";
   this.dialogNode.style.display = "block";
@@ -234,7 +303,8 @@ EPUB.Notation.prototype.hideText = function () {
  * 隐藏笔记窗口
  */
 EPUB.Notation.prototype.hideDialog = function () {
-  document.getElementById("comment-content").value = "";
+  document.getElementById("back").removeAttribute("class");
+  document.getElementById("comment-content").value = "留下你的笔记";
   this.dialogNode.style.left = "0px";
   this.dialogNode.style.top = "0px";
   this.dialogNode.style.display = "none";

@@ -3,28 +3,23 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
-    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <link href="css/textBook.css" rel="stylesheet">
 </head>
 <body>
-<div style="width:100%">
-    <p style="width:200px;height:30px;background:#000;float:right" id="ss">
-    </p>
-    <a href="javascript:void(0)" id="a1" style="">全文</a>
+<div class="u-inputpanel" id="popup-comment" style="position: absolute; left: 1017px; top: 326px; display: block;"><h2>
+    批注</h2>
 
-</div>
-<script type="text/javascript">
-    $("#a1").click(function(){
-        var g=$(this).text();
-        if(g=="全文")
-        {
-            $("#ss").animate({"width":"0px"});
-            $(this).text("收起");
-        }
-        else{
-            $("#ss").animate({"width":"200px"},500);
-            $(this).text("全文");
-        }
-    })
-</script>
+    <p class="txt">money in my purse, and nothing particular to interest me on shore, I thought I would sail about a
+        little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the
+        circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my
+        soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every
+        funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong
+        moral</p>
+
+    <form><textarea id="comment-content"></textarea>
+
+        <div class="btn"><input id="button-finish-comment" type="button" class="u-btn3" value="完成"></div>
+    </form>
+    <a id="button-close-comment" class="icn-close2">×</a></div>
 </body>
 </html>
