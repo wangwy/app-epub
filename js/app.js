@@ -12,15 +12,16 @@ EPUB.App.init = (function ($) {
       Book.listen("book:tocReady", toc);
 
       var width = $(".menubox").width();
-      var show = true;
+      Book.showMenu = true;
       $(".btn_zoom").click(function () {
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
-        if (show) {
+        document.getElementsByClassName("menubox")[0].style.display = "";
+        if (Book.showMenu) {
           $(".menubox").stop().animate({right: 0}, 100);
-          show = false;
+          Book.showMenu = false;
         } else {
           $(".menubox").stop().animate({right: -width}, 100);
-          show = true;
+          Book.showMenu = true;
         }
       });
 

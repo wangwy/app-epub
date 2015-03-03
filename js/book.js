@@ -31,10 +31,11 @@ EPUB.Book.prototype.beforeDisplay = function () {
  * 页面展示
  * @param mark
  */
-EPUB.Book.prototype.display = function (mark) {
+EPUB.Book.prototype.display = function (mark,url) {
   var that = this;
   var num;
-  var chapterXml = EPUB.Request.loadFile(that.manifest[that.spine[that.spineNum].id].url, 'xml');
+  var path = url || that.manifest[that.spine[that.spineNum].id].url;
+  var chapterXml = EPUB.Request.loadFile(path, 'xml');
   chapterXml.then(function (context) {
     return that.render.initialize(context);
   }).then(function (context) {
@@ -48,8 +49,8 @@ EPUB.Book.prototype.display = function (mark) {
     that.tell("book:tocReady");
     that.render.display(num);
 
-    console.log(that.spineNum);
-    console.log(that.render.displayedPage);
+    console.log(that.manifest);
+    console.log(that.spine);
   });
 };
 
@@ -86,8 +87,6 @@ EPUB.Book.prototype.nextPage = function () {
       alert("已经是最后一页");
     }
   }
-  console.log(this.spineNum);
-  console.log(this.render.displayedPage);
 };
 
 /**
@@ -104,8 +103,6 @@ EPUB.Book.prototype.prevPage = function () {
       alert("已经是第一页");
     }
   }
-  console.log(this.spineNum);
-  console.log(this.render.displayedPage);
 };
 
 /**
@@ -121,6 +118,7 @@ EPUB.Book.prototype.getTOC = function(){
  * @param doc
  */
 EPUB.Book.prototype.createToc = function(doc){
+  var that = this;
   var tocDiv = document.getElementById("test2_1");
   tocDiv.setAttribute("class","tablistx block");
   tocDiv.innerHTML = "";
@@ -133,10 +131,16 @@ EPUB.Book.prototype.createToc = function(doc){
     doc.forEach(function(item){
       var li = document.createElement("li");
       ul.appendChild(li);
-      var a = document.createElement("a");
-      a.href = item.href;
-      a.textContent = item.label;
-      li.appendChild(a);
+      var span = document.createElement("span");
+      //a.href = item.href;
+      span.addEventListener("click",function(){
+        that.display("next", item.href);
+        document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
+        document.getElementsByClassName("menubox")[0].style.display = "none";
+        that.showMenu = true;
+      });
+      span.textContent = item.label;
+      li.appendChild(span);
     });
   }
 };
