@@ -5,29 +5,6 @@
     <title>电子图书</title>
     <link href="css/main.css" rel="stylesheet">
     <link href="css/textBook.css" rel="stylesheet">
-    <style type="text/css">
-        search > a {
-            display: inline !important;
-            margin: 0px !important;
-            border: 0px !important;
-            border-right: solid #808080 1px !important;
-            padding: 10px 10px !important;
-            font: 14px/20px "宋体", "Arail" !important;
-            height: 20px !important;
-            background: #333 !important;
-            color: #fff !important;
-            text-decoration: none !important;
-        }
-
-        search > a:visited {
-            color: #000000 !important;
-            text-decoration: none !important;
-        }
-
-        search > a:hover {
-            text-decoration: underline !important;
-        }
-    </style>
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/rsvp/rsvp.min.js"></script>
     <script src="bower_components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
@@ -64,64 +41,13 @@
     <div class="md_book">
         <div class="book_page_wrapr">
             <div class="tbbox">
-                <div class="tbparagra" style="width:667px;height:889px;background:#FFF;position:absolute; padding: 10px;" id="area"></div>
-
-                <div class="menubox">
-                    <div class="tablistcon">
-                        <ul id="test2_li_now_">
-                            <li class="now">
-                                <span class="tab_menu">目录</span>
-                            </li>
-                            <li>
-                                <span class="tab_tag">书签</span>
-                            </li>
-                            <li style="border:none;">
-                                <span class="tab_note">笔记</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="tabcon">
-                        <div id="test2_1" class="tablistx block">
-                            <ul class="menuconlist">
-                                <li>
-                                    <span>版本信息</span>
-                                    <span class="menuconum">1</span>
-                                </li>
-                                <li>
-                                    <span>一级目录一级目录一级目录一级目录</span>
-                                    <span class="menuconum">1</span>
-                                </li>
-                                <li>
-                                    <span>一级目录一级目录</span>
-                                    <span class="menuconum">1</span>
-                                </li>
-                                <li>
-                                    <span>一级目录一级目录</span>
-                                    <span class="menuconum">1</span>
-                                </li>
-                                <li>
-                                    <span>一级目录一级目录</span>
-                                    <span class="menuconum">1</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div id="test2_2" class="tablistx">
-                            <span>杂家，代表人物吕不韦，代表作《吕氏春秋》。</span>
-                        </div>
-                        <div id="test2_3" class="tablistx">
-                            <span>兵家，代表人物孙武、孙膑，代表作《孙子》、《孙膑兵法》。</span>
-                        </div>
-                        <div id="test2_4" class="tablistx">
-                            <span>纵横家，代表人物苏秦、张仪，代表作《战国纵横家书》。</span>
-                        </div>
-                    </div>
-                </div>
+                <div style="width:730px;height:889px;background:#FFF;position:absolute;" id="area"></div>
             </div>
         </div>
     </div>
     <div class="r_fct">
         <ul class="btn_cntrl">
-            <li class="btn_zoom">
+            <li class="btn_zoom" data-show="false">
                 <img src="images/zoom.png" title="目录">
             </li>
             <li class="btn_tag">

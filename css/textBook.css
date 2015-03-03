@@ -118,3 +118,26 @@
     line-height: 20px;
     cursor: pointer;
 }
+
+/*弹出复制，笔记，删除框的样式*/
+search > a {
+    display: inline !important;
+    margin: 0px !important;
+    border: 0px !important;
+    border-right: solid #808080 1px !important;
+    padding: 10px 10px !important;
+    font: 14px/20px "宋体", "Arail" !important;
+    height: 20px !important;
+    background: #333 !important;
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
+search > a:visited {
+    color: #000000 !important;
+    text-decoration: none !important;
+}
+
+search > a:hover {
+    text-decoration: underline !important;
+}
