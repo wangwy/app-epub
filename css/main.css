@@ -1036,11 +1036,11 @@ ul{list-style-type:none;}
 	-khtml-opacity: 0.6;
 	}
 .pup_con{
-	height:280px;
+	
 	width:500px;
 	background:#fff;
 	z-index:9999;
-	position:relative;
+	position:absolute;
 	margin:auto;
 	top:200px;
 	text-align:center;
@@ -1053,22 +1053,20 @@ ul{list-style-type:none;}
 	}
 .pup_title{
 	text-align:left;
-	float:left;
 	margin:18px 0px 0px 35px;
 	font:18px/1 "黑体";
 	}
 .pup_hight{
+	margin:15px 0px 5px 35px;
+	width:437px;
 	text-align:left;
-	float:left;
-	position:absolute;
-	margin:60px 0px 0px 35px;
 	font:16px/1 "宋体";
 	color:#7d3a08;
 	}
 .pup_text{
+
 	text-align:left;
-	float:left;
-	margin:90px 0px 0px -45px;
+	
 	height:130px;
 	width:432px;
 	background-color:#f8f8f8;
@@ -1078,8 +1076,12 @@ ul{list-style-type:none;}
 	color:#a29f9f;
 	}
 .pup_save{
+	border:1px solid #905e42;
+	border-radius:3px;
+	cursor:pointer;
+	padding:6px 20px;
 	float:right;
-	margin:10px 30px 0px 0px;
+	margin:10px 30px 10px 0px;
 	color:#905e42;
 	font:14px/1 "宋体";
 	}

@@ -31,8 +31,9 @@ EPUB.Book.prototype.beforeDisplay = function () {
  * 页面展示
  * @param mark
  */
-EPUB.Book.prototype.display = function (mark,url) {
+EPUB.Book.prototype.display = function (mark, url, spineNum) {
   var that = this;
+  this.spineNum = spineNum || this.spineNum;
   var num;
   var path = url || that.manifest[that.spine[that.spineNum].id].url;
   var chapterXml = EPUB.Request.loadFile(path, 'xml');
@@ -48,9 +49,6 @@ EPUB.Book.prototype.display = function (mark,url) {
     }
     that.tell("book:tocReady");
     that.render.display(num);
-
-    console.log(that.manifest);
-    console.log(that.spine);
   });
 };
 
@@ -109,7 +107,7 @@ EPUB.Book.prototype.prevPage = function () {
  * 获得目录列表
  * @returns {Array}
  */
-EPUB.Book.prototype.getTOC = function(){
+EPUB.Book.prototype.getTOC = function () {
   return this.format.toc;
 };
 
@@ -117,24 +115,24 @@ EPUB.Book.prototype.getTOC = function(){
  * 创建目录
  * @param doc
  */
-EPUB.Book.prototype.createToc = function(doc){
+EPUB.Book.prototype.createToc = function (doc) {
   var that = this;
   var tocDiv = document.getElementById("test2_1");
-  tocDiv.setAttribute("class","tablistx block");
+  tocDiv.setAttribute("class", "tablistx block");
   tocDiv.innerHTML = "";
 
   var ul = document.createElement("ul");
-  ul.setAttribute("class","menuconlist");
+  ul.setAttribute("class", "menuconlist");
   tocDiv.appendChild(ul);
 
-  if(doc instanceof Array){
-    doc.forEach(function(item){
+  if (doc instanceof Array) {
+    doc.forEach(function (item) {
       var li = document.createElement("li");
       ul.appendChild(li);
       var span = document.createElement("span");
       //a.href = item.href;
-      span.addEventListener("click",function(){
-        that.display("next", item.href);
+      span.addEventListener("click", function () {
+        that.display("next", item.url, item.spineNum);
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
         that.showMenu = true;

@@ -207,10 +207,12 @@ EPUB.Format.prototype.formatManifest = function (xml) {
  * @returns {Array}
  */
 EPUB.Format.prototype.formatSpine = function (xml) {
+  var that = this;
   var spine = [];
+  this.spineIndex = {};
   var selected = xml.getElementsByTagName("itemref"),
       items = Array.prototype.slice.call(selected);
-  items.forEach(function (item) {
+  items.forEach(function (item, index) {
     var id = item.getAttribute("idref"),
         properties = item.getAttribute("properties") || '',
         linear = item.getAttribute("linear") || '';
@@ -220,6 +222,7 @@ EPUB.Format.prototype.formatSpine = function (xml) {
       'linear': linear
     };
     spine.push(vert);
+    that.spineIndex[id] = index;
   });
 
   return spine;
@@ -238,7 +241,8 @@ EPUB.Format.prototype.formatToc = function (path) {
       items.forEach(function (item) {
         var id = item.getAttribute('id'),
             content = item.getElementsByTagName("content")[0],
-            href = that.bookUrl + content.getAttribute('src'),
+            href = content.getAttribute('src'),
+            url = that.bookUrl + href;
             navLabel = item.getElementsByTagName("navLabel")[0],
             text = navLabel.textContent ? navLabel.textContent : "",
             subitems = item.getElementsByTagName("navPoint") || false,
@@ -255,6 +259,8 @@ EPUB.Format.prototype.formatToc = function (path) {
           "id":id,
           "href": href,
           "label": text,
+          "url": url,
+          "spineNum": parseInt(that.spineIndex[id]),
           "subitems": subs
         });
       });

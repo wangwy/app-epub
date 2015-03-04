@@ -236,10 +236,13 @@ EPUB.Notation.prototype.createDialog = function () {
   textArea.textContent = "留下你的笔记";
   this.dialogNode.appendChild(textArea);
 
-  var p3 = document.createElement("p");
-  p3.setAttribute("class", "pup_save");
-  p3.textContent = "回车键保存";
-  this.dialogNode.appendChild(p3);
+  var a = document.createElement("p");
+  a.setAttribute("class", "pup_save");
+  a.textContent = "回车键保存";
+  a.addEventListener("click",function(){
+    that.sendNotation();
+  });
+  this.dialogNode.appendChild(a);
   /*
   var input = document.createElement("input");
   input.setAttribute("id", "button-finish-comment");
