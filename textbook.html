@@ -94,7 +94,29 @@
         </ul>
     </div>
 </div>
+
 </body>
+
+<search style="position: absolute; border: none; z-index: 1000000; left: 0px; top: 0px; display: none; cursor: pointer; color: rgb(255, 255, 255); background: rgb(51, 51, 51);">
+    <a id="copy-button"> 复制 </a><a> 分享 </a><a id="show-dialog"> 笔记 </a><a> 删除 </a></search>
+
+<div id="pup">
+    <div id="back"></div>
+    <div class="pup_con" style="position: absolute; left: 0px; top: 0px; display: none;"><img src="images/pup_close.png"
+                                                                                              class="pup_close">
+
+        <p class="pup_title">笔记</p>
+
+        <p class="pup_hight"></p><textarea id="comment-content" class="pup_text">留下你的笔记</textarea>
+
+        <p class="pup_save">保存</p></div>
+</div>
+
+<div class="u-note u-note-1" id="popup-note" style="position: absolute; left: 0px; top: 0px; display: none;">
+    <div class="note-wrap"><p></p></div>
+    <div class="arr"><span class="t0"></span><span class="t1"></span></div>
+</div>
+
 <script>
     document.onreadystatechange = function () {
         if (document.readyState == "complete") {

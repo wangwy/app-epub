@@ -9,9 +9,6 @@ EPUB.Notation = function () {
   this.bacRects = [];
   this.showPostion = {};
   this.string = "";
-  this.create();
-  this.createDialog();
-  this.createText();
 };
 
 /**
@@ -50,36 +47,29 @@ EPUB.Notation.prototype.hide = function () {
 };
 
 /**
- * 功能菜单创建
- */
-EPUB.Notation.prototype.create = function () {
-  var that = this;
-  this.node = document.createElement("search");
-  this.node.style.position = "absolute";
-  this.node.style.border = "none";
-  this.node.style.zIndex = "1000000";
-  this.node.style.left = "0px";
-  this.node.style.top = "0px";
-  this.node.style.display = "none";
-  this.node.style.background = "#333";
-  this.node.style.cursor = "pointer";
-  this.node.style.color = "#fff";
-  this.node.addEventListener("click", function (e) {
-    e.stopPropagation();
-    that.hide();
-  }, false);
-  this.node.innerHTML += "<a id='copy-button'> 复制 </a>";
-  this.node.innerHTML += "<a> 分享 </a>";
-  this.node.innerHTML += "<a id='show-dialog'> 笔记 </a>";
-  this.node.innerHTML += "<a> 删除 </a>";
-  document.documentElement.appendChild(this.node);
-};
-
-/**
  * 初始化功能菜单
  */
 EPUB.Notation.prototype.initNotation = function () {
   var that = this;
+
+  this.node = document.getElementsByTagName("search")[0];
+  this.node.addEventListener("click", function (e) {
+    e.stopPropagation();
+    that.hide();
+  }, false);
+
+  this.dialogNode = document.getElementsByClassName("pup_con")[0];
+  var img = this.dialogNode.getElementsByTagName("img")[0];
+  img.addEventListener("click",function(){
+    that.hideDialog();
+  });
+  var saveButton = this.dialogNode.getElementsByClassName("pup_save")[0];
+  saveButton.addEventListener("click",function(){
+    that.sendNotation();
+  });
+
+  this.textNode = document.getElementById("popup-note");
+
   if (this.svgSelected.length > 0) {
     this.show(this.showPostion.x, this.showPostion.y);
     var copyText = this.getString();
@@ -108,163 +98,6 @@ EPUB.Notation.prototype.getString = function () {
     });
   }
   return s;
-};
-
-/**
- * 创建显示笔记内容窗口
- */
-EPUB.Notation.prototype.createText = function () {
-  this.textNode = document.createElement('div');
-  this.textNode.style.position = "absolute";
-  this.textNode.style.left = "0px";
-  this.textNode.style.top = "0px";
-  this.textNode.style.display = "none";
-  this.textNode.setAttribute("class", "u-note u-note-1");
-  this.textNode.setAttribute("id", "popup-note");
-
-  var div1 = document.createElement('div');
-  this.textNode.appendChild(div1);
-  div1.setAttribute("class", "note-wrap");
-
-  var p = document.createElement('p');
-  div1.appendChild(p);
-
-  var div2 = document.createElement('div');
-  this.textNode.appendChild(div2);
-  div2.setAttribute("class", "arr");
-
-  var span1 = document.createElement('span');
-  div2.appendChild(span1);
-  span1.setAttribute("class", "t0");
-
-  var span2 = document.createElement('span');
-  div2.appendChild(span2);
-  span2.setAttribute("class", "t1");
-
-  document.documentElement.appendChild(this.textNode);
-};
-
-/**
- * 创建笔记窗口
- */
-/*EPUB.Notation.prototype.createDialog = function () {
-  var that = this;
-  this.dialogNode = document.createElement('div');
-  this.dialogNode.style.position = "absolute";
-  this.dialogNode.style.left = "0px";
-  this.dialogNode.style.top = "0px";
-  this.dialogNode.style.display = "none";
-  this.dialogNode.setAttribute("class", "u-inputpanel");
-  this.dialogNode.setAttribute("id", "popup-comment");
-  var h2 = document.createElement("h2");
-  h2.textContent = "批注";
-  this.dialogNode.appendChild(h2);
-
-  var p = document.createElement("p");
-  p.setAttribute("class", "txt");
-  this.dialogNode.appendChild(p);
-
-  var form = document.createElement("form");
-
-  var textArea = document.createElement("textarea");
-  textArea.setAttribute("id", "comment-content");
-  form.appendChild(textArea);
-
-  var div = document.createElement("div");
-  div.setAttribute("class", "btn");
-
-  var input = document.createElement("input");
-  input.setAttribute("id", "button-finish-comment");
-  input.setAttribute("type", "button");
-  input.setAttribute("class", "u-btn3");
-  input.setAttribute("value", "完成");
-  input.addEventListener("click", function () {
-    that.sendNotation();
-  });
-  div.appendChild(input);
-  form.appendChild(div);
-  this.dialogNode.appendChild(form);
-
-  var a = document.createElement("a");
-  a.setAttribute("id", "button-close-comment");
-  a.setAttribute("class", "icn-close2");
-  a.textContent = "×";
-  a.addEventListener("click", function (e) {
-    that.hideDialog();
-  });
-  this.dialogNode.appendChild(a);
-  document.documentElement.appendChild(this.dialogNode);
-};*/
-
-EPUB.Notation.prototype.createDialog = function () {
-  var that = this;
-  var div1 = document.createElement("div");
-  div1.setAttribute("id","pup");
-
- var div2 = document.createElement('div');
-  div2.setAttribute("id","back");
-  div1.appendChild(div2);
-
-  this.dialogNode = document.createElement('div');
-  this.dialogNode.style.position = "absolute";
-  this.dialogNode.style.left = "0px";
-  this.dialogNode.style.top = "0px";
-  this.dialogNode.style.display = "none";
-  this.dialogNode.setAttribute("class", "pup_con");
-  div1.appendChild(this.dialogNode);
-
-  var img = document.createElement('img');
-  img.setAttribute("src","images/pup_close.png");
-  img.setAttribute("class","pup_close");
-  img.addEventListener("click",function(){
-    that.hideDialog();
-  });
-  this.dialogNode.appendChild(img);
-
-  var p1 = document.createElement("p");
-  p1.textContent = "笔记";
-  p1.setAttribute("class","pup_title");
-  this.dialogNode.appendChild(p1);
-
-  var p2 = document.createElement("p");
-  p2.setAttribute("class", "pup_hight");
-  this.dialogNode.appendChild(p2);
-
-  var textArea = document.createElement("textarea");
-  textArea.setAttribute("id", "comment-content");
-  textArea.setAttribute("class","pup_text");
-  textArea.textContent = "留下你的笔记";
-  this.dialogNode.appendChild(textArea);
-
-  var a = document.createElement("p");
-  a.setAttribute("class", "pup_save");
-  a.textContent = "回车键保存";
-  a.addEventListener("click",function(){
-    that.sendNotation();
-  });
-  this.dialogNode.appendChild(a);
-  /*
-  var input = document.createElement("input");
-  input.setAttribute("id", "button-finish-comment");
-  input.setAttribute("type", "button");
-  input.setAttribute("class", "u-btn3");
-  input.setAttribute("value", "完成");
-  input.addEventListener("click", function () {
-    that.sendNotation();
-  });
-  div.appendChild(input);
-  form.appendChild(div);
-  this.dialogNode.appendChild(form);
-
-  var a = document.createElement("a");
-  a.setAttribute("id", "button-close-comment");
-  a.setAttribute("class", "icn-close2");
-  a.textContent = "×";
-  a.addEventListener("click", function (e) {
-    that.hideDialog();
-  });
-  this.dialogNode.appendChild(a);*/
-  document.documentElement.appendChild(div1);
 };
 
 /**
@@ -408,36 +241,3 @@ EPUB.Notation.prototype.showNotation = function () {
     });
   }
 };
-/*
- EPUB.Notation.prototype.showNotation = function () {
- var that = this;
- if (this.isNotation()) {
- if (this.pageIndex - 1 == this.notationPage) {
- var page = this.pages[this.pageIndex - 1];
- for (var j = 0; j < page.length; j++) {
- if (j >= this.notationStart && j < this.notationEnd) {
- var glyph = page[j];
- var rectElem = document.createElementNS("http://www.w3.org/2000/svg", "rect");
- rectElem.setAttribute("x", glyph.rect.px);
- rectElem.setAttribute("y", glyph.rect.py);
- rectElem.setAttribute("width", glyph.rect.width);
- rectElem.setAttribute("height", "2");
- rectElem.setAttribute("fill", "red");
- rectElem.setAttribute("class", "svgBackRect");
- this.svg.insertBefore(rectElem, this.svg.firstChild);
- }
- }
- *//*var info = page[this.notationEnd-1];
- var infoRect = document.createElementNS("http://www.w3.org/2000/svg", "circle");
- infoRect.setAttribute("cx", info.rect.px+10);
- infoRect.setAttribute("cy", info.rect.py);
- infoRect.setAttribute("r", "5");
- infoRect.setAttribute("fill", "red");
- infoRect.setAttribute("class", "svgBackRect");
- infoRect.addEventListener("click",function(e){
- that.showDialog(info.rect.px, info.rect.py);
- });
- this.svg.insertBefore(infoRect, this.svg.firstChild);*//*
- }
- }
- };*/
