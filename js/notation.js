@@ -9,6 +9,7 @@ EPUB.Notation = function () {
   this.bacRects = [];
   this.showPostion = {};
   this.string = "";
+  this.initialDialog();
 };
 
 /**
@@ -46,12 +47,8 @@ EPUB.Notation.prototype.hide = function () {
   this.node.style.display = "none";
 };
 
-/**
- * 初始化功能菜单
- */
-EPUB.Notation.prototype.initNotation = function () {
+EPUB.Notation.prototype.initialDialog = function () {
   var that = this;
-
   this.node = document.getElementsByTagName("search")[0];
   this.node.addEventListener("click", function (e) {
     e.stopPropagation();
@@ -60,16 +57,22 @@ EPUB.Notation.prototype.initNotation = function () {
 
   this.dialogNode = document.getElementsByClassName("pup_con")[0];
   var img = this.dialogNode.getElementsByTagName("img")[0];
-  img.addEventListener("click",function(){
+  img.addEventListener("click", function () {
     that.hideDialog();
   });
   var saveButton = this.dialogNode.getElementsByClassName("pup_save")[0];
-  saveButton.addEventListener("click",function(){
+  saveButton.addEventListener("click", function () {
     that.sendNotation();
   });
 
   this.textNode = document.getElementById("popup-note");
+};
 
+/**
+ * 初始化功能菜单
+ */
+EPUB.Notation.prototype.initNotation = function () {
+  var that = this;
   if (this.svgSelected.length > 0) {
     this.show(this.showPostion.x, this.showPostion.y);
     var copyText = this.getString();
@@ -120,7 +123,7 @@ EPUB.Notation.prototype.showText = function (x, y, text) {
  */
 EPUB.Notation.prototype.showDialog = function (x, y) {
   this.dialogNode.getElementsByClassName("pup_hight")[0].textContent = this.getString();
-  document.getElementById("back").setAttribute("class","pup_bg");
+  document.getElementById("back").setAttribute("class", "pup_bg");
   this.dialogNode.style.left = x + "px";
   this.dialogNode.style.top = y + "px";
   this.dialogNode.style.display = "block";
@@ -230,10 +233,10 @@ EPUB.Notation.prototype.showNotation = function () {
         circleElem.setAttribute("cy", lastNode.rect.py);
         circleElem.setAttribute("r", "5");
         circleElem.setAttribute("fill", "red");
-        circleElem.addEventListener("mouseover",function(e){
+        circleElem.addEventListener("mouseover", function (e) {
           that.showText(e.x, e.y, value.context);
         });
-        circleElem.addEventListener("mouseout",function(){
+        circleElem.addEventListener("mouseout", function () {
           that.hideText();
         });
         that.svg.insertBefore(circleElem, that.svg.lastChild);

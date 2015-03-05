@@ -70,7 +70,7 @@ EPUB.Render.prototype.initialize = function (context) {
 EPUB.Render.prototype.getPagesNum = function (elem) {
   this.getAllTextNodeContextAndRender(elem);
   this.displayedPages = this.pages.length;
-  this.selections = new EPUB.Selections(this.pages);
+  this.selections = new EPUB.Selections(this);
   return this.displayedPages;
 };
 

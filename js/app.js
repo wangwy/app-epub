@@ -40,7 +40,6 @@ EPUB.App.init = (function ($) {
 
   function toc() {
     Book.createToc(Book.getTOC());
-//    console.log(Book.getTOC());
   }
 
   function tab(o, s, cb, ev) { //tab切换类

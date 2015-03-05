@@ -2,9 +2,8 @@
  * Created by wangwy on 15-1-23.
  * 重写浏览器选择背景
  */
-var EPUB = EPUB || {};
-EPUB.Selections = function (pages) {
-  this.pages = pages;
+EPUB.Selections = function (render) {
+  this.render = render;
   this.selectionElements = [];
   this.notation = new EPUB.Notation();
   this.rects = [];
@@ -16,8 +15,8 @@ EPUB.Selections = function (pages) {
 EPUB.Selections.prototype.initSelection = function () {
   this.svg = document.getElementsByTagName("svg")[0];
   this.notation.svg = this.svg;
-  this.notation.pages = this.pages;
-  this.notation.pageIndex = localStorage.getItem("pageIndex");
+  this.notation.pages = this.render.pages;
+  this.notation.pageIndex = this.render.displayedPage;
   this.notation.showNotation();
   //禁用浏览器选重
   this.svg.onmousedown = function(){return false};
