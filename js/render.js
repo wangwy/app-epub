@@ -186,7 +186,6 @@ EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, leng
 EPUB.Render.prototype.display = function (index) {
   this.el.innerHTML = "";
   this.displayedPage = index;
-  localStorage.setItem("pageIndex", index);
   var page = this.pages[this.displayedPage - 1];
   var textHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" + this.el.style.width + "\" height=\"" + this.el.style.height + "\">";
   for (var i = 0; i < page.length; i++) {

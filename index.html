@@ -3,20 +3,65 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/rsvp/rsvp.min.js"></script>
+    <script src="js/request.js"></script>
+    <script>
+        $(function(){
+            $("#b01").click(function(){
+                /*htmlobj = $.ajax({url:"/bookstore", async:false});
+                $("#myDIV").html(htmlobj.responseText);*/
+
+                /*postData("/bookstore/mobile/get/my/readnote",{"userid":"1","authtoken":"dfdfdf","pagesize":"10","pagenum":"1","bookid":"1"},function(request){
+                    $("#myDIV").html(request.responseText)
+                })*/
+                EPUB.Request.modifyNote("/bookstore/mobile/get/my/readnote",{"userid":"1","authtoken":"dfdfdf","pagesize":"10","pagenum":"1","bookid":"1"}).then(function(r){
+                    //console.log(r);
+                    $("#showNote").html(JSON.stringify(r));
+                });
+            });
+
+            $("#b02").click(function(){
+                /*htmlobj = $.ajax({url:"/bookstore", async:false});
+                $("#myDIV").html(htmlobj.responseText);*/
+                var data = {"userid":"1","authtoken":"dfdfdf","bookid":"10","process":"222","adddate":"2015-03-10 14:02:00","catindex":"3","catname":"Moby-Dick","summary":"wwy test","digestnote":"wwy test","linecolor":"","numbers":"322,379","ranges":"322, 57","noteid":''}
+                /*postData("/bookstore/mobile/post/save/my/readnote",data,function(request){
+                    $("#saveNote").html(request.responseText)
+                })*/
+                EPUB.Request.modifyNote("/bookstore/mobile/post/save/my/readnote",data).then(function(r){
+                    console.log(r);
+                    $("#saveNote").html(JSON.stringify(r));
+                });
+            });
+        });
+
+        /*function postData(url,data,callback){
+            var request = new XMLHttpRequest();
+            request.open("POST",url);
+            request.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+            request.onreadystatechange = function(){
+                if(request.readyState === 4 && callback){
+                    callback(request);
+                }
+            };
+            request.send(JSON.stringify(data));
+        }*/
+    </script>
 </head>
-<script>
-    document.onreadystatechange = function () {
-        if (document.readyState == "complete") {
-            EPUB.app.init("area","/");
-        }
-    }
-</script>
 <body>
-<div id="area" style="height: 800px; width: 630px; padding:15px; position: absolute;background:#cccccc;"></div>
+<div id="showNote">
+    笔记列表显示区域
+</div>
+<button id="b01" type="button">
+    显示笔记
+</button>
+
+<div id="saveNote">
+    保存笔记
+</div>
+<button id="b02" type="button">
+    保存笔记
+</button>
+
 </body>
-<script src="bower_components/rsvp/rsvp.min.js"></script>
-<script src="js/base.js"></script>
-<script src="js/book.js"></script>
-<script src="js/paragraph.js"></script>
-<script src="js/request.js"></script>
 </html>
