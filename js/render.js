@@ -199,6 +199,21 @@ EPUB.Render.prototype.display = function (index) {
   this.el.innerHTML = textHTML;
   this.selections.initSelection();
 };
+
+/**
+ * 根据偏移量计算显示页码
+ * @param offset
+ */
+EPUB.Render.prototype.calculateDisplayNum = function(offset){
+  var num = 0;
+  for(var i = 0, length = this.pages.length; i < length; i++){
+    num += this.pages[i].length;
+    if(num >= offset){
+      return i+1;
+    }
+  }
+};
+
 /*EPUB.Render.prototype.display = function (index) {
  this.el.innerHTML = "";
  this.displayedPage = index;

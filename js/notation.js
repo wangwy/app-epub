@@ -157,7 +157,7 @@ EPUB.Notation.prototype.sendNotation = function () {
   var that = this, data = {
         "userid": "1",
         "authtoken": "dfdfdf",
-        "bookid": "10",
+        "bookid": "14",
         "process": "222",
         "adddate": new Date().Format("yyyy-MM-dd hh:mm:ss"),
         "catindex": that.render.spineNum,

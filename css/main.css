@@ -857,7 +857,7 @@ ul{list-style-type:none;}
 	background:#fafafa;
 	}
 .tablistcon{
-	width:521.5px;
+	width:522px;
 	height:32px;
 	line-height:32px;
 	margin:30px auto 10px;
@@ -923,17 +923,59 @@ ul{list-style-type:none;}
 .menuconlist li:hover{
 	color:#e87313;
 	}
-
-
-
-
-
-
-
-
-
-
-
+.levltwolist li{
+	padding-left:40px;
+	}	
+	
+.recordp{
+	text-align:right;
+	border-bottom:solid 2px #e5e0d8;
+	font:14px/1 "黑体";
+	padding:10px 0px 20px;
+	color:#b28f6f;
+	}
+.redcolor{
+	color:#e87313;
+	}
+.coninfbox{
+	font:14px/1 "黑体";
+	padding:10px 0px;
+	border-bottom:solid 1px #e5e0d8;
+	}
+.coninfop{
+	color:#442f1d;
+	text-indent:2em;
+	margin:10px 0px;
+	line-height:1.2;
+	}
+.browcolor{
+	color:#ac8662;
+	}
+.noconbox{
+	text-align:center;
+	margin-top:40%;
+	display:none;
+	}
+.nothings{
+	width:102px;
+	height:101px;
+	display:inline-block;
+	text-align:center;
+	padding-top:120px;
+	
+	}	
+.nomenu{
+	background:url(../images/no_menu.png) no-repeat;
+	}
+.nonote{
+	background:url(../images/no_note.png) no-repeat;
+	}
+.notag{
+	background:url(../images/no_tag.png) no-repeat;
+	}
+.nothingp{
+	margin-top:-70px;
+	}
 
 /*专题列表*/
 .speciallist{width:945px;margin:0px auto;text-align:center;}

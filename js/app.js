@@ -10,7 +10,7 @@ EPUB.App.init = (function ($) {
     $(function () {
       controls();
       Book.listen("book:tocReady", toc);
-
+      Book.listen("book:noteReady",note);
       var width = $(".menubox").width();
       Book.showMenu = true;
       $(".btn_zoom").click(function () {
@@ -42,6 +42,9 @@ EPUB.App.init = (function ($) {
     Book.createToc(Book.getTOC());
   }
 
+  function note(){
+    Book.createNote(Book.notelist);
+  }
   function tab(o, s, cb, ev) { //tab切换类
     var $ = function (o) {
       return document.getElementById(o)
