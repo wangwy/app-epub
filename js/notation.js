@@ -2,7 +2,8 @@
  * Created by wangwy on 15-1-22.
  * 鼠标选择后弹出复制、标记等功能菜单
  */
-EPUB.Notation = function () {
+EPUB.Notation = function (render) {
+  this.render = render;
   this.pages = [];
   this.svg = [];
   this.svgSelected = [];
@@ -158,35 +159,32 @@ EPUB.Notation.prototype.sendNotation = function () {
         "authtoken": "dfdfdf",
         "bookid": "10",
         "process": "222",
-        "adddate": new Date().Format("yyyy-MM-dd HH:mm:ss"),
-        "catindex": "3",
-        "catname": "Moby-Dick",
+        "adddate": new Date().Format("yyyy-MM-dd hh:mm:ss"),
+        "catindex": that.render.spineNum,
+        "catname": that.render.chapterName,
         "summary": this.getString(),
         "digestnote": document.getElementById("comment-content").value,
         "linecolor": "",
-        "numbers": ""+that.selectedOffset().startOffset+","+that.selectedOffset().endOffset+"",//"322,379",
-        "ranges": ""+that.selectedOffset().startOffset+","+that.svgSelected.length+"",//"322, 57",
+        "numbers": ""+that.selectedOffset().startOffset+","+that.selectedOffset().endOffset+"",
+        "ranges": ""+that.selectedOffset().startOffset+","+that.svgSelected.length+"",
         "noteid": ''
       };
-  var items = Array.prototype.slice.call(this.bacRects);
-  items.forEach(function (value) {
-    var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    underRect.setAttribute("x", value.getAttribute("x"));
-    underRect.setAttribute("y", parseInt(value.getAttribute("y")) + parseInt(value.getAttribute("height")));
-    underRect.setAttribute("width", value.getAttribute("width"));
-    underRect.setAttribute("height", "2");
-    underRect.setAttribute("fill", "red");
-    underRect.setAttribute("class", "svgBackRect");
-    that.svg.removeChild(value);
-    that.svg.insertBefore(underRect, that.svg.firstChild);
+  EPUB.Request.modifyNote("/bookstore/mobile/post/save/my/readnote",data).then(function(r){
+    var items = Array.prototype.slice.call(that.bacRects);
+    items.forEach(function (value) {
+      var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      underRect.setAttribute("x", value.getAttribute("x"));
+      underRect.setAttribute("y", parseInt(value.getAttribute("y")) + parseInt(value.getAttribute("height")));
+      underRect.setAttribute("width", value.getAttribute("width"));
+      underRect.setAttribute("height", "2");
+      underRect.setAttribute("fill", "red");
+      underRect.setAttribute("class", "svgBackRect");
+      that.svg.removeChild(value);
+      that.svg.insertBefore(underRect, that.svg.firstChild);
+    });
+    that.bacRects.length = 0;
+    that.hideDialog();
   });
-  this.bacRects.length = 0;
-  var offset = this.selectedOffset();
-  var sendNotationText = document.getElementById("comment-content").textContent;
-  data.offset = offset;
-  data.context = sendNotationText;
-  EPUB.STORENOTATION.push(data);
-  this.hideDialog();
 };
 
 /**

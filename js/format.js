@@ -145,6 +145,10 @@ EPUB.Format.prototype.formatSpine = function (xml) {
   return spine;
 };
 
+/**
+ * 格式化目录
+ * @param path
+ */
 EPUB.Format.prototype.formatToc = function (path) {
   var that = this,
       url = this.bookUrl + path;

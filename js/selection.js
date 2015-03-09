@@ -5,7 +5,7 @@
 EPUB.Selections = function (render) {
   this.render = render;
   this.selectionElements = [];
-  this.notation = new EPUB.Notation();
+  this.notation = new EPUB.Notation(render);
   this.rects = [];
 };
 

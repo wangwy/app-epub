@@ -48,6 +48,8 @@ EPUB.Book.prototype.display = function (mark, url, spineNum) {
     } else if (mark === "prev") {
       num = that.render.pages.length;
     }
+    that.render.spineNum = that.spineNum;
+    that.render.chapterName = that.format.toc[that.spineNum].label;
     that.render.display(num);
   });
 };
