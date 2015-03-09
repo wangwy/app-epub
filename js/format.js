@@ -2,93 +2,10 @@
  * Created by wangwy on 15-1-12.
  * 初始化书本等信息
  */
-EPUB.Format = function (baseUrl) {
-  this.baseUrl = baseUrl || '';
-  this.bookUrlOptions = this.formatUrl(this.baseUrl);
-};
-
-/**
- * 格式化路径
- * @param url
- * @returns {{protocol: string, host: string, path: string, origin: string, directory: string, base: string, filename: string, extension: string, fragment: string, href: *}}
- */
-EPUB.Format.prototype.formatUrl = function (url) {
-  var uri = {
-        protocol: '',
-        host: '',
-        path: '',
-        origin: '',
-        directory: '',
-        base: '',
-        filename: '',
-        extension: '',
-        fragment: '',
-        href: url
-      },
-      blob = url.indexOf('blob:'),
-      doubleSlash = url.indexOf('://'),
-      search = url.indexOf('?'),
-      fragment = url.indexOf('#'),
-      withoutProtocol,
-      dot,
-      firstSlash;
-
-  if (blob === 0) {
-    uri.protocol = "blob";
-    uri.base = url.indexOf(0, fragment);
-    return uri;
-  }
-
-  if (fragment != -1) {
-    uri.search = url.slice(fragment + 1);
-    uri.href = url.slice(0, fragment);
-  }
-
-  if (search != -1) {
-    uri.search = url.slice(search + 1);
-    uri.href = url.slice(0, search);
-  }
-
-  if (doubleSlash != -1) {
-    uri.protocol = url.slice(0, doubleSlash);
-    withoutProtocol = url.slice(doubleSlash + 3);
-    firstSlash = withoutProtocol.indexOf('/');
-
-    if (firstSlash === -1) {
-      uri.host = uri.path;
-      uri.path = "";
-    } else {
-      uri.host = withoutProtocol.slice(0, firstSlash);
-      uri.path = withoutProtocol.slice(firstSlash);
-    }
-
-    uri.origin = uri.protocol + "://" + uri.host + "/";
-    uri.directory = this.formatFolder(uri.path);
-    uri.base = uri.origin + uri.directory;
-  } else {
-    uri.path = url;
-    uri.directory = this.formatFolder(url);
-    uri.base = uri.directory;
-  }
-
-  uri.filename = url.replace(uri.base, '');
-  dot = uri.filename.lastIndexOf('.');
-  if (dot != -1) {
-    uri.extension = uri.filename.slice(dot + 1);
-  }
-  return uri;
-};
-
-/**
- * 获取文件
- * @param url
- * @returns {string}
- */
-EPUB.Format.prototype.formatFolder = function (url) {
-  var lastSlash = url.lastIndexOf('/');
-  if (lastSlash == -1) var folder = '';
-  folder = url.slice(0, lastSlash + 1);
-  return folder;
+EPUB.Format = function (book) {
+  this.book = book;
+  this.baseUrl = this.book.bookUrl || '';
+  this.bookUrlOptions = EPUB.Utils.parseUrl(this.baseUrl);
 };
 
 /**
@@ -100,7 +17,7 @@ EPUB.Format.prototype.formatContainerXML = function (containerXML) {
   var rootfile, fullpath, encoding;
   rootfile = containerXML.querySelector("rootfile");
   fullpath = rootfile.getAttribute("full-path");
-  this.bookUrl = this.baseUrl + this.formatUrl(fullpath).base;
+  this.bookUrl = this.baseUrl + EPUB.Utils.parseUrl(fullpath).base;
   encoding = containerXML.xmlEncoding;
   return {
     'packagePath': fullpath,
@@ -267,5 +184,6 @@ EPUB.Format.prototype.formatToc = function (path) {
       return list;
     }
     that.toc = getTOC(navMap.getElementsByTagName("navPoint"), navMap);
+    that.book.tell("book:tocReady");
   });
 };

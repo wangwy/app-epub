@@ -4,10 +4,11 @@
  */
 EPUB.Book = function (elem, bookUrl) {
   this.spineNum = 6;
+  this.bookUrl = bookUrl;
   this.render = new EPUB.Render(elem);
-  this.format = new EPUB.Format(bookUrl);
   this.el = this.render.el;
   this.events = new EPUB.Events(this, this.el);
+  this.format = new EPUB.Format(this);
   this.createEvent("book:tocReady");
   this.beforeDisplay();
 };
@@ -47,7 +48,6 @@ EPUB.Book.prototype.display = function (mark, url, spineNum) {
     } else if (mark === "prev") {
       num = that.render.pages.length;
     }
-    that.tell("book:tocReady");
     that.render.display(num);
   });
 };

@@ -6,7 +6,6 @@ EPUB.Render = function (elem) {
   this.el = this.getEl(elem);
   this.paragraph = new EPUB.Paragraph();
   this.lineGap = EPUB.LINEGAP;
-  this.format = new EPUB.Format();
 };
 
 /**
@@ -39,7 +38,7 @@ EPUB.Render.prototype.initialize = function (context) {
     var count = images.length;
     images.forEach(function (value) {
       var image = new Image();
-      var url = that.format.formatUrl(value.src);
+      var url = EPUB.Utils.parseUrl(value.src);
       image.onload = function () {
         count--;
         if (!that.imagesAll.hasOwnProperty(url.filename)) {
@@ -100,7 +99,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
 };
 
 EPUB.Render.prototype.imageSetting = function (ele) {
-  var url = this.format.formatUrl(ele.src);
+  var url = EPUB.Utils.parseUrl(ele.src);
   var img = this.imagesAll[url.filename];
   var image = new imageNode(img.src, 0, this.currentPositionY, img.height, img.width);
   this.currentPage.push(image);

@@ -153,7 +153,21 @@ EPUB.Notation.prototype.hideDialog = function () {
  *向服务器发送数据请求
  */
 EPUB.Notation.prototype.sendNotation = function () {
-  var data = {}, that = this;
+  var that = this, data = {
+        "userid": "1",
+        "authtoken": "dfdfdf",
+        "bookid": "10",
+        "process": "222",
+        "adddate": new Date().Format("yyyy-MM-dd HH:mm:ss"),
+        "catindex": "3",
+        "catname": "Moby-Dick",
+        "summary": this.getString(),
+        "digestnote": document.getElementById("comment-content").value,
+        "linecolor": "",
+        "numbers": ""+that.selectedOffset().startOffset+","+that.selectedOffset().endOffset+"",//"322,379",
+        "ranges": ""+that.selectedOffset().startOffset+","+that.svgSelected.length+"",//"322, 57",
+        "noteid": ''
+      };
   var items = Array.prototype.slice.call(this.bacRects);
   items.forEach(function (value) {
     var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
