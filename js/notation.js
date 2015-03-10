@@ -48,6 +48,9 @@ EPUB.Notation.prototype.hide = function () {
   this.node.style.display = "none";
 };
 
+/**
+ * 初始化所有窗口
+ */
 EPUB.Notation.prototype.initialDialog = function () {
   var that = this;
   this.node = document.getElementsByTagName("search")[0];
@@ -155,21 +158,21 @@ EPUB.Notation.prototype.hideDialog = function () {
  */
 EPUB.Notation.prototype.sendNotation = function () {
   var that = this, data = {
-        "userid": "1",
-        "authtoken": "dfdfdf",
-        "bookid": "14",
-        "process": "222",
-        "adddate": new Date().Format("yyyy-MM-dd hh:mm:ss"),
-        "catindex": that.render.spineNum,
-        "catname": that.render.chapterName,
-        "summary": this.getString(),
-        "digestnote": document.getElementById("comment-content").value,
-        "linecolor": "",
-        "numbers": ""+that.selectedOffset().startOffset+","+that.selectedOffset().endOffset+"",
-        "ranges": ""+that.selectedOffset().startOffset+","+that.svgSelected.length+"",
-        "noteid": ''
-      };
-  EPUB.Request.modifyNote("/bookstore/mobile/post/save/my/readnote",data).then(function(r){
+    "userid": "1",
+    "authtoken": "dfdfdf",
+    "bookid": "14",
+    "process": "222",
+    "adddate": new Date().Format("yyyy-MM-dd hh:mm:ss"),
+    "catindex": that.render.spineNum,
+    "catname": that.render.chapterName,
+    "summary": this.getString(),
+    "digestnote": document.getElementById("comment-content").value,
+    "linecolor": "",
+    "numbers": "" + that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset + "",
+    "ranges": "" + that.selectedOffset().startOffset + "," + that.svgSelected.length + "",
+    "noteid": ''
+  };
+  EPUB.Request.modifyNote("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
     var items = Array.prototype.slice.call(that.bacRects);
     items.forEach(function (value) {
       var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -214,18 +217,19 @@ EPUB.Notation.prototype.selectedOffset = function () {
  */
 EPUB.Notation.prototype.showNotation = function () {
   var that = this;
-  if (EPUB.STORENOTATION.length > 0) {
+  if (that.render.notes.length > 0) {
     var pageEndLength = pageStartLength = 0;
     for (var i = 0; i < this.pageIndex; i++) {
       pageEndLength += this.pages[i].length;
       pageStartLength = pageEndLength - this.pages[i].length;
     }
-    EPUB.STORENOTATION.forEach(function (value) {
-      if (pageStartLength <= value.offset.startOffset && pageEndLength >= (value.offset.startOffset + value.offset.textlength)) {
+    that.render.notes.forEach(function (value) {
+      var startOffset = value.numbers.split(",")[0], endOffset = value.numbers.split(",")[1];
+      if (pageStartLength <= startOffset && pageEndLength >= endOffset) {
         var page = that.pages[that.pageIndex - 1];
 
-        var notationStart = value.offset.startOffset - pageStartLength;
-        var notationEnd = value.offset.startOffset + value.offset.textlength - pageStartLength;
+        var notationStart = startOffset - pageStartLength;
+        var notationEnd = endOffset - pageStartLength;
         for (var j = 0; j < page.length; j++) {
           if (j >= notationStart && j < notationEnd) {
             var glyph = page[j];
@@ -246,7 +250,7 @@ EPUB.Notation.prototype.showNotation = function () {
         circleElem.setAttribute("r", "5");
         circleElem.setAttribute("fill", "red");
         circleElem.addEventListener("mouseover", function (e) {
-          that.showText(e.x, e.y, value.context);
+          that.showText(e.x, e.y, value.digestnote);
         });
         circleElem.addEventListener("mouseout", function () {
           that.hideText();

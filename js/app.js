@@ -29,6 +29,9 @@ EPUB.App.init = (function ($) {
     });
   }
 
+  /**
+   * 为页面元素添加事件
+   */
   function controls() {
     $("#next").on("click", function () {
       Book.nextPage();
@@ -38,13 +41,21 @@ EPUB.App.init = (function ($) {
     });
   }
 
+  /**
+   * 展示目录
+   */
   function toc() {
     Book.createToc(Book.getTOC());
   }
 
+  /**
+   * 展示笔记列表
+   */
   function note(){
     Book.createNote(Book.notelist);
+//    Book.render.notes = Book.getChapterNotes(Book.spineNum);
   }
+
   function tab(o, s, cb, ev) { //tab切换类
     var $ = function (o) {
       return document.getElementById(o)

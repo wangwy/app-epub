@@ -23,29 +23,29 @@ EPUB.Book.prototype.beforeDisplay = function () {
     var bookData = book.format.formatOpfFile(context);
     book.manifest = bookData.manifest;
     book.spine = bookData.spine;
-    book.getNote();
-    return true;
-  }).then(function () {
-    book.display().then(function () {
-      book.render.spineNum = book.spineNum;
-      book.render.chapterName = book.format.toc[book.spineNum].label;
-      book.render.display(1);
-    });
-  });
+  }).then(function(){
+    return book.getNote();
+  }).then(function(){
+    return book.display()
+  }).then(function(){
+    book.render.display(1)})
 };
 
 /**
  * 页面展示
  * @param mark
  */
-EPUB.Book.prototype.display = function ( url, spineNum) {
+EPUB.Book.prototype.display = function (url, spineNum) {
   var that = this;
   this.spineNum = spineNum || this.spineNum;
   var path = url || that.manifest[that.spine[that.spineNum].id].url;
   var chapterXml = EPUB.Request.loadFile(path, 'xml').then(function (context) {
     return that.render.initialize(context);
   }).then(function (context) {
-    return that.render.getPagesNum(context);
+    that.render.spineNum = that.spineNum;
+    that.render.chapterName = that.format.toc[that.spineNum].label;
+    that.render.getPagesNum(context);
+    that.render.notes = that.getChapterNotes(that.spineNum);
   });
   return chapterXml;
 };
@@ -79,8 +79,6 @@ EPUB.Book.prototype.nextPage = function () {
     if (this.spineNum < this.spine.length) {
       this.spineNum++;
       this.display().then(function () {
-        that.render.spineNum = that.spineNum;
-        that.render.chapterName = that.format.toc[that.spineNum].label;
         that.render.display(1);
       });
     } else {
@@ -93,15 +91,13 @@ EPUB.Book.prototype.nextPage = function () {
  * 上一页
  */
 EPUB.Book.prototype.prevPage = function () {
-  var prev,that = this;
+  var prev, that = this;
   prev = this.render.prevPage();
   if (!prev) {
     if (this.spineNum > 0) {
       this.spineNum--;
       this.display().then(function () {
-        var  num = that.render.pages.length;
-        that.render.spineNum = that.spineNum;
-        that.render.chapterName = that.format.toc[that.spineNum].label;
+        var num = that.render.pages.length;
         that.render.display(num);
       });
     } else {
@@ -137,11 +133,8 @@ EPUB.Book.prototype.createToc = function (doc) {
       var li = document.createElement("li");
       ul.appendChild(li);
       var span = document.createElement("span");
-      //a.href = item.href;
       span.addEventListener("click", function () {
         that.display(item.url, item.spineNum).then(function () {
-          that.render.spineNum = that.spineNum;
-          that.render.chapterName = that.format.toc[that.spineNum].label;
           that.render.display(1);
         });
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
@@ -166,10 +159,12 @@ EPUB.Book.prototype.getNote = function () {
         "pagesize": "10",
         "pagenum": "1",
         "bookid": "14"};
-  EPUB.Request.modifyNote(path, data).then(function (r) {
+  var getNote = EPUB.Request.modifyNote(path, data).then(function (r) {
     that.notelist = r.notelist;
+    console.log(r);
     that.tell("book:noteReady");
   });
+  return getNote;
 };
 
 /**
@@ -195,10 +190,8 @@ EPUB.Book.prototype.createNote = function (notelist) {
       var p = document.createElement("p");
       p.setAttribute("class", "coninfop");
       p.textContent = item.summary;
-      p.addEventListener("click",function(e){
-        that.display('',item.catindex).then(function(){
-          that.render.spineNum = that.spineNum;
-          that.render.chapterName = that.format.toc[that.spineNum].label;
+      p.addEventListener("click", function (e) {
+        that.display('', item.catindex).then(function () {
           var num = that.render.calculateDisplayNum(parseInt(item.ranges.split(",")[0]));
           that.render.display(num);
         });
@@ -219,4 +212,19 @@ EPUB.Book.prototype.createNote = function (notelist) {
       span2.insertBefore(span3, span2.firstChild);
     });
   }
+};
+
+/**
+ * 获取某一章节的笔记列表
+ * @param spineNum
+ * @returns {Array}
+ */
+EPUB.Book.prototype.getChapterNotes = function (spineNum) {
+  var notes = [];
+  this.notelist.forEach(function(value){
+    if(value.catindex == spineNum){
+      notes.push(value);
+    }
+  });
+  return notes;
 };
