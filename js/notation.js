@@ -44,7 +44,7 @@ EPUB.Notation.prototype.show = function (x, y) {
  * @param x
  * @param y
  */
-EPUB.Notation.prototype.showHasDel = function(x,y){
+EPUB.Notation.prototype.showHasDel = function (x, y) {
   var that = this;
   var nodes = Array.prototype.slice.call(this.node.querySelectorAll('a[search]'));
   nodes.forEach(function (node) {
@@ -77,7 +77,7 @@ EPUB.Notation.prototype.hideHasNote = function () {
 /**
  * 隐藏带删除的功能菜单
  */
-EPUB.Notation.prototype.hideHasDel = function(){
+EPUB.Notation.prototype.hideHasDel = function () {
   this.nodeHasDel.style.left = "0px";
   this.nodeHasDel.style.top = "0px";
   this.nodeHasDel.style.display = "none";
@@ -88,20 +88,21 @@ EPUB.Notation.prototype.hideHasDel = function(){
  */
 EPUB.Notation.prototype.initialDialog = function () {
   var that = this;
-  this.node = document.getElementsByTagName("search")[0];
+
+  this.node = document.getElementById("noteSearch");
   this.node.addEventListener("click", function (e) {
     e.stopPropagation();
     that.hideHasNote();
   }, false);
 
-  this.nodeHasDel = document.getElementsByTagName("searched")[0];
-  this.nodeHasDel.addEventListener("click",function(){
+  this.nodeHasDel = document.getElementById("delSearch");
+  this.nodeHasDel.addEventListener("click", function () {
     that.hideHasDel();
   });
   var delNode = document.getElementById("del-note");
-  delNode.addEventListener("click",function(e){
+  delNode.addEventListener("click", function (e) {
     var delNoteid = delNode.getAttribute("data-noteid");
-    if(delNoteid){
+    if (delNoteid) {
       that.deletNotation(delNoteid);
     }
   });
@@ -210,16 +211,16 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
     "authtoken": "dfdfdf",
     "noteid": noteid
   };
-  EPUB.Request.modifyNote("/bookstore/mobile/post/delete/my/readnote",data).then(function(r){
+  EPUB.Request.modifyNote("/bookstore/mobile/post/delete/my/readnote", data).then(function (r) {
     var backRect = that.svg.getElementsByClassName(noteid);
     var items = Array.prototype.slice.call(backRect);
-    items.forEach(function(value){
+    items.forEach(function (value) {
       that.svg.removeChild(value);
     });
     var g = that.svg.getElementById(noteid);
     var gChild = Array.prototype.slice.call(g.children);
-    gChild.forEach(function(value){
-      that.svg.insertBefore(value,g);
+    gChild.forEach(function (value) {
+      that.svg.insertBefore(value, g);
     });
     that.svg.removeChild(g);
   });
@@ -240,62 +241,91 @@ EPUB.Notation.prototype.sendNotation = function () {
     "summary": this.getString(that.svgSelected),
     "digestnote": document.getElementById("comment-content").value,
     "linecolor": "",
-    "numbers": "" + that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset + "",
-    "ranges": "" + that.selectedOffset().startOffset + "," + that.svgSelected.length + "",
+    "numbers": that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset,
+    "ranges": that.selectedOffset().startOffset + "," + that.svgSelected.length,
     "noteid": ''
   };
   EPUB.Request.modifyNote("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
-    var g = document.createElementNS("http://www.w3.org/2000/svg","g");
-    g.setAttribute("id", r.noteid);
-    that.svg.insertBefore(g,that.svgSelected[0]);
-    var items = Array.prototype.slice.call(that.bacRects);
-    items.forEach(function (value) {
-      var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      underRect.setAttribute("x", value.getAttribute("x"));
-      underRect.setAttribute("y", parseInt(value.getAttribute("y")) + parseInt(value.getAttribute("height")));
-      underRect.setAttribute("width", value.getAttribute("width"));
-      underRect.setAttribute("height", "2");
-      underRect.setAttribute("fill", "red");
-      underRect.setAttribute("class", r.noteid);
-      underRect.addEventListener("click",function(e){
-        that.show(e.clientX, e.clientY)
-      });
+    //删除背景
+    that.bacRects.forEach(function (value) {
       that.svg.removeChild(value);
-      that.svg.insertBefore(underRect, that.svg.lastChild);
     });
-    that.svgSelected.forEach(function(value){
-      g.appendChild(value);
-    });
-
-    g.addEventListener("click",function(e){
-      var g = e.target.parentElement;
-      var string = that.getString(g.childNodes);
-      var copiedButton = document.getElementById("copied-button");
-      copiedButton.setAttribute("data-clipboard-text", string);
-      var client = new ZeroClipboard(copiedButton);
-      var delA = document.getElementById("del-note");
-      delA.setAttribute("data-noteid", r.noteid);
-      that.showHasDel(e.clientX, e.clientY);
-    });
-
-    var page = that.pages[that.pageIndex - 1];
-    var lastNode = page[that.selectedOffset().endOffset];
-    var circleElem = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    circleElem.setAttribute("cx", lastNode.rect.px);
-    circleElem.setAttribute("cy", lastNode.rect.py);
-    circleElem.setAttribute("r", "5");
-    circleElem.setAttribute("fill", "red");
-    circleElem.setAttribute("class", r.id);
-    circleElem.addEventListener("mouseover", function (e) {
-      that.showText(e.x, e.y, r.digestnote);
-    });
-    circleElem.addEventListener("mouseout", function () {
-      that.hideText();
-    });
-    that.svg.insertBefore(circleElem, that.svg.lastChild);
     that.bacRects.length = 0;
+
+    that.createUnderline(r.noteid);
+
+    that.createTextCircle(r.noteid, data.digestnote);
+
     that.hideDialog();
   });
+};
+
+/**
+ * 根据选择区域创建下划线
+ * @param items
+ * @param data
+ */
+EPUB.Notation.prototype.createUnderline = function (noteid) {
+  var that = this;
+  var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  g.setAttribute("id", noteid);
+  that.svg.insertBefore(g, that.svgSelected[0]);
+
+  that.svgSelected.forEach(function (value) {
+    var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    underRect.setAttribute("x", value.getAttribute("x"));
+    underRect.setAttribute("y", value.getAttribute("y"));
+    underRect.setAttribute("width", value.getAttribute("data-width"));
+    underRect.setAttribute("height", "2");
+    underRect.setAttribute("fill", "red");
+    underRect.setAttribute("class", noteid);
+    underRect.addEventListener("click", function (e) {
+      that.show(e.clientX, e.clientY)
+    });
+    that.svg.appendChild(underRect);
+  });
+
+  that.svgSelected.forEach(function (value) {
+    g.appendChild(value);
+  });
+
+  g.addEventListener("click", function (e) {
+    var g = e.target.parentElement;
+    var string = that.getString(g.childNodes);
+    var copiedButton = document.getElementById("copied-button");
+    copiedButton.setAttribute("data-clipboard-text", string);
+    var client = new ZeroClipboard(copiedButton);
+    var delA = document.getElementById("del-note");
+    delA.setAttribute("data-noteid", noteid);
+    that.showHasDel(e.clientX, e.clientY);
+  });
+};
+
+/**
+ * 创建提示笔记内容框的圆点
+ * @param x
+ * @param y
+ * @param data
+ */
+EPUB.Notation.prototype.createTextCircle = function (noteid, digestnote) {
+  var that = this;
+  var textElem = that.svgSelected[that.svgSelected.length - 1];
+  var x = parseInt(textElem.getAttribute("x"), 10) + parseInt(textElem.getAttribute("data-width"), 10),
+      y = parseInt(textElem.getAttribute("y"), 10);
+  var circleElem = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circleElem.setAttribute("cx", x);
+  circleElem.setAttribute("cy", y);
+  circleElem.setAttribute("r", "5");
+  circleElem.setAttribute("fill", "red");
+  circleElem.setAttribute("class", noteid);
+  circleElem.addEventListener("mouseover", function (e) {
+    that.showText(e.x, e.y, digestnote);
+  });
+  circleElem.addEventListener("mouseout", function () {
+    that.hideText();
+  });
+  that.svg.appendChild(circleElem);
+  that.bacRects.length = 0;
 };
 
 /**
@@ -332,40 +362,12 @@ EPUB.Notation.prototype.showNotation = function () {
     that.render.notes.forEach(function (value) {
       var startOffset = value.numbers.split(",")[0], endOffset = value.numbers.split(",")[1];
       if (pageStartLength <= startOffset && pageEndLength >= endOffset) {
-        var page = that.pages[that.pageIndex - 1];
-
         var notationStart = startOffset - pageStartLength;
         var notationEnd = endOffset - pageStartLength;
-        for (var j = 0; j < page.length; j++) {
-          if (j >= notationStart && j < notationEnd) {
-            var glyph = page[j];
-            var rectElem = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            rectElem.setAttribute("x", glyph.rect.px);
-            rectElem.setAttribute("y", glyph.rect.py);
-            rectElem.setAttribute("width", glyph.rect.width);
-            rectElem.setAttribute("height", "2");
-            rectElem.setAttribute("fill", "red");
-            rectElem.setAttribute("class", ""+value.id+"");
-            rectElem.addEventListener("click",function(e){
-              that.show(e.clientX, e.clientY);
-            });
-            that.svg.insertBefore(rectElem, that.svg.lastChild);
-          }
-        }
-        var lastNode = page[notationEnd];
-        var circleElem = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circleElem.setAttribute("cx", lastNode.rect.px);
-        circleElem.setAttribute("cy", lastNode.rect.py);
-        circleElem.setAttribute("r", "5");
-        circleElem.setAttribute("fill", "red");
-        circleElem.setAttribute("class", ""+value.id+"");
-        circleElem.addEventListener("mouseover", function (e) {
-          that.showText(e.x, e.y, value.digestnote);
-        });
-        circleElem.addEventListener("mouseout", function () {
-          that.hideText();
-        });
-        that.svg.insertBefore(circleElem, that.svg.lastChild);
+        var svgArray = Array.prototype.slice.call(that.svg.children);
+        that.svgSelected = svgArray.slice(notationStart, notationEnd);
+        that.createUnderline(value.id);
+        that.createTextCircle(value.id, value.digestnote);
       }
     });
   }
