@@ -14,7 +14,7 @@ EPUB.Notation = function (render) {
 };
 
 /**
- * 功能菜单显示
+ * 带笔记的功能菜单显示
  * @param x
  * @param y
  */
@@ -40,12 +40,47 @@ EPUB.Notation.prototype.show = function (x, y) {
 };
 
 /**
- * 功能菜单隐藏
+ * 带删除的功能菜单显示
+ * @param x
+ * @param y
  */
-EPUB.Notation.prototype.hide = function () {
+EPUB.Notation.prototype.showHasDel = function(x,y){
+  var that = this;
+  var nodes = Array.prototype.slice.call(this.node.querySelectorAll('a[search]'));
+  nodes.forEach(function (node) {
+    if (node.className == "ujs_search_link_go") node.href = that.string;
+  });
+  this.nodeHasDel.style.display = "block";
+  var w = this.nodeHasDel.offsetWidth;
+  var h = this.nodeHasDel.offsetHeight;
+  var wx = window.scrollX;
+  var wy = window.scrollY;
+  var ww = window.innerWidth;
+  var wh = window.innerHeight;
+  var xm = wx + ww - w;
+  var ym = wy + wh - h;
+  x = (x + 10) > xm ? xm : (x + 10) < wx ? wx : x + 10;
+  y = y > ym ? ym : y < wy ? wy : y;
+  this.nodeHasDel.style.left = x + "px";
+  this.nodeHasDel.style.top = y + "px";
+};
+
+/**
+ * 隐藏带笔记的功能菜单
+ */
+EPUB.Notation.prototype.hideHasNote = function () {
   this.node.style.left = "0px";
   this.node.style.top = "0px";
   this.node.style.display = "none";
+};
+
+/**
+ * 隐藏带删除的功能菜单
+ */
+EPUB.Notation.prototype.hideHasDel = function(){
+  this.nodeHasDel.style.left = "0px";
+  this.nodeHasDel.style.top = "0px";
+  this.nodeHasDel.style.display = "none";
 };
 
 /**
@@ -56,8 +91,20 @@ EPUB.Notation.prototype.initialDialog = function () {
   this.node = document.getElementsByTagName("search")[0];
   this.node.addEventListener("click", function (e) {
     e.stopPropagation();
-    that.hide();
+    that.hideHasNote();
   }, false);
+
+  this.nodeHasDel = document.getElementsByTagName("searched")[0];
+  this.nodeHasDel.addEventListener("click",function(){
+    that.hideHasDel();
+  });
+  var delNode = document.getElementById("del-note");
+  delNode.addEventListener("click",function(e){
+    var delNoteid = delNode.getAttribute("data-noteid");
+    if(delNoteid){
+      that.deletNotation(delNoteid);
+    }
+  });
 
   this.dialogNode = document.getElementsByClassName("pup_con")[0];
   var img = this.dialogNode.getElementsByTagName("img")[0];
@@ -79,7 +126,7 @@ EPUB.Notation.prototype.initNotation = function () {
   var that = this;
   if (this.svgSelected.length > 0) {
     this.show(this.showPostion.x, this.showPostion.y);
-    var copyText = this.getString();
+    var copyText = this.getString(that.svgSelected);
     var copyButton = document.getElementById("copy-button");
     copyButton.setAttribute("data-clipboard-text", copyText);
     var client = new ZeroClipboard(copyButton);
@@ -88,7 +135,7 @@ EPUB.Notation.prototype.initNotation = function () {
       that.showDialog(that.showPostion.x, that.showPostion.y);
     });
   } else {
-    this.hide();
+    this.hideHasNote();
   }
 };
 
@@ -96,10 +143,10 @@ EPUB.Notation.prototype.initNotation = function () {
  * 获取选中文本
  * @returns {string}
  */
-EPUB.Notation.prototype.getString = function () {
+EPUB.Notation.prototype.getString = function (node) {
   var s = "";
-  if (this.svgSelected.length > 0) {
-    var item = Array.prototype.slice.call(this.svgSelected);
+  if (node.length > 0) {
+    var item = Array.prototype.slice.call(node);
     item.forEach(function (value) {
       s += value.textContent;
     });
@@ -126,7 +173,7 @@ EPUB.Notation.prototype.showText = function (x, y, text) {
  * @param y
  */
 EPUB.Notation.prototype.showDialog = function (x, y) {
-  this.dialogNode.getElementsByClassName("pup_hight")[0].textContent = this.getString();
+  this.dialogNode.getElementsByClassName("pup_hight")[0].textContent = this.getString(this.svgSelected);
   document.getElementById("back").setAttribute("class", "pup_bg");
   this.dialogNode.style.left = x + "px";
   this.dialogNode.style.top = y + "px";
@@ -154,7 +201,32 @@ EPUB.Notation.prototype.hideDialog = function () {
 };
 
 /**
- *向服务器发送数据请求
+ * 删除笔记
+ * @param noteid
+ */
+EPUB.Notation.prototype.deletNotation = function (noteid) {
+  var that = this, data = {
+    "userid": "1",
+    "authtoken": "dfdfdf",
+    "noteid": noteid
+  };
+  EPUB.Request.modifyNote("/bookstore/mobile/post/delete/my/readnote",data).then(function(r){
+    var backRect = that.svg.getElementsByClassName(noteid);
+    var items = Array.prototype.slice.call(backRect);
+    items.forEach(function(value){
+      that.svg.removeChild(value);
+    });
+    var g = that.svg.getElementById(noteid);
+    var gChild = Array.prototype.slice.call(g.children);
+    gChild.forEach(function(value){
+      that.svg.insertBefore(value,g);
+    });
+    that.svg.removeChild(g);
+  });
+};
+
+/**
+ *保存笔记
  */
 EPUB.Notation.prototype.sendNotation = function () {
   var that = this, data = {
@@ -165,7 +237,7 @@ EPUB.Notation.prototype.sendNotation = function () {
     "adddate": new Date().Format("yyyy-MM-dd hh:mm:ss"),
     "catindex": that.render.spineNum,
     "catname": that.render.chapterName,
-    "summary": this.getString(),
+    "summary": this.getString(that.svgSelected),
     "digestnote": document.getElementById("comment-content").value,
     "linecolor": "",
     "numbers": "" + that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset + "",
@@ -173,6 +245,9 @@ EPUB.Notation.prototype.sendNotation = function () {
     "noteid": ''
   };
   EPUB.Request.modifyNote("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
+    var g = document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.setAttribute("id", r.noteid);
+    that.svg.insertBefore(g,that.svgSelected[0]);
     var items = Array.prototype.slice.call(that.bacRects);
     items.forEach(function (value) {
       var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -181,10 +256,43 @@ EPUB.Notation.prototype.sendNotation = function () {
       underRect.setAttribute("width", value.getAttribute("width"));
       underRect.setAttribute("height", "2");
       underRect.setAttribute("fill", "red");
-      underRect.setAttribute("class", "svgBackRect");
+      underRect.setAttribute("class", r.noteid);
+      underRect.addEventListener("click",function(e){
+        that.show(e.clientX, e.clientY)
+      });
       that.svg.removeChild(value);
-      that.svg.insertBefore(underRect, that.svg.firstChild);
+      that.svg.insertBefore(underRect, that.svg.lastChild);
     });
+    that.svgSelected.forEach(function(value){
+      g.appendChild(value);
+    });
+
+    g.addEventListener("click",function(e){
+      var g = e.target.parentElement;
+      var string = that.getString(g.childNodes);
+      var copiedButton = document.getElementById("copied-button");
+      copiedButton.setAttribute("data-clipboard-text", string);
+      var client = new ZeroClipboard(copiedButton);
+      var delA = document.getElementById("del-note");
+      delA.setAttribute("data-noteid", r.noteid);
+      that.showHasDel(e.clientX, e.clientY);
+    });
+
+    var page = that.pages[that.pageIndex - 1];
+    var lastNode = page[that.selectedOffset().endOffset];
+    var circleElem = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circleElem.setAttribute("cx", lastNode.rect.px);
+    circleElem.setAttribute("cy", lastNode.rect.py);
+    circleElem.setAttribute("r", "5");
+    circleElem.setAttribute("fill", "red");
+    circleElem.setAttribute("class", r.id);
+    circleElem.addEventListener("mouseover", function (e) {
+      that.showText(e.x, e.y, r.digestnote);
+    });
+    circleElem.addEventListener("mouseout", function () {
+      that.hideText();
+    });
+    that.svg.insertBefore(circleElem, that.svg.lastChild);
     that.bacRects.length = 0;
     that.hideDialog();
   });
@@ -204,8 +312,6 @@ EPUB.Notation.prototype.selectedOffset = function () {
   startOffset += svgArray.indexOf(this.svgSelected[0]) - backRect.length;
 
   endOffset = startOffset + this.svgSelected.length;
-  localStorage.setItem("startOffset", startOffset);
-  localStorage.setItem("endOffset", endOffset);
   return {
     "startOffset": startOffset,
     "endOffset": endOffset
@@ -239,8 +345,11 @@ EPUB.Notation.prototype.showNotation = function () {
             rectElem.setAttribute("width", glyph.rect.width);
             rectElem.setAttribute("height", "2");
             rectElem.setAttribute("fill", "red");
-            rectElem.setAttribute("class", "svgBackRect");
-            that.svg.insertBefore(rectElem, that.svg.firstChild);
+            rectElem.setAttribute("class", ""+value.id+"");
+            rectElem.addEventListener("click",function(e){
+              that.show(e.clientX, e.clientY);
+            });
+            that.svg.insertBefore(rectElem, that.svg.lastChild);
           }
         }
         var lastNode = page[notationEnd];
@@ -249,6 +358,7 @@ EPUB.Notation.prototype.showNotation = function () {
         circleElem.setAttribute("cy", lastNode.rect.py);
         circleElem.setAttribute("r", "5");
         circleElem.setAttribute("fill", "red");
+        circleElem.setAttribute("class", ""+value.id+"");
         circleElem.addEventListener("mouseover", function (e) {
           that.showText(e.x, e.y, value.digestnote);
         });
