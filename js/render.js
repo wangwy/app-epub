@@ -2,19 +2,11 @@
  * Created by wangwy on 15-1-13.
  * 段落内容渲染
  */
-EPUB.Render = function (elem) {
-  this.el = this.getEl(elem);
+EPUB.Render = function (book) {
+  this.book = book;
+  this.el = this.book.el;
   this.paragraph = new EPUB.Paragraph();
   this.lineGap = EPUB.LINEGAP;
-};
-
-/**
- * 根据id获得element
- * @param elem
- * @returns {HTMLElement}
- */
-EPUB.Render.prototype.getEl = function (elem) {
-  return document.getElementById(elem);
 };
 
 /**

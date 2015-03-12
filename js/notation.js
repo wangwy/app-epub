@@ -112,7 +112,7 @@ EPUB.Notation.prototype.initialDialog = function () {
   img.addEventListener("click", function () {
     that.hideDialog();
   });
-  var saveButton = this.dialogNode.getElementsByClassName("pup_save")[0];
+  var saveButton = document.getElementById("noteSave");
   saveButton.addEventListener("click", function () {
     that.sendNotation();
   });
@@ -137,6 +137,7 @@ EPUB.Notation.prototype.initNotation = function () {
     });
   } else {
     this.hideHasNote();
+    this.hideHasDel();
   }
 };
 
@@ -223,6 +224,10 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
       that.svg.insertBefore(value, g);
     });
     that.svg.removeChild(g);
+
+    that.render.book.getNote().then(function(){
+      that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
+    });
   });
 };
 
@@ -256,8 +261,12 @@ EPUB.Notation.prototype.sendNotation = function () {
 
     that.createTextCircle(r.noteid, data.digestnote);
 
-    that.hideDialog();
+    that.render.book.getNote().then(function(){
+      that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
+    });
+
   });
+  that.hideDialog();
 };
 
 /**

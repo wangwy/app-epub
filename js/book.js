@@ -5,13 +5,20 @@
 EPUB.Book = function (elem, bookUrl) {
   this.spineNum = 6;
   this.bookUrl = bookUrl;
-  this.render = new EPUB.Render(elem);
-  this.el = this.render.el;
+  this.el = this.getEl(elem);
+  this.render = new EPUB.Render(this);
   this.events = new EPUB.Events(this, this.el);
   this.format = new EPUB.Format(this);
-  this.createEvent("book:tocReady");
-  this.createEvent("book:noteReady");
   this.beforeDisplay();
+};
+
+/**
+ * 根据id获得element
+ * @param elem
+ * @returns {HTMLElement}
+ */
+EPUB.Book.prototype.getEl = function (elem) {
+  return document.getElementById(elem);
 };
 
 /**
@@ -26,9 +33,10 @@ EPUB.Book.prototype.beforeDisplay = function () {
   }).then(function(){
     return book.getNote();
   }).then(function(){
-    return book.display()
+    return book.display();
   }).then(function(){
-    book.render.display(1)})
+    book.render.display(1);
+  });
 };
 
 /**
@@ -162,7 +170,7 @@ EPUB.Book.prototype.getNote = function () {
   var getNote = EPUB.Request.modifyNote(path, data).then(function (r) {
     that.notelist = r.notelist;
     console.log(r);
-    that.tell("book:noteReady");
+    that.createNote(that.notelist);
   });
   return getNote;
 };
@@ -174,9 +182,22 @@ EPUB.Book.prototype.getNote = function () {
 EPUB.Book.prototype.createNote = function (notelist) {
   var that = this;
   var noteDialog = document.getElementById("test2_3");
-  var recordp = noteDialog.getElementsByClassName("redcolor")[0];
-  recordp.textContent = notelist.length;
+  noteDialog.innerHTML = "";
   if (notelist.length > 0) {
+    var recordNumDiv = document.createElement("div");
+    noteDialog.appendChild(recordNumDiv);
+
+    var recordNumP = document.createElement("p");
+    recordNumP.setAttribute("class","recordp");
+    recordNumP.textContent = "条记录";
+    recordNumDiv.appendChild(recordNumP);
+
+    var recordNumSpan = document.createElement("span");
+    recordNumSpan.setAttribute("class","redcolor");
+    recordNumP.insertBefore(recordNumSpan,recordNumP.firstChild);
+
+    recordNumSpan.textContent = notelist.length;
+
     notelist.forEach(function (item) {
       var div = document.createElement("div");
       div.setAttribute("class", "coninfbox");
@@ -211,6 +232,20 @@ EPUB.Book.prototype.createNote = function (notelist) {
       span3.textContent = "注：";
       span2.insertBefore(span3, span2.firstChild);
     });
+  } else {
+    var div = document.createElement("div");
+    div.setAttribute("class","noconbox");
+    noteDialog.appendChild(div);
+
+    var a = document.createElement("a");
+    a.setAttribute("class","nonote nothings");
+    a.textContent = "没有笔记";
+    div.appendChild(a);
+
+    var p = document.createElement("p");
+    p.setAttribute("class","nothingp");
+    p.textContent = "在阅读时长按以选中文字添加笔记";
+    div.appendChild(p);
   }
 };
 

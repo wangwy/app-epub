@@ -66,42 +66,41 @@
                         <div id="test2_2" class="tablistx">
                             <div>
                                 <p class="recordp"><span class="redcolor">6</span>条记录</p>
+
                                 <div class="coninfbox">
                                     <span class="browcolor">2015/1/05</span>
+
                                     <p class="coninfop">版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息</p>
                                 </div>
                                 <div class="coninfbox">
                                     <span class="browcolor">2015/1/05</span>
+
                                     <p class="coninfop">版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息</p>
                                 </div>
                                 <div class="coninfbox">
                                     <span class="browcolor">2015/1/05</span>
+
                                     <p class="coninfop">版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息</p>
                                 </div>
                                 <div class="coninfbox">
                                     <span class="browcolor">2015/1/05</span>
+
                                     <p class="coninfop">版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息</p>
                                 </div>
                                 <div class="coninfbox">
                                     <span class="browcolor">2015/1/05</span>
+
                                     <p class="coninfop">版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息版本信息</p>
                                 </div>
                             </div>
                             <!-- 没有内容界面 -->
                             <div class="noconbox">
                                 <a class="notag nothings">暂时没有书签</a>
+
                                 <p class="nothingp">在阅读时点击屏幕右上角可添加书签</p>
                             </div>
                         </div>
                         <div id="test2_3" class="tablistx">
-                            <div>
-                                <p class="recordp"><span class="redcolor"></span>条记录</p>
-                            </div>
-                            <!-- 没有内容界面 -->
-                            <div class="noconbox">
-                                <a class="nonote nothings">没有笔记</a>
-                                <p class="nothingp">在阅读时长按以选中文字添加笔记</p>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -133,10 +132,12 @@
 
 </body>
 
-<search id = "noteSearch" style="position: absolute; border: none; z-index: 1000000; left: 0px; top: 0px; display: none; cursor: pointer; color: rgb(255, 255, 255); background: rgb(51, 51, 51);">
+<search id="noteSearch"
+        style="position: absolute; border: none; z-index: 1000000; left: 0px; top: 0px; display: none; cursor: pointer; color: rgb(255, 255, 255); background: rgb(51, 51, 51);">
     <a id="copy-button"> 复制 </a><a> 分享 </a><a id="show-dialog"> 笔记 </a></search>
 
-<search id = "delSearch" style="position: absolute; border: none; z-index: 1000000; left: 0px; top: 0px; display: none; cursor: pointer; color: rgb(255, 255, 255); background: rgb(51, 51, 51);">
+<search id="delSearch"
+        style="position: absolute; border: none; z-index: 1000000; left: 0px; top: 0px; display: none; cursor: pointer; color: rgb(255, 255, 255); background: rgb(51, 51, 51);">
     <a id="copied-button"> 复制 </a><a> 分享 </a><a id="del-note" data-noteid=""> 删除 </a></search>
 
 <div id="pup">
@@ -148,7 +149,7 @@
 
         <p class="pup_hight"></p><textarea id="comment-content" class="pup_text">留下你的笔记</textarea>
 
-        <p class="pup_save">保存</p></div>
+        <p class="pup_save" id="noteSave">保存</p></div>
 </div>
 
 <div class="u-note u-note-1" id="popup-note" style="position: absolute; left: 0px; top: 0px; display: none;">

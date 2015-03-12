@@ -9,8 +9,6 @@ EPUB.App.init = (function ($) {
     Book = new EPUB.Book(elem, bookUrl);
     $(function () {
       controls();
-      Book.listen("book:tocReady", toc);
-      Book.listen("book:noteReady",note);
       var width = $(".menubox").width();
       Book.showMenu = true;
       $(".btn_zoom").click(function () {
@@ -39,21 +37,6 @@ EPUB.App.init = (function ($) {
     $("#prev").on("click", function () {
       Book.prevPage();
     });
-  }
-
-  /**
-   * 展示目录
-   */
-  function toc() {
-    Book.createToc(Book.getTOC());
-  }
-
-  /**
-   * 展示笔记列表
-   */
-  function note(){
-    Book.createNote(Book.notelist);
-//    Book.render.notes = Book.getChapterNotes(Book.spineNum);
   }
 
   function tab(o, s, cb, ev) { //tab切换类

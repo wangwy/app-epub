@@ -188,6 +188,6 @@ EPUB.Format.prototype.formatToc = function (path) {
       return list;
     }
     that.toc = getTOC(navMap.getElementsByTagName("navPoint"), navMap);
-    that.book.tell("book:tocReady");
+    that.book.createToc(that.book.getTOC());
   });
 };
