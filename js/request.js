@@ -41,7 +41,7 @@ EPUB.Request.loadFile = function (url, type) {
  * @param data
  * @returns {promise|S.promise|$$enumerator$$Enumerator.promise|deferred.promise}
  */
-EPUB.Request.modifyNote = function (url, data) {
+EPUB.Request.bookStoreRequest = function (url, data) {
   var deferred = new RSVP.defer();
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url);

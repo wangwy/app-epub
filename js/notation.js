@@ -212,22 +212,24 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
     "authtoken": "dfdfdf",
     "noteid": noteid
   };
-  EPUB.Request.modifyNote("/bookstore/mobile/post/delete/my/readnote", data).then(function (r) {
-    var backRect = that.svg.getElementsByClassName(noteid);
-    var items = Array.prototype.slice.call(backRect);
-    items.forEach(function (value) {
-      that.svg.removeChild(value);
-    });
-    var g = that.svg.getElementById(noteid);
-    var gChild = Array.prototype.slice.call(g.children);
-    gChild.forEach(function (value) {
-      that.svg.insertBefore(value, g);
-    });
-    that.svg.removeChild(g);
+  EPUB.Request.bookStoreRequest("/bookstore/mobile/post/delete/my/readnote", data).then(function (r) {
+    if(r.flag == "1"){
+      var backRect = that.svg.getElementsByClassName(noteid);
+      var items = Array.prototype.slice.call(backRect);
+      items.forEach(function (value) {
+        that.svg.removeChild(value);
+      });
+      var g = that.svg.getElementById(noteid);
+      var gChild = Array.prototype.slice.call(g.children);
+      gChild.forEach(function (value) {
+        that.svg.insertBefore(value, g);
+      });
+      that.svg.removeChild(g);
 
-    that.render.book.getNote().then(function(){
-      that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
-    });
+      that.render.book.getNote().then(function(){
+        that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
+      });
+    }
   });
 };
 
@@ -250,22 +252,23 @@ EPUB.Notation.prototype.sendNotation = function () {
     "ranges": that.selectedOffset().startOffset + "," + that.svgSelected.length,
     "noteid": ''
   };
-  EPUB.Request.modifyNote("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
-    //删除背景
-    that.bacRects.forEach(function (value) {
-      that.svg.removeChild(value);
-    });
-    that.bacRects.length = 0;
+  EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
+    if(r.flag == "1"){
 
-    that.createUnderline(r.noteid);
+      that.createUnderline(r.noteid);
 
-    that.createTextCircle(r.noteid, data.digestnote);
+      that.createTextCircle(r.noteid, data.digestnote);
 
-    that.render.book.getNote().then(function(){
-      that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
-    });
-
+      that.render.book.getNote().then(function(){
+        that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
+      });
+    }
   });
+  //删除背景
+  that.bacRects.forEach(function (value) {
+    that.svg.removeChild(value);
+  });
+  that.bacRects.length = 0;
   that.hideDialog();
 };
 
