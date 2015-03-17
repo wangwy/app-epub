@@ -2,8 +2,8 @@
  * Created by wangwy on 15-1-22.
  * 鼠标选择后弹出复制、标记等功能菜单
  */
-EPUB.Notation = function (render) {
-  this.render = render;
+EPUB.Notation = function (selection) {
+  this.render = selection.render;
   this.pages = [];
   this.svg = [];
   this.svgSelected = [];
@@ -89,12 +89,14 @@ EPUB.Notation.prototype.hideHasDel = function () {
 EPUB.Notation.prototype.initialDialog = function () {
   var that = this;
 
+  //有笔记功能的功能框
   this.node = document.getElementById("noteSearch");
   this.node.addEventListener("click", function (e) {
     e.stopPropagation();
     that.hideHasNote();
   }, false);
 
+  //有删除功能的功能框
   this.nodeHasDel = document.getElementById("delSearch");
   this.nodeHasDel.addEventListener("click", function () {
     that.hideHasDel();
@@ -107,6 +109,7 @@ EPUB.Notation.prototype.initialDialog = function () {
     }
   });
 
+  //笔记框
   this.dialogNode = document.getElementsByClassName("pup_con")[0];
   var img = this.dialogNode.getElementsByTagName("img")[0];
   img.addEventListener("click", function () {
@@ -117,7 +120,19 @@ EPUB.Notation.prototype.initialDialog = function () {
     that.sendNotation();
   });
 
+  //笔记内容框
   this.textNode = document.getElementById("popup-note");
+
+  //书签
+  this.markNode = document.getElementById("markNode");
+  this.markNode.addEventListener("click", function () {
+    var markId = that.markNode.getAttribute("data-markId");
+    if (markId) {
+      that.deleteMark(markId);
+    } else {
+      that.saveMark();
+    }
+  });
 };
 
 /**
@@ -213,7 +228,7 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
     "noteid": noteid
   };
   EPUB.Request.bookStoreRequest("/bookstore/mobile/post/delete/my/readnote", data).then(function (r) {
-    if(r.flag == "1"){
+    if (r.flag == "1") {
       var backRect = that.svg.getElementsByClassName(noteid);
       var items = Array.prototype.slice.call(backRect);
       items.forEach(function (value) {
@@ -226,7 +241,7 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
       });
       that.svg.removeChild(g);
 
-      that.render.book.getNote().then(function(){
+      that.render.book.getNotes().then(function () {
         that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
       });
     }
@@ -253,13 +268,13 @@ EPUB.Notation.prototype.sendNotation = function () {
     "noteid": ''
   };
   EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
-    if(r.flag == "1"){
+    if (r.flag == "1") {
 
       that.createUnderline(r.noteid);
 
       that.createTextCircle(r.noteid, data.digestnote);
 
-      that.render.book.getNote().then(function(){
+      that.render.book.getNotes().then(function () {
         that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
       });
     }
@@ -270,6 +285,54 @@ EPUB.Notation.prototype.sendNotation = function () {
   });
   that.bacRects.length = 0;
   that.hideDialog();
+};
+
+/**
+ * 保存书签
+ */
+EPUB.Notation.prototype.saveMark = function () {
+  var that = this;
+  var pageStartPosition = 0;
+  for (var i = 0; i < this.pageIndex - 1; i++) {
+    pageStartPosition += this.pages[i].length;
+  }
+  var summary = that.getString(that.svg.children).slice(0,100);
+  var data = {
+    "userid": "1",
+    "authtoken": "dfdfdf",
+    "bookid": "14",
+    "adddate": new Date().Format("yyyy-MM-dd hh:mm:ss"),
+    "catindex": that.render.spineNum,
+    "catname": that.render.chapterName,
+    "summary": summary,
+    "positions": pageStartPosition
+  };
+  EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/bookmark", data).then(function (r) {
+    if (r.flag == "1") {
+      that.markNode.style.background = "url(images/redsign.png) no-repeat";
+      that.markNode.setAttribute("data-markId", r.id);
+      that.render.book.getMarks();
+    }
+  });
+};
+
+/**
+ * 删除书签
+ * @param markId
+ */
+EPUB.Notation.prototype.deleteMark = function (markId) {
+  var that = this, data = {
+    "userid": "1",
+    "authtoken": "dfdfdf",
+    "bookmarkid": markId
+  };
+  EPUB.Request.bookStoreRequest("/bookstore/mobile/post/delete/my/bookmark", data).then(function (r) {
+    if (r.flag == "1") {
+      that.markNode.style.background = "url(images/sign.png) no-repeat";
+      that.markNode.setAttribute("data-markId", "");
+      that.render.book.getMarks();
+    }
+  });
 };
 
 /**
@@ -361,12 +424,12 @@ EPUB.Notation.prototype.selectedOffset = function () {
 };
 
 /**
- * 当页面第一次被加载时，显示批注信息
+ * 当页面被加载时，显示批注信息
  */
 EPUB.Notation.prototype.showNotation = function () {
   var that = this;
   if (that.render.notes.length > 0) {
-    var pageEndLength = pageStartLength = 0;
+    var pageEndLength = 0, pageStartLength = 0;
     for (var i = 0; i < this.pageIndex; i++) {
       pageEndLength += this.pages[i].length;
       pageStartLength = pageEndLength - this.pages[i].length;
@@ -382,5 +445,33 @@ EPUB.Notation.prototype.showNotation = function () {
         that.createTextCircle(value.id, value.digestnote);
       }
     });
+  }
+};
+
+/**
+ * 当页面被加载时显示书签
+ */
+EPUB.Notation.prototype.showMark = function(){
+  var that = this,
+      showMark = "";
+  if(that.render.marks.length > 0){
+    var pageEndPosition= 0, pageStartPosition = 0;
+    for (var i = 0; i < this.pageIndex; i++) {
+      pageEndPosition += this.pages[i].length;
+      pageStartPosition = pageEndPosition - this.pages[i].length;
+    }
+    that.render.marks.forEach(function(mark){
+      if(mark.positions >= pageStartPosition && mark.positions < pageEndPosition){
+        showMark = mark;
+      }
+    });
+  }
+
+  if(showMark){
+    that.markNode.style.background = "url(images/redsign.png) no-repeat";
+    that.markNode.setAttribute("data-markId", showMark.id);
+  }else{
+    that.markNode.style.background = "url(images/sign.png) no-repeat";
+    that.markNode.setAttribute("data-markId", "");
   }
 };

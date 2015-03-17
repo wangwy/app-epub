@@ -32,7 +32,7 @@ EPUB.Book.prototype.beforeDisplay = function () {
     book.spine = bookData.spine;
   }).then(function () {
     return book.getNotes();
-  }).then(function(){
+  }).then(function () {
     return book.getMarks();
   }).then(function () {
     return book.display();
@@ -61,6 +61,7 @@ EPUB.Book.prototype.display = function (url, spineNum) {
     that.render.chapterName = that.format.toc[that.spineNum].label;
     that.render.getPagesNum(context);
     that.render.notes = that.getChapterNotes(that.spineNum);
+    that.render.marks = that.getChapterMarks(that.spineNum);
   });
   return chapterXml;
 };
@@ -283,34 +284,34 @@ EPUB.Book.prototype.createMark = function (marklist) {
   var that = this,
       markElem = document.getElementById("test2_2");
   markElem.innerHTML = "";
-  if(marklist.length > 0){
+  if (marklist.length > 0) {
     var makrDiv = document.createElement("div");
     markElem.appendChild(makrDiv);
 
     var markNumP = document.createElement("p");
-    markNumP.setAttribute("class","recordp");
+    markNumP.setAttribute("class", "recordp");
     markNumP.textContent = "条记录";
     makrDiv.appendChild(markNumP);
 
     var markNumSpan = document.createElement("span");
-    markNumSpan.setAttribute("class","redcolor");
+    markNumSpan.setAttribute("class", "redcolor");
     markNumSpan.textContent = marklist.length;
-    markNumP.insertBefore(markNumSpan,markNumP.firstChild);
+    markNumP.insertBefore(markNumSpan, markNumP.firstChild);
 
-    marklist.forEach(function(value){
+    marklist.forEach(function (value) {
       var markListDiv = document.createElement("div");
-      markListDiv.setAttribute("class","coninfbox");
+      markListDiv.setAttribute("class", "coninfbox");
       makrDiv.appendChild(markListDiv);
 
       var markListSpan = document.createElement("span");
-      markListSpan.setAttribute("class","browcolor");
+      markListSpan.setAttribute("class", "browcolor");
       markListSpan.textContent = value.adddate;
       markListDiv.appendChild(markListSpan);
 
       var markListP = document.createElement("p");
-      markListP.setAttribute("class","coninfop");
+      markListP.setAttribute("class", "coninfop");
       markListP.textContent = value.summary;
-      markListP.addEventListener("click",function(){
+      markListP.addEventListener("click", function () {
         that.display('', value.catindex).then(function () {
           var num = that.render.calculateDisplayNum(parseInt(value.positions));
           that.render.display(num);
@@ -322,7 +323,7 @@ EPUB.Book.prototype.createMark = function (marklist) {
       markListDiv.appendChild(markListP);
     });
 
-  }else{
+  } else {
     var div = document.createElement("div");
     div.setAttribute("class", "noconbox");
     markElem.appendChild(div);
@@ -352,4 +353,19 @@ EPUB.Book.prototype.getChapterNotes = function (spineNum) {
     }
   });
   return notes;
+};
+
+/**
+ * 获取某一章节的书签列表
+ * @param spineNum
+ * @returns {Array}
+ */
+EPUB.Book.prototype.getChapterMarks = function (spineNum) {
+  var marks = [];
+  this.markList.forEach(function(value){
+    if(value.catindex == spineNum){
+      marks.push(value);
+    }
+  });
+  return marks;
 };

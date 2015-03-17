@@ -5,8 +5,8 @@
 EPUB.Selections = function (render) {
   this.render = render;
   this.selectionElements = [];
-  this.notation = new EPUB.Notation(render);
   this.rects = [];
+  this.notation = new EPUB.Notation(this);
 };
 
 /**
@@ -18,6 +18,7 @@ EPUB.Selections.prototype.initSelection = function () {
   this.notation.pages = this.render.pages;
   this.notation.pageIndex = this.render.displayedPage;
   this.notation.showNotation();
+  this.notation.showMark();
   //禁用浏览器选重
   this.svg.onmousedown = function(){return false};
   this.svgPosition = this.svg.getBoundingClientRect();

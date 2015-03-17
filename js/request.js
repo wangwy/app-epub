@@ -36,7 +36,7 @@ EPUB.Request.loadFile = function (url, type) {
 };
 
 /**
- * 下载图书笔记列表
+ * 后台数据交互接口
  * @param url
  * @param data
  * @returns {promise|S.promise|$$enumerator$$Enumerator.promise|deferred.promise}

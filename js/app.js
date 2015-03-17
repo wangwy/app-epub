@@ -4,7 +4,9 @@
 EPUB.App = {};
 EPUB.App.init = (function ($) {
   var Book;
-
+  RSVP.on('error', function(reason) {
+    console.log(reason);
+  });
   function init(elem, bookUrl) {
     Book = new EPUB.Book(elem, bookUrl);
     $(function () {

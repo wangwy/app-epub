@@ -7,6 +7,7 @@ EPUB.Render = function (book) {
   this.el = this.book.el;
   this.paragraph = new EPUB.Paragraph();
   this.lineGap = EPUB.LINEGAP;
+  this.selections = new EPUB.Selections(this);
 };
 
 /**
@@ -61,7 +62,6 @@ EPUB.Render.prototype.initialize = function (context) {
 EPUB.Render.prototype.getPagesNum = function (elem) {
   this.getAllTextNodeContextAndRender(elem);
   this.displayedPages = this.pages.length;
-  this.selections = new EPUB.Selections(this);
   return this.displayedPages;
 };
 
@@ -200,7 +200,7 @@ EPUB.Render.prototype.calculateDisplayNum = function(offset){
   var num = 0;
   for(var i = 0, length = this.pages.length; i < length; i++){
     num += this.pages[i].length;
-    if(num >= offset){
+    if(num > offset){
       return i+1;
     }
   }
