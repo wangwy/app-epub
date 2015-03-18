@@ -36,12 +36,3 @@ EPUB.ELEMENTS = {
   }
 };
 
-EPUB.STORENOTATION = [
-  {offset: {startOffset: 0, textlength: 3}, context: "1111"},
-  {offset: {startOffset: 235, textlength: 3}, context: "1111"},
-  {offset: {startOffset: 245, textlength: 3}, context: "1111"},
-  {offset: {startOffset: 255, textlength: 3}, context: "1111"},
-  {offset: {startOffset: 265, textlength: 3}, context: "1111"}
-];
-
-

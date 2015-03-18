@@ -133,6 +133,11 @@ EPUB.Notation.prototype.initialDialog = function () {
       that.saveMark();
     }
   });
+
+  this.shareNode = document.getElementById("shareNode");
+  this.shareNode.addEventListener("click",function(){
+      that.hideShareNode();
+  });
 };
 
 /**
@@ -143,9 +148,17 @@ EPUB.Notation.prototype.initNotation = function () {
   if (this.svgSelected.length > 0) {
     this.show(this.showPostion.x, this.showPostion.y);
     var copyText = this.getString(that.svgSelected);
+
     var copyButton = document.getElementById("copy-button");
     copyButton.setAttribute("data-clipboard-text", copyText);
     var client = new ZeroClipboard(copyButton);
+
+    window.jiathis_config.summary = copyText;
+    var shareButton = document.getElementById("share");
+    shareButton.addEventListener("click",function(e){
+      that.showShareNode(e.clientX, e.clientY)
+    });
+
     var showDialog = document.getElementById("show-dialog");
     showDialog.addEventListener('click', function () {
       that.showDialog(that.showPostion.x, that.showPostion.y);
@@ -215,6 +228,26 @@ EPUB.Notation.prototype.hideDialog = function () {
   this.dialogNode.style.left = "0px";
   this.dialogNode.style.top = "0px";
   this.dialogNode.style.display = "none";
+};
+
+/**
+ * 显示分享窗口
+ * @param x
+ * @param y
+ */
+EPUB.Notation.prototype.showShareNode = function(x,y){
+  this.shareNode.style.left = x + "px";
+  this.shareNode.style.top = y + "px";
+  this.shareNode.style.display = "block";
+};
+
+/**
+ * 隐藏分享窗口
+ */
+EPUB.Notation.prototype.hideShareNode = function(){
+  this.shareNode.style.left = 0 + "px";
+  this.shareNode.style.top = 0 + "px";
+  this.shareNode.style.display = "none";
 };
 
 /**
@@ -296,7 +329,7 @@ EPUB.Notation.prototype.saveMark = function () {
   for (var i = 0; i < this.pageIndex - 1; i++) {
     pageStartPosition += this.pages[i].length;
   }
-  var summary = that.getString(that.svg.children).slice(0,100);
+  var summary = that.getString(that.svg.children).slice(0, 100);
   var data = {
     "userid": "1",
     "authtoken": "dfdfdf",
@@ -367,11 +400,20 @@ EPUB.Notation.prototype.createUnderline = function (noteid) {
   g.addEventListener("click", function (e) {
     var g = e.target.parentElement;
     var string = that.getString(g.childNodes);
+
+    window.jiathis_config.summary = string;
+    var sharedButton = document.getElementById("shared");
+    sharedButton.addEventListener("click",function(e){
+      that.showShareNode(e.clientX, e.clientY)
+    });
+
     var copiedButton = document.getElementById("copied-button");
     copiedButton.setAttribute("data-clipboard-text", string);
     var client = new ZeroClipboard(copiedButton);
+
     var delA = document.getElementById("del-note");
     delA.setAttribute("data-noteid", noteid);
+
     that.showHasDel(e.clientX, e.clientY);
   });
 };
@@ -451,26 +493,26 @@ EPUB.Notation.prototype.showNotation = function () {
 /**
  * 当页面被加载时显示书签
  */
-EPUB.Notation.prototype.showMark = function(){
+EPUB.Notation.prototype.showMark = function () {
   var that = this,
       showMark = "";
-  if(that.render.marks.length > 0){
-    var pageEndPosition= 0, pageStartPosition = 0;
+  if (that.render.marks.length > 0) {
+    var pageEndPosition = 0, pageStartPosition = 0;
     for (var i = 0; i < this.pageIndex; i++) {
       pageEndPosition += this.pages[i].length;
       pageStartPosition = pageEndPosition - this.pages[i].length;
     }
-    that.render.marks.forEach(function(mark){
-      if(mark.positions >= pageStartPosition && mark.positions < pageEndPosition){
+    that.render.marks.forEach(function (mark) {
+      if (mark.positions >= pageStartPosition && mark.positions < pageEndPosition) {
         showMark = mark;
       }
     });
   }
 
-  if(showMark){
+  if (showMark) {
     that.markNode.style.background = "url(images/redsign.png) no-repeat";
     that.markNode.setAttribute("data-markId", showMark.id);
-  }else{
+  } else {
     that.markNode.style.background = "url(images/sign.png) no-repeat";
     that.markNode.setAttribute("data-markId", "");
   }

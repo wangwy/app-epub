@@ -7,29 +7,29 @@
     <script src="bower_components/rsvp/rsvp.min.js"></script>
     <script src="js/request.js"></script>
     <script>
-        $(function(){
-            $("#b01").click(function(){
-                EPUB.Request.bookStoreRequest("/bookstore/mobile/get/my/readnote",{"userid":"1","authtoken":"dfdfdf","pagesize":"10","pagenum":"1","bookid":"1"}).then(function(r){
+        $(function () {
+            $("#b01").click(function () {
+                EPUB.Request.bookStoreRequest("/bookstore/mobile/get/my/readnote", {"userid": "1", "authtoken": "dfdfdf", "pagesize": "10", "pagenum": "1", "bookid": "1"}).then(function (r) {
                     $("#showNote").html(JSON.stringify(r));
                 });
             });
 
-            $("#b02").click(function(){
-                var data = {"userid":"1","authtoken":"dfdfdf","bookid":"10","process":"222","adddate":"2015-03-10 14:02:00","catindex":"3","catname":"Moby-Dick","summary":"wwy test","digestnote":"wwy test","linecolor":"","numbers":"322,379","ranges":"322, 57","noteid":''}
-                EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/readnote",data).then(function(r){
+            $("#b02").click(function () {
+                var data = {"userid": "1", "authtoken": "dfdfdf", "bookid": "10", "process": "222", "adddate": "2015-03-10 14:02:00", "catindex": "3", "catname": "Moby-Dick", "summary": "wwy test", "digestnote": "wwy test", "linecolor": "", "numbers": "322,379", "ranges": "322, 57", "noteid": ''}
+                EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
                     $("#saveNote").html(JSON.stringify(r));
                 });
             });
 
-            $("#b03").click(function(){
-                EPUB.Request.bookStoreRequest("/bookstore/mobile/get/my/bookmark",{"userid":"1","authtoken":"dfdfdf","pagesize":"10","pagenum":"1","bookid":"14"}).then(function(r){
+            $("#b03").click(function () {
+                EPUB.Request.bookStoreRequest("/bookstore/mobile/get/my/bookmark", {"userid": "1", "authtoken": "dfdfdf", "pagesize": "10", "pagenum": "1", "bookid": "14"}).then(function (r) {
                     $("#showMark").html(JSON.stringify(r));
                 });
             });
 
-            $("#b04").click(function(){
-                var data = {"userid":"1","authtoken":"dfdfdf","bookid":"14","adddate":"2015-03-10 14:02:00","catindex":"3","catname":"Moby-Dick","summary":"wwy test","positions":"12"};
-                EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/bookmark",data).then(function(r){
+            $("#b04").click(function () {
+                var data = {"userid": "1", "authtoken": "dfdfdf", "bookid": "14", "adddate": "2015-03-10 14:02:00", "catindex": "3", "catname": "Moby-Dick", "summary": "wwy test", "positions": "12"};
+                EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/bookmark", data).then(function (r) {
                     $("#saveMark").html(JSON.stringify(r));
                 });
             });
@@ -65,5 +65,21 @@
     保存书签
 </button>
 
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32" style=" width: 216px; position: absolute; top: 441px; left: 673px;">
+    <a class="jiathis_button_qzone"></a>
+    <a class="jiathis_button_tsina"></a>
+    <a class="jiathis_button_tqq"></a>
+    <a class="jiathis_button_weixin"></a>
+    <a class="jiathis_button_renren"></a>
+</div>
+<!-- JiaThis Button END -->
 </body>
+<script>
+    var jiathis_config = {
+        summary: "wwytest",
+        siteName: "网站名字"
+    }
+</script>
+<script type="text/javascript" src="http://v2.jiathis.com/code/jia.js" charset="utf-8"></script>
 </html>
