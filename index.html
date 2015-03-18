@@ -65,6 +65,16 @@
     保存书签
 </button>
 
+<div class="item">
+    <input type="button" value="button" />
+    <input type="file" style="visibility: hidden"/>
+</div>
+<form action="/home/index" method="POST" novalidate="true">
+    <input type="file" multiple="multiple" name="fileDemo" id="fileDemo" /><br/>
+    <input type="button" value="获取文件的名字" id="btnGetFile"/>
+    <div id="result"></div>
+</form>
+<hr/>
 <!-- JiaThis Button BEGIN -->
 <div class="jiathis_style_32x32" style=" width: 216px; position: absolute; top: 441px; left: 673px;">
     <a class="jiathis_button_qzone"></a>
@@ -76,6 +86,23 @@
 <!-- JiaThis Button END -->
 </body>
 <script>
+    $(function () {
+    $("#btnGetFile").click(function (e) {
+        var fileList = document.getElementById("fileDemo").files;
+        for (var i = 0; i < fileList.length; i++) {
+            if (!(/image\/\w+/.test(fileList[i].type))) {
+                $("#result").append("<span>type:"+fileList[i].type+"--******非图片类型*****--name:"+fileList[i].name+"--size:"+fileList[i].size+"</span><br />");
+            }
+            else {
+                $("#result").append("<span>type:"+fileList[i].type+"--name:"+fileList[i].name+"--size:"+fileList[i].size+"</span><br />");
+            }
+        }
+    });
+});
+    /*$('input[type=button]').click(function() {
+        $('input[type=file]').trigger('click');
+    });
+*/
     var jiathis_config = {
         summary: "wwytest",
         siteName: "网站名字"

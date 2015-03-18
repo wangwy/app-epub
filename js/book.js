@@ -140,11 +140,11 @@ EPUB.Book.prototype.createToc = function (doc) {
   tocDiv.setAttribute("class", "tablistx block");
   tocDiv.innerHTML = "";
 
-  var ul = document.createElement("ul");
-  ul.setAttribute("class", "menuconlist");
-  tocDiv.appendChild(ul);
+  if (doc.length > 0) {
+    var ul = document.createElement("ul");
+    ul.setAttribute("class", "menuconlist");
+    tocDiv.appendChild(ul);
 
-  if (doc instanceof Array) {
     doc.forEach(function (item) {
       var li = document.createElement("li");
       ul.appendChild(li);
@@ -160,6 +160,15 @@ EPUB.Book.prototype.createToc = function (doc) {
       span.textContent = item.label;
       li.appendChild(span);
     });
+  }else{
+    var noTocDiv = document.createElement("div");
+    noTocDiv.setAttribute("class","noconbox");
+    tocDiv.appendChild(noTocDiv);
+
+    var noTocA = document.createElement("a");
+    noTocA.setAttribute("class","nomenu nothings");
+    noTocA.textContent = "没有目录";
+    noTocDiv.appendChild(noTocA);
   }
 };
 
