@@ -120,6 +120,16 @@
 }
 
 /*弹出复制，笔记，删除框的样式*/
+
+search {
+    position: absolute;
+    border: none;
+    display: none;
+    cursor: pointer;
+    color: rgb(255, 255, 255);
+    background: rgb(51, 51, 51);
+}
+
 search > a {
     display: inline !important;
     margin: 0px !important;
