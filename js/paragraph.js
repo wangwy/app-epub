@@ -13,6 +13,24 @@ EPUB.Paragraph.prototype.isDbcCase = function (c) {
   }
 };
 
+/**
+ * 判断是否是空格
+ * @param c
+ * @returns {boolean}
+ */
+EPUB.Paragraph.prototype.isSpace = function (c) {
+  if (c == 32) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+/**
+ * 判断是否是英文字符
+ * @param c
+ * @returns {boolean}
+ */
 EPUB.Paragraph.prototype.isEnglish = function (c) {
   if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122)) {
     return true;

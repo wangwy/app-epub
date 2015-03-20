@@ -76,7 +76,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
     if (EPUB.ELEMENTS.hasOwnProperty(node.nodeName) && node.nodeName != "span") {
       //一段结束，换行
       this.currentPositionY += (EPUB.ELEMENTS[node.nodeName].fontSize + this.lineGap);
-      this.currentPositionX = EPUB.ELEMENTS[node.nodeName].fontSize;
+      this.currentPositionX = EPUB.ELEMENTS[node.nodeName].fontSize * 2;
       if (node.nodeName == "img") {
         this.imageSetting(node);
       }
@@ -106,41 +106,25 @@ EPUB.Render.prototype.typeSetting = function (ele) {
   var width = parseInt(this.el.style.width.slice(0, -2));
   var height = parseInt(this.el.style.height.slice(0, -2));
   var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName];
-  //保证字符串是以空格结束，以便计算单词
-  txt = txt.charAt(txt.length - 1) === " " ? txt : txt + " ";
-  var world = "";
-  var worldWidth = 0;
   for (var i = 0; i < txt.length; i++) {
     var char = txt.charAt(i);
     var charCode = txt.charCodeAt(i);
-    if (this.paragraph.isEnglish(charCode)) {
-      world += char;
-      continue;
-    } else {
-      if (this.paragraph.isDbcCase(charCode)) {
+    var rect, glyph;
+    this.changeLineOrPage(width, height, eleStyle);
+    rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, width, eleStyle.fontSize);
+    if (this.paragraph.isDbcCase(charCode)) {
+      if (this.paragraph.isSpace(charCode) && this.currentPositionX == 0) {
+        this.currentPositionX = 0;
+      }else{
         this.currentPositionX += eleStyle.fontSize / 2 + 3;
-        worldWidth = eleStyle.fontSize / 2 + 3;
       }
-      else {
-        this.currentPositionX += eleStyle.fontSize;
-        worldWidth = eleStyle.fontSize
-      }
-      var rect, glyph;
-      if (world) {
-        this.changeLineOrPage(width, height, eleStyle, world.length);
-        rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, worldWidth * world.length, eleStyle.fontSize);
-        glyph = new Glyph(world, rect);
-        this.currentPage.push(glyph);
-        this.currentPositionX += (eleStyle.fontSize / 2 + 3) * world.length;
-        world = "";
-      }
-      this.changeLineOrPage(width, height, eleStyle, "");
-
-      rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, worldWidth, eleStyle.fontSize);
-      glyph = new Glyph(char, rect);
-      this.currentPage.push(glyph);
+    }
+    else {
+      this.currentPositionX += eleStyle.fontSize;
     }
 
+    glyph = new Glyph(char, rect);
+    this.currentPage.push(glyph);
   }
 };
 
@@ -150,13 +134,8 @@ EPUB.Render.prototype.typeSetting = function (ele) {
  * @param height
  * @param length
  */
-EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, length) {
-  var offset = 0;
-  if (length > 1) {
-    offset = (eleStyle.fontSize / 2 + 3) * length;
-  } else {
-    offset = eleStyle.fontSize;
-  }
+EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle) {
+  var offset = eleStyle.fontSize;
   //换行计算
   if (this.currentPositionX + offset > width) {
     this.currentPositionY += (eleStyle.fontSize + this.lineGap);
@@ -169,6 +148,85 @@ EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, leng
     this.pages.push(this.currentPage);
   }
 };
+
+/*
+
+ */
+/**
+ * 将文本拆分并排版
+ * @param txt
+ *//*
+
+ EPUB.Render.prototype.typeSetting = function (ele) {
+ var width = parseInt(this.el.style.width.slice(0, -2));
+ var height = parseInt(this.el.style.height.slice(0, -2));
+ var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName];
+ //保证字符串是以空格结束，以便计算单词
+ txt = txt.charAt(txt.length - 1) === " " ? txt : txt + " ";
+ var world = "";
+ var worldWidth = 0;
+ for (var i = 0; i < txt.length; i++) {
+ var char = txt.charAt(i);
+ var charCode = txt.charCodeAt(i);
+ if (this.paragraph.isEnglish(charCode)) {
+ world += char;
+ continue;
+ } else {
+ if (this.paragraph.isDbcCase(charCode)) {
+ this.currentPositionX += eleStyle.fontSize / 2 + 3;
+ worldWidth = eleStyle.fontSize / 2 + 3;
+ }
+ else {
+ this.currentPositionX += eleStyle.fontSize;
+ worldWidth = eleStyle.fontSize
+ }
+ var rect, glyph;
+ if (world) {
+ this.changeLineOrPage(width, height, eleStyle, world.length);
+ rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, worldWidth * world.length, eleStyle.fontSize);
+ glyph = new Glyph(world, rect);
+ this.currentPage.push(glyph);
+ this.currentPositionX += (eleStyle.fontSize / 2 + 3) * world.length;
+ world = "";
+ }
+ this.changeLineOrPage(width, height, eleStyle, "");
+
+ rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, worldWidth, eleStyle.fontSize);
+ glyph = new Glyph(char, rect);
+ this.currentPage.push(glyph);
+ }
+
+ }
+ };
+
+ */
+/**
+ * 换行，换页计算
+ * @param width
+ * @param height
+ * @param length
+ *//*
+
+ EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, length) {
+ var offset = 0;
+ if (length > 1) {
+ offset = (eleStyle.fontSize / 2 + 3) * length;
+ } else {
+ offset = eleStyle.fontSize;
+ }
+ //换行计算
+ if (this.currentPositionX + offset > width) {
+ this.currentPositionY += (eleStyle.fontSize + this.lineGap);
+ this.currentPositionX = 0;
+ }
+ //换页计算
+ if (this.currentPositionY + eleStyle.fontSize + this.lineGap > height) {
+ this.currentPositionY = eleStyle.fontSize;
+ this.currentPage = new Array();
+ this.pages.push(this.currentPage);
+ }
+ };
+ */
 
 /**
  * 页面展示
@@ -196,12 +254,12 @@ EPUB.Render.prototype.display = function (index) {
  * 根据偏移量计算显示页码
  * @param offset
  */
-EPUB.Render.prototype.calculateDisplayNum = function(offset){
+EPUB.Render.prototype.calculateDisplayNum = function (offset) {
   var num = 0;
-  for(var i = 0, length = this.pages.length; i < length; i++){
+  for (var i = 0, length = this.pages.length; i < length; i++) {
     num += this.pages[i].length;
-    if(num > offset){
-      return i+1;
+    if (num > offset) {
+      return i + 1;
     }
   }
 };
