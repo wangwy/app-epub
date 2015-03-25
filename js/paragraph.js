@@ -5,6 +5,11 @@
 EPUB.Paragraph = function () {
 };
 
+/**
+ * 是否是非中文字符
+ * @param c
+ * @returns {boolean}
+ */
 EPUB.Paragraph.prototype.isDbcCase = function (c) {
   if ((c >= 32 && c <= 127) || (c >= 65377 && c <= 65439)) {
     return true;

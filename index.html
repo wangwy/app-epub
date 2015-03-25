@@ -9,25 +9,33 @@
     <script>
         $(function () {
             $("#b01").click(function () {
-                EPUB.Request.bookStoreRequest("/bookstore/mobile/get/my/readnote", {"userid": "1", "authtoken": "dfdfdf", "pagesize": "10", "pagenum": "1", "bookid": "1"}).then(function (r) {
+                EPUB.Request.bookStoreRequest("/bookstore/mobile/get/my/readnote", {"userid": "1", "authtoken": "dfdfdf", "pagesize": "10", "pagenum": "1", "bookid": "14"}).then(function (r) {
                     $("#showNote").html(JSON.stringify(r));
                 });
             });
 
             $("#b02").click(function () {
-                var data = {"userid": "1", "authtoken": "dfdfdf", "bookid": "10", "process": "222", "adddate": "2015-03-10 14:02:00", "catindex": "3", "catname": "Moby-Dick", "summary": "wwy test", "digestnote": "wwy test", "linecolor": "", "numbers": "322,379", "ranges": "322, 57", "noteid": ''}
+                var data = {"userid": "1", "authtoken": "dfdfdf", "bookid": "14", "process": "222", "adddate": "2015-03-10 14:02:00", "catindex": "3", "catname": "Moby-Dick", "summary": "wwy test", "digestnote": "wwy test", "linecolor": "", "numbers": "322,379", "ranges": "322, 57", "noteid": ''}
                 EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
                     $("#saveNote").html(JSON.stringify(r));
                 });
             });
 
             $("#b03").click(function () {
+                var noteid = $("#deleNote").val();
+                var data = {"userid": "1", "authtoken": "dfdfdf", "noteid": noteid};
+                EPUB.Request.bookStoreRequest("/bookstore/mobile/post/delete/my/readnote", data).then(function (r) {
+                    alert(JSON.stringify(r))
+                });
+            });
+
+            $("#b04").click(function () {
                 EPUB.Request.bookStoreRequest("/bookstore/mobile/get/my/bookmark", {"userid": "1", "authtoken": "dfdfdf", "pagesize": "10", "pagenum": "1", "bookid": "14"}).then(function (r) {
                     $("#showMark").html(JSON.stringify(r));
                 });
             });
 
-            $("#b04").click(function () {
+            $("#b05").click(function () {
                 var data = {"userid": "1", "authtoken": "dfdfdf", "bookid": "14", "adddate": "2015-03-10 14:02:00", "catindex": "3", "catname": "Moby-Dick", "summary": "wwy test", "positions": "12"};
                 EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/bookmark", data).then(function (r) {
                     $("#saveMark").html(JSON.stringify(r));
@@ -51,17 +59,22 @@
     保存笔记
 </button>
 
+<div>
+    <input type="text" id="deleNote"/>
+</div>
+<button id="b03"> 删除笔记</button>
+
 <div id="showMark">
     书签列表显示区域
 </div>
-<button id="b03" type="button">
+<button id="b04" type="button">
     显示书签
 </button>
 
 <div id="saveMark">
     保存书签
 </div>
-<button id="b04" type="button">
+<button id="b05" type="button">
     保存书签
 </button>
 

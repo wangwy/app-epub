@@ -197,7 +197,7 @@ EPUB.Render.prototype.reSettingLine = function (width) {
       glyph = this.currentLine[j];
       glyph.rect.px = x;
       if (this.paragraph.isDbcCase(glyph.txt.charCodeAt(0))) {
-        glyph.rect.fontSize = (offset / glyph.rect.width) * glyph.rect.fontSize;
+//        glyph.rect.fontSize = (offset / glyph.rect.width) * glyph.rect.fontSize;
         glyph.rect.width = offset;
         x += offset;
       } else {
@@ -238,9 +238,11 @@ EPUB.Render.prototype.display = function (index) {
 EPUB.Render.prototype.calculateDisplayNum = function (offset) {
   var num = 0;
   for (var i = 0, length = this.pages.length; i < length; i++) {
-    num += this.pages[i].length;
-    if (num > offset) {
-      return i + 1;
+    for(var j = 0, pageLength = this.pages[i].length; j < pageLength; j++){
+      num += this.pages[i][j].length;
+      if (num > offset) {
+        return i + 1;
+      }
     }
   }
 };

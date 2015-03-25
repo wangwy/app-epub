@@ -166,6 +166,7 @@ EPUB.Notation.prototype.initNotation = function () {
   } else {
     this.hideHasNote();
     this.hideHasDel();
+    this.hideShareNode();
   }
 };
 
@@ -327,7 +328,9 @@ EPUB.Notation.prototype.saveMark = function () {
   var that = this;
   var pageStartPosition = 0;
   for (var i = 0; i < this.pageIndex - 1; i++) {
-    pageStartPosition += this.pages[i].length;
+    for(var j = 0; j < this.pages[i].length; j++){
+      pageStartPosition += this.pages[i][j].length;
+    }
   }
   var summary = that.getString(that.svg.children).slice(0, 100);
   var data = {
@@ -454,7 +457,9 @@ EPUB.Notation.prototype.selectedOffset = function () {
       svgArray = Array.prototype.slice.call(this.svg.children),
       backRect = this.svg.getElementsByClassName("svgBackRect");
   for (var i = 0; i < this.pageIndex - 1; i++) {
-    startOffset += this.pages[i].length;
+    for(var j = 0; j < this.pages[i].length; j++){
+      startOffset += this.pages[i][j].length;
+    }
   }
   startOffset += svgArray.indexOf(this.svgSelected[0]) - backRect.length;
 
@@ -473,8 +478,10 @@ EPUB.Notation.prototype.showNotation = function () {
   if (that.render.notes.length > 0) {
     var pageEndLength = 0, pageStartLength = 0;
     for (var i = 0; i < this.pageIndex; i++) {
-      pageEndLength += this.pages[i].length;
-      pageStartLength = pageEndLength - this.pages[i].length;
+      pageStartLength = pageEndLength;
+      for(var j = 0; j < this.pages[i].length; j++){
+        pageEndLength += this.pages[i][j].length;
+      }
     }
     that.render.notes.forEach(function (value) {
       var startOffset = value.numbers.split(",")[0], endOffset = value.numbers.split(",")[1];
@@ -499,8 +506,10 @@ EPUB.Notation.prototype.showMark = function () {
   if (that.render.marks.length > 0) {
     var pageEndPosition = 0, pageStartPosition = 0;
     for (var i = 0; i < this.pageIndex; i++) {
-      pageEndPosition += this.pages[i].length;
-      pageStartPosition = pageEndPosition - this.pages[i].length;
+      pageStartPosition = pageEndPosition;
+      for(var j = 0; j < this.pages[i].length; j++){
+        pageEndPosition += this.pages[i][j].length;
+      }
     }
     that.render.marks.forEach(function (mark) {
       if (mark.positions >= pageStartPosition && mark.positions < pageEndPosition) {
