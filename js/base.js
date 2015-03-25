@@ -3,7 +3,7 @@
  */
 var EPUB = EPUB || {};
 EPUB.VERSION = "1.0.0";
-EPUB.LINEGAP = 10;
+EPUB.LINEGAP = 15;
 
 EPUB.ELEMENTS = {
   "p": {

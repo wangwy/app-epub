@@ -38,3 +38,29 @@ EPUB.Paragraph.prototype.isEnglish = function (c) {
     return false;
   }
 };
+
+/**
+ * 判断是否是标点符号
+ * @param c
+ * @returns {boolean}
+ */
+EPUB.Paragraph.prototype.isPunctuation = function (c) {
+  if ((c >= 33 && c <= 47) || (c >= 58 && c <= 63)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+/**
+ * 判断是否为中文
+ * @param c
+ * @returns {boolean}
+ */
+EPUB.Paragraph.prototype.isChinese = function (c) {
+  if (c >= 10000) {
+    return true;
+  } else {
+    return false;
+  }
+};
