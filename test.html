@@ -3,22 +3,22 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div id="ff" style="width:500px;background:#f3f3f3;">But look! here come more crowds, pacing straight for the water,</div>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
+        <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
+
+        <!-- Add the extra clearfix for only the required viewport -->
+        <div class="clearfix visible-xs-block"></div>
+
+        <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
+        <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
+    </div>
+</div>
 </body>
-<script>
-    function toBreakWord(intLen){
-        var obj=document.getElementById("ff");//文字内容所在容器的id
-        var strContent=obj.innerHTML;
-        var strTemp="";
-        while(strContent.length>intLen){
-            strTemp+=strContent.substr(0,intLen)+"<br />";
-            strContent=strContent.substr(intLen,strContent.length);
-        }
-        strTemp+=strContent;
-        obj.innerHTML=strTemp;
-    }
-    toBreakWord(50);//一行的最大字符数
-</script>
 </html>
