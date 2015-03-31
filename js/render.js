@@ -187,9 +187,8 @@ EPUB.Render.prototype.reSettingLine = function (width) {
       }
     }
   }
-
-  var offset = (width - chLength) / enNum;
-  var x = 0;
+  var x = this.currentLine[0].rect.px;
+  var offset = (width - chLength - x) / enNum;
   for (var j = 0, length = this.currentLine.length; j < length; j++) {
     if (j == 0 && this.paragraph.isSpace(this.currentLine[0].txt.charCodeAt(0))) {
       continue;
