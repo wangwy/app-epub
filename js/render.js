@@ -5,6 +5,8 @@
 EPUB.Render = function (book) {
   this.book = book;
   this.el = this.book.el;
+  this.width = parseInt(this.el.style.width.slice(0, -2));
+  this.height = parseInt(this.el.style.height.slice(0, -2));
   this.paragraph = new EPUB.Paragraph();
   this.lineGap = EPUB.LINEGAP;
   this.selections = new EPUB.Selections(this);
@@ -100,9 +102,43 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
 EPUB.Render.prototype.imageSetting = function (ele) {
   var url = EPUB.Utils.parseUrl(ele.src);
   var img = this.imagesAll[url.filename];
-  var image = new imageNode(img.src, 0, this.currentPositionY, img.height, img.width);
-  this.currentLine.push(image);
-  this.currentPositionY += img.height
+  var hScale = img.height / (this.height - this.currentPositionY);
+  var wScale = img.width / this.width;
+  var image;
+  var maxScale = Math.max(hScale, wScale);
+  var height = 0, width = 0, x = 0;
+  if (maxScale > 1 && hScale < 5) {
+    height = img.height / maxScale;
+    width = img.width / maxScale;
+    if (width < this.width) {
+      x = (this.width - width) / 2;
+    }
+    image = new imageNode(img.src, x, this.currentPositionY, height, width);
+    this.currentLine.push(image);
+    this.currentPositionY += height
+  }else if(hScale > 5){
+    hScale = img.height / this.height;
+    wScale = img.width / this.width;
+    maxScale = Math.max(hScale, wScale);
+    height = img.height / maxScale;
+    width = img.width / maxScale;
+    if (width < this.width) {
+      x = (this.width - width) / 2;
+    }
+    this.currentLine = new Array();
+    image = new imageNode(img.src, x, 12, height, width);
+    this.currentLine.push(image);
+    this.currentPage = new Array();
+    this.currentPage.push(this.currentLine);
+    this.pages.push(this.currentPage);
+    this.currentPositionY += height
+  } else {
+    height = img.height;
+    width = img.width;
+    image = new imageNode(img.src, x, this.currentPositionY, height, width);
+    this.currentLine.push(image);
+    this.currentPositionY += height
+  }
 };
 
 /**
@@ -110,14 +146,12 @@ EPUB.Render.prototype.imageSetting = function (ele) {
  * @param txt
  */
 EPUB.Render.prototype.typeSetting = function (ele) {
-  var width = parseInt(this.el.style.width.slice(0, -2));
-  var height = parseInt(this.el.style.height.slice(0, -2));
   var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName];
   for (var i = 0; i < txt.length; i++) {
     var char = txt.charAt(i);
     var charCode = txt.charCodeAt(i);
     var rect, glyph, xOffset;
-    this.changeLineOrPage(width, height, eleStyle, charCode);
+    this.changeLineOrPage(this.width, this.height, eleStyle, charCode);
     if (this.paragraph.isDbcCase(charCode)) {
       if (this.paragraph.isSpace(charCode) && this.currentPositionX == 0) {
         rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, 0, eleStyle.fontSize);
@@ -237,7 +271,7 @@ EPUB.Render.prototype.display = function (index) {
 EPUB.Render.prototype.calculateDisplayNum = function (offset) {
   var num = 0;
   for (var i = 0, length = this.pages.length; i < length; i++) {
-    for(var j = 0, pageLength = this.pages[i].length; j < pageLength; j++){
+    for (var j = 0, pageLength = this.pages[i].length; j < pageLength; j++) {
       num += this.pages[i][j].length;
       if (num > offset) {
         return i + 1;
