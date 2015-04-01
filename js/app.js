@@ -8,6 +8,12 @@ EPUB.App.init = (function ($) {
     console.log(reason);
   });
   function init(elem, bookUrl) {
+
+    EPUB.USERID = "1";
+    EPUB.BOOKID = "14";
+    EPUB.AUTHTOKEN = "dfdfdf";
+    EPUB.PROCESS = "222";
+
     Book = new EPUB.Book(elem, bookUrl);
     $(function () {
       controls();

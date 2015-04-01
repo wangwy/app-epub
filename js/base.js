@@ -36,3 +36,8 @@ EPUB.ELEMENTS = {
   }
 };
 
+EPUB.USERID = "";//用户id
+EPUB.BOOKID = "";//书籍id
+EPUB.AUTHTOKEN = "";//认证
+EPUB.PROCESS = "";
+

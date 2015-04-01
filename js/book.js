@@ -179,11 +179,11 @@ EPUB.Book.prototype.getNotes = function () {
   var that = this,
       path = "/bookstore/mobile/get/my/readnote",
       data = {
-        "userid": "1",
-        "authtoken": "dfdfdf",
+        "userid": EPUB.USERID,
+        "authtoken": EPUB.AUTHTOKEN,
         "pagesize": "10",
         "pagenum": "1",
-        "bookid": "14"};
+        "bookid": EPUB.BOOKID};
   var getNoteRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
     that.notelist = r.notelist;
     that.createNote(that.notelist);
@@ -272,11 +272,11 @@ EPUB.Book.prototype.getMarks = function () {
   var that = this,
       path = "/bookstore/mobile/get/my/bookmark",
       data = {
-        "userid": "1",
-        "authtoken": "dfdfdf",
+        "userid": EPUB.USERID,
+        "authtoken": EPUB.AUTHTOKEN,
         "pagesize": "10",
         "pagenum": "1",
-        "bookid": "14"
+        "bookid": EPUB.BOOKID
       };
   var getMarkRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
     that.markList = r.bookmarklist;

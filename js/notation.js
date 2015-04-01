@@ -257,8 +257,8 @@ EPUB.Notation.prototype.hideShareNode = function(){
  */
 EPUB.Notation.prototype.deletNotation = function (noteid) {
   var that = this, data = {
-    "userid": "1",
-    "authtoken": "dfdfdf",
+    "userid": EPUB.USERID,
+    "authtoken": EPUB.AUTHTOKEN,
     "noteid": noteid
   };
   EPUB.Request.bookStoreRequest("/bookstore/mobile/post/delete/my/readnote", data).then(function (r) {
@@ -287,10 +287,10 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
  */
 EPUB.Notation.prototype.sendNotation = function () {
   var that = this, data = {
-    "userid": "1",
-    "authtoken": "dfdfdf",
-    "bookid": "14",
-    "process": "222",
+    "userid": EPUB.USERID,
+    "authtoken": EPUB.AUTHTOKEN,
+    "bookid": EPUB.BOOKID,
+    "process": EPUB.PROCESS,
     "adddate": new Date().Format("yyyy-MM-dd hh:mm:ss"),
     "catindex": that.render.spineNum,
     "catname": that.render.chapterName,
@@ -334,9 +334,9 @@ EPUB.Notation.prototype.saveMark = function () {
   }
   var summary = that.getString(that.svg.children).slice(0, 100);
   var data = {
-    "userid": "1",
-    "authtoken": "dfdfdf",
-    "bookid": "14",
+    "userid": EPUB.USERID,
+    "authtoken": EPUB.AUTHTOKEN,
+    "bookid": EPUB.BOOKID,
     "adddate": new Date().Format("yyyy-MM-dd hh:mm:ss"),
     "catindex": that.render.spineNum,
     "catname": that.render.chapterName,
@@ -358,8 +358,8 @@ EPUB.Notation.prototype.saveMark = function () {
  */
 EPUB.Notation.prototype.deleteMark = function (markId) {
   var that = this, data = {
-    "userid": "1",
-    "authtoken": "dfdfdf",
+    "userid": EPUB.USERID,
+    "authtoken": EPUB.AUTHTOKEN,
     "bookmarkid": markId
   };
   EPUB.Request.bookStoreRequest("/bookstore/mobile/post/delete/my/bookmark", data).then(function (r) {

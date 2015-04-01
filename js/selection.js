@@ -80,7 +80,6 @@ EPUB.Selections.prototype.getSelectionElements = function () {
     var eleY = parseInt(value.getAttribute("y"), 10) + parseInt(that.svgPosition.top, 10),
         eleX = parseInt(value.getAttribute("x"), 10) + parseInt(that.svgPosition.left, 10);
     if ((that.endXY.y - that.startXY.y) <= lineHeight && (that.startXY.x - eleX) < 11 && (that.endXY.x - eleX) > 11 && eleY > that.startXY.y && eleY <= (that.endXY.y + lineHeight)) {
-      console.log(1 + " : " + true);
       that.selectionElements.push(value);
     }
     else if ((that.endXY.y - that.startXY.y > lineHeight) && ((eleY > (that.startXY.y + lineHeight) && eleY < that.endXY.y) ||
