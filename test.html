@@ -3,21 +3,79 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <!--<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>-->
+    <!--<link rel="stylesheet" href="css/textBook.css"/>-->
+    <style>
+        /* 目录 */
+        .m-reader .rd_dirct .nav-list li {
+            position: relative;
+            border-bottom: 1px dashed #e5e0d8;
+        }
+
+        .m-reader .rd_dirct .nav-list li a {
+            display: block;
+            padding: 18px 80px 18px 0;
+            line-height: 20px;
+            font-size: 14px;
+        }
+
+        .m-reader .rd_dirct .nav-list li a.disable {
+            color: #999;
+            cursor: default;
+        }
+
+        .m-reader .rd_dirct .nav-list li span {
+            position: absolute;
+            right: 0;
+            top: 18px;
+            font-size: 12px;
+            color: #bcb2a5;
+        }
+
+        .m-reader .rd_dirct .nav-list li li {
+            padding-left: 2em;
+        }
+
+        .m-reader .rd_dirct .nav-list .final {
+            border-bottom: none;
+        }
+
+        .m-reader .rd_dirct .nav-list .nav-list {
+            border-top: 1px dashed #e5e0d8;
+        }
+
+        .m-reader .rd_dirct .nav-list .active a {
+            color: #ed6c00;
+        }
+
+        .m-reader .rd_dirct .nav-list .active li a {
+            color: #000;
+        }
+        ul,ol,li{padding:0;margin:0;}
+        li{list-style:none;}
+    </style>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
-        <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
+<div class="m-reader">
+    <div class="rd_dirct" style="">
+        <ul class="nav nav-list">
+            <li><a href="javascript:void(0)" class="j-itm" page_from="2" page_to="2">版权信息<span>2</span></a></li>
+            <li><a href="javascript:void(0)" class="j-itm" page_from="15" page_to="18">写在前面的话<span>15</span></a></li>
+            <li><a href="javascript:void(0)" class="j-itm" page_from="19" page_to="19">内容提要<span>19</span></a></li>
+            <li><a href="javascript:void(0)" class="j-itm" page_from="20" page_to="20">第一章 做好准备<span>20</span></a></li>
 
-        <!-- Add the extra clearfix for only the required viewport -->
-        <div class="clearfix visible-xs-block"></div>
+            <ul class="nav nav-list">
+                <li><a href="javascript:void(0)" class="j-itm" page_from="22" page_to="33">一、准备什么样的相机<span>22</span></a>
+                </li>
+                <li><a href="javascript:void(0)" class="j-itm" page_from="34"
+                       page_to="36">二、学摄影的过程<span>34</span></a>
+                </li>
+                <li><a href="javascript:void(0)" class="j-itm" page_from="37" page_to="39">三、学摄影的方法是<span>37</span></a>
+                </li>
+            </ul>
 
-        <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
-        <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
+        </ul>
     </div>
 </div>
 </body>

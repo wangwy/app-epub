@@ -163,9 +163,9 @@ EPUB.Format.prototype.formatToc = function (path) {
         var id = item.getAttribute('id'),
             content = item.getElementsByTagName("content")[0],
             href = content.getAttribute('src'),
-            url = that.bookUrl + href;
+            url = that.bookUrl + href,
             navLabel = item.getElementsByTagName("navLabel")[0],
-            text = navLabel.textContent ? navLabel.textContent : "",
+            text = item.getElementsByTagName("navLabel")[0].textContent ? item.getElementsByTagName("navLabel")[0].textContent : "",
             subitems = item.getElementsByTagName("navPoint") || false,
             subs = false,
             childof = (item.parentNode == parent);

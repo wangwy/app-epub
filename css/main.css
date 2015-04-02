@@ -868,6 +868,7 @@ ul{list-style-type:none;}
 	display:inline-block;
 	width:17px;
 	height:31px;
+	background:url(../images/sign.png) no-repeat;
 	position:absolute;
 	right:0px;
 	top:45px;
@@ -936,13 +937,15 @@ ul{list-style-type:none;}
 	padding-left:30px;
 	}
 .tabcon{
-	width:521px;
-	height:500px;
-	margin:0px auto;
+	width:530px;
+	/*height:500px;*/
+	padding:0px 50px;
 	font-size:14px;
 	text-align:left;
 	font:14px/1 "黑体";
 	color:#442f1d;
+	overflow:auto;
+	overflow-x:hidden;
 	}		
 .tablistx{
 	width:100%;
@@ -951,23 +954,27 @@ ul{list-style-type:none;}
 .block{
 	display:block;
 	}
-.menuconum{
-	float:right;
-	color:#ac8662;
-	}
 .menuconlist li{
+	position:relative;
 	border-bottom:solid 1px #e5e0d8;
-	height:40px;
-	line-height:40px;
+	/*line-height:40px;*/
 	cursor:pointer;
 	}
-.menuconlist li:hover{
+.menuconlist li a{
+	display: block;
+	padding: 10px 80px 10px 0;
+	line-height: 20px;
+	}
+.tabcon li a:hover{
 	color:#e87313;
 	}
-.levltwolist li{
-	padding-left:40px;
-	}	
-	
+.menuconlist li .menuconum{
+	float:right;
+	color:#ac8662;
+	position: absolute;
+	right: 0;
+	top: 10px;
+	}
 .recordp{
 	text-align:right;
 	border-bottom:solid 2px #e5e0d8;
@@ -995,6 +1002,7 @@ ul{list-style-type:none;}
 .noconbox{
 	text-align:center;
 	margin-top:40%;
+	display:none;
 	}
 .nothings{
 	width:102px;
@@ -1118,13 +1126,14 @@ ul{list-style-type:none;}
 	-khtml-opacity: 0.6;
 	}
 .pup_con{
-	
 	width:500px;
 	background:#fff;
 	z-index:9999;
 	position:absolute;
-	margin:auto;
-	top:200px;
+	top:50%;
+	left:50%;
+	margin-top:-130px;
+	margin-left:-250px;
 	text-align:center;
 	}
 .pup_close{
@@ -1167,3 +1176,27 @@ ul{list-style-type:none;}
 	color:#905e42;
 	font:14px/1 "宋体";
 	}
+/*电子书笔记内容弹框*/	
+.notepup{
+	display:none;
+	position:absolute;
+	top:20%;
+	left:50%;
+	width:145px;
+	height:200px;
+	border:solid 1px #c2c2c2;
+	background:#fbf6ec;
+	color:#7d3a08;
+	font:12px/1.2 "宋体";
+	overflow: auto;
+	padding:5px;
+	}	
+.notepup p{
+	margin:0px;
+	padding:0px;
+	}	
+	
+	
+	
+	
+	

@@ -141,32 +141,40 @@ EPUB.Book.prototype.createToc = function (doc) {
   tocDiv.innerHTML = "";
 
   if (doc.length > 0) {
-    var ul = document.createElement("ul");
-    ul.setAttribute("class", "menuconlist");
-    tocDiv.appendChild(ul);
-
-    doc.forEach(function (item) {
-      var li = document.createElement("li");
-      ul.appendChild(li);
-      var span = document.createElement("span");
-      span.addEventListener("click", function () {
-        that.display(item.url, item.spineNum).then(function () {
-          that.render.display(1);
+    function tocList(parentNode, items, n) {
+      var offsetEm = n;
+      var ul = document.createElement("ul");
+      ul.setAttribute("class", "menuconlist");
+      parentNode.appendChild(ul);
+      items.forEach(function (item) {
+        var li = document.createElement("li");
+        li.setAttribute("style", "padding-left:" + offsetEm + "em");
+        ul.appendChild(li);
+        var a = document.createElement("a");
+        a.addEventListener("click", function () {
+          that.display(item.url, item.spineNum).then(function () {
+            that.render.display(1);
+          });
+          document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
+          document.getElementsByClassName("menubox")[0].style.display = "none";
+          that.showMenu = true;
         });
-        document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
-        document.getElementsByClassName("menubox")[0].style.display = "none";
-        that.showMenu = true;
+        a.textContent = item.label;
+        li.appendChild(a);
+        if (item.subitems.length > 0) {
+          tocList(ul, item.subitems, offsetEm + 2);
+        }
       });
-      span.textContent = item.label;
-      li.appendChild(span);
-    });
-  }else{
+    }
+
+    tocList(tocDiv, doc, 0)
+  } else {
     var noTocDiv = document.createElement("div");
-    noTocDiv.setAttribute("class","noconbox");
+    noTocDiv.setAttribute("class", "noconbox");
     tocDiv.appendChild(noTocDiv);
 
     var noTocA = document.createElement("a");
-    noTocA.setAttribute("class","nomenu nothings");
+    noTocA.setAttribute("class", "nomenu nothings");
     noTocA.textContent = "没有目录";
     noTocDiv.appendChild(noTocA);
   }
@@ -371,8 +379,8 @@ EPUB.Book.prototype.getChapterNotes = function (spineNum) {
  */
 EPUB.Book.prototype.getChapterMarks = function (spineNum) {
   var marks = [];
-  this.markList.forEach(function(value){
-    if(value.catindex == spineNum){
+  this.markList.forEach(function (value) {
+    if (value.catindex == spineNum) {
       marks.push(value);
     }
   });
