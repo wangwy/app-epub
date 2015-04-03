@@ -200,8 +200,6 @@ EPUB.Notation.prototype.showText = function (x, y, text) {
 
 /**
  * 显示笔记窗口
- * @param x
- * @param y
  */
 EPUB.Notation.prototype.showDialog = function () {
   this.dialogNode.getElementsByClassName("pup_hight")[0].textContent = this.getString(this.svgSelected);
@@ -379,17 +377,19 @@ EPUB.Notation.prototype.createUnderline = function (noteid) {
   that.svg.insertBefore(g, that.svgSelected[0]);
 
   that.svgSelected.forEach(function (value) {
-    var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    underRect.setAttribute("x", value.getAttribute("x"));
-    underRect.setAttribute("y", value.getAttribute("y"));
-    underRect.setAttribute("width", value.getAttribute("data-width"));
-    underRect.setAttribute("height", "2");
-    underRect.setAttribute("fill", "red");
-    underRect.setAttribute("class", noteid);
-    underRect.addEventListener("click", function (e) {
-      that.show(e.clientX, e.clientY)
-    });
-    that.svg.appendChild(underRect);
+    if(value.tagName == "text"){
+      var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      underRect.setAttribute("x", value.getAttribute("x"));
+      underRect.setAttribute("y", value.getAttribute("y"));
+      underRect.setAttribute("width", value.getAttribute("data-width"));
+      underRect.setAttribute("height", "2");
+      underRect.setAttribute("fill", "red");
+      underRect.setAttribute("class", noteid);
+      underRect.addEventListener("click", function (e) {
+        that.show(e.clientX, e.clientY)
+      });
+      that.svg.appendChild(underRect);
+    }
   });
 
   that.svgSelected.forEach(function (value) {
@@ -481,13 +481,27 @@ EPUB.Notation.prototype.showNotation = function () {
     }
     that.render.notes.forEach(function (value) {
       var startOffset = value.numbers.split(",")[0], endOffset = value.numbers.split(",")[1];
-      if (pageStartLength <= startOffset && pageEndLength >= endOffset) {
-        var notationStart = startOffset - pageStartLength;
-        var notationEnd = endOffset - pageStartLength;
-        var svgArray = Array.prototype.slice.call(that.svg.children);
+      var notationStart, notationEnd, svgArray;
+      if (pageStartLength > startOffset && pageStartLength < endOffset && pageEndLength >= endOffset) {
+        notationStart = 0;
+        notationEnd = endOffset - pageStartLength;
+        svgArray = Array.prototype.slice.call(that.svg.children);
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
         that.createTextCircle(value.id, value.digestnote);
+      } else if (pageStartLength <= startOffset && pageEndLength >= endOffset) {
+        notationStart = startOffset - pageStartLength;
+        notationEnd = endOffset - pageStartLength;
+        svgArray = Array.prototype.slice.call(that.svg.children);
+        that.svgSelected = svgArray.slice(notationStart, notationEnd);
+        that.createUnderline(value.id);
+        that.createTextCircle(value.id, value.digestnote);
+      } else if (pageStartLength <= startOffset && pageEndLength < endOffset) {
+        notationStart = startOffset - pageStartLength;
+        notationEnd = pageEndLength - pageStartLength;
+        svgArray = Array.prototype.slice.call(that.svg.children);
+        that.svgSelected = svgArray.slice(notationStart, notationEnd);
+        that.createUnderline(value.id);
       }
     });
   }

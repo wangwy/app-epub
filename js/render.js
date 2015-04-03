@@ -83,6 +83,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
       this.currentLine = new Array();
       this.currentPage.push(this.currentLine);
       if (node.nodeName == "img") {
+        this.currentPositionY -= this.lineGap/2;
         this.imageSetting(node);
       }
     }
@@ -115,7 +116,9 @@ EPUB.Render.prototype.imageSetting = function (ele) {
     }
     image = new imageNode(img.src, x, this.currentPositionY, height, width);
     this.currentLine.push(image);
-    this.currentPositionY += height
+    this.currentLine = new Array();
+    this.currentPage.push(this.currentLine);
+    this.currentPositionY += (height+this.lineGap * 1.5)
   }else if(hScale > 5){
     hScale = img.height / this.height;
     wScale = img.width / this.width;
@@ -135,9 +138,14 @@ EPUB.Render.prototype.imageSetting = function (ele) {
   } else {
     height = img.height;
     width = img.width;
+    if (width < this.width) {
+      x = (this.width - width) / 2;
+    }
     image = new imageNode(img.src, x, this.currentPositionY, height, width);
     this.currentLine.push(image);
-    this.currentPositionY += height
+    this.currentLine = new Array();
+    this.currentPage.push(this.currentLine);
+    this.currentPositionY += (height+this.lineGap * 1.5);
   }
 };
 
@@ -255,7 +263,7 @@ EPUB.Render.prototype.display = function (index) {
       if (glyph.type == "text") {
         textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
       } else if (glyph.type == "image") {
-        textHTML += "<image xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "'/>";
+        textHTML += "<image xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "' data-height = '"+glyph.h+"'/>";
       }
     }
   }

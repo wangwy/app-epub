@@ -74,7 +74,7 @@ EPUB.Selections.prototype.reInitSelections = function () {
  * 获取选择区域内的节点
  */
 EPUB.Selections.prototype.getSelectionElements = function () {
-  var items = Array.prototype.slice.call(this.svg.querySelectorAll('text')), that = this;
+  var items = Array.prototype.slice.call(this.svg.children), that = this;
   items.forEach(function (value) {
     var lineHeight = parseInt(value.getAttribute("data-height"), 10);
     var eleY = parseInt(value.getAttribute("y"), 10) + parseInt(that.svgPosition.top, 10),
@@ -97,14 +97,16 @@ EPUB.Selections.prototype.createRects = function () {
   if (this.selectionElements.length > 0) {
     var that = this;
     this.selectionElements.forEach(function (value) {
-      var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", value.getAttribute("x"));
-      rect.setAttribute("y", value.getAttribute("y") - value.getAttribute("font-size"));
-      rect.setAttribute("width", value.getAttribute("data-width"));
-      rect.setAttribute("height", value.getAttribute("data-height"));
-      rect.setAttribute("fill", "yellow");
-      rect.setAttribute("class","svgBackRect");
-      that.rects.push(rect);
+      if(value.tagName == "text"){
+        var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", value.getAttribute("x"));
+        rect.setAttribute("y", value.getAttribute("y") - value.getAttribute("font-size"));
+        rect.setAttribute("width", value.getAttribute("data-width"));
+        rect.setAttribute("height", value.getAttribute("data-height"));
+        rect.setAttribute("fill", "yellow");
+        rect.setAttribute("class","svgBackRect");
+        that.rects.push(rect);
+      }
     });
   }
 };
