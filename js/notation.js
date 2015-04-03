@@ -135,8 +135,8 @@ EPUB.Notation.prototype.initialDialog = function () {
   });
 
   this.shareNode = document.getElementById("shareNode");
-  this.shareNode.addEventListener("click",function(){
-      that.hideShareNode();
+  this.shareNode.addEventListener("click", function () {
+    that.hideShareNode();
   });
 };
 
@@ -155,13 +155,13 @@ EPUB.Notation.prototype.initNotation = function () {
 
     window.jiathis_config.summary = copyText;
     var shareButton = document.getElementById("share");
-    shareButton.addEventListener("click",function(e){
+    shareButton.addEventListener("click", function (e) {
       that.showShareNode(e.clientX, e.clientY)
     });
 
     var showDialog = document.getElementById("show-dialog");
     showDialog.addEventListener('click', function () {
-      that.showDialog(that.showPostion.x, that.showPostion.y);
+      that.showDialog();
     });
   } else {
     this.hideHasNote();
@@ -203,11 +203,9 @@ EPUB.Notation.prototype.showText = function (x, y, text) {
  * @param x
  * @param y
  */
-EPUB.Notation.prototype.showDialog = function (x, y) {
+EPUB.Notation.prototype.showDialog = function () {
   this.dialogNode.getElementsByClassName("pup_hight")[0].textContent = this.getString(this.svgSelected);
   document.getElementById("back").setAttribute("class", "pup_bg");
-  this.dialogNode.style.left = x + "px";
-  this.dialogNode.style.top = y + "px";
   this.dialogNode.style.display = "block";
 };
 
@@ -226,8 +224,6 @@ EPUB.Notation.prototype.hideText = function () {
 EPUB.Notation.prototype.hideDialog = function () {
   document.getElementById("back").removeAttribute("class");
   document.getElementById("comment-content").value = "留下你的笔记";
-  this.dialogNode.style.left = "0px";
-  this.dialogNode.style.top = "0px";
   this.dialogNode.style.display = "none";
 };
 
@@ -236,7 +232,7 @@ EPUB.Notation.prototype.hideDialog = function () {
  * @param x
  * @param y
  */
-EPUB.Notation.prototype.showShareNode = function(x,y){
+EPUB.Notation.prototype.showShareNode = function (x, y) {
   this.shareNode.style.left = x + "px";
   this.shareNode.style.top = y + "px";
   this.shareNode.style.display = "block";
@@ -245,7 +241,7 @@ EPUB.Notation.prototype.showShareNode = function(x,y){
 /**
  * 隐藏分享窗口
  */
-EPUB.Notation.prototype.hideShareNode = function(){
+EPUB.Notation.prototype.hideShareNode = function () {
   this.shareNode.style.left = 0 + "px";
   this.shareNode.style.top = 0 + "px";
   this.shareNode.style.display = "none";
@@ -328,7 +324,7 @@ EPUB.Notation.prototype.saveMark = function () {
   var that = this;
   var pageStartPosition = 0;
   for (var i = 0; i < this.pageIndex - 1; i++) {
-    for(var j = 0; j < this.pages[i].length; j++){
+    for (var j = 0; j < this.pages[i].length; j++) {
       pageStartPosition += this.pages[i][j].length;
     }
   }
@@ -406,7 +402,7 @@ EPUB.Notation.prototype.createUnderline = function (noteid) {
 
     window.jiathis_config.summary = string;
     var sharedButton = document.getElementById("shared");
-    sharedButton.addEventListener("click",function(e){
+    sharedButton.addEventListener("click", function (e) {
       that.showShareNode(e.clientX, e.clientY)
     });
 
@@ -457,7 +453,7 @@ EPUB.Notation.prototype.selectedOffset = function () {
       svgArray = Array.prototype.slice.call(this.svg.children),
       backRect = this.svg.getElementsByClassName("svgBackRect");
   for (var i = 0; i < this.pageIndex - 1; i++) {
-    for(var j = 0; j < this.pages[i].length; j++){
+    for (var j = 0; j < this.pages[i].length; j++) {
       startOffset += this.pages[i][j].length;
     }
   }
@@ -479,7 +475,7 @@ EPUB.Notation.prototype.showNotation = function () {
     var pageEndLength = 0, pageStartLength = 0;
     for (var i = 0; i < this.pageIndex; i++) {
       pageStartLength = pageEndLength;
-      for(var j = 0; j < this.pages[i].length; j++){
+      for (var j = 0; j < this.pages[i].length; j++) {
         pageEndLength += this.pages[i][j].length;
       }
     }
@@ -507,7 +503,7 @@ EPUB.Notation.prototype.showMark = function () {
     var pageEndPosition = 0, pageStartPosition = 0;
     for (var i = 0; i < this.pageIndex; i++) {
       pageStartPosition = pageEndPosition;
-      for(var j = 0; j < this.pages[i].length; j++){
+      for (var j = 0; j < this.pages[i].length; j++) {
         pageEndPosition += this.pages[i][j].length;
       }
     }
