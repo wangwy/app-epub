@@ -194,6 +194,8 @@ EPUB.Notation.prototype.getString = function (node) {
  */
 EPUB.Notation.prototype.showText = function (x, y, text) {
   this.textNode.getElementsByTagName("p")[0].textContent = text;
+  var height = EPUB.Utils.getCss(this.textNode,"height").slice(0,-2);
+  y + parseInt(height) > this.render.height ? y = y - height : y;
   this.textNode.style.left = x + "px";
   this.textNode.style.top = y + "px";
   this.textNode.style.display = "block";
@@ -534,3 +536,4 @@ EPUB.Notation.prototype.showMark = function () {
     that.markNode.setAttribute("data-markId", "");
   }
 };
+

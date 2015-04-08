@@ -108,3 +108,13 @@ Date.prototype.Format = function (fmt) {
     if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
   return fmt;
 };
+
+/**
+ * 获取css属性的值
+ * @param o
+ * @param key
+ * @returns {*}
+ */
+EPUB.Utils.getCss = function(o,key){
+  return o.currentStyle ? o.currentStyle[key] : window.getComputedStyle(o,null)[key];
+};

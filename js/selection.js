@@ -20,8 +20,9 @@ EPUB.Selections.prototype.initSelection = function () {
   this.notation.showNotation();
   this.notation.showMark();
   //禁用浏览器选重
-  this.svg.onmousedown = function(){return false};
-//  this.svgPosition = this.svg.getBoundingClientRect();
+  this.svg.onmousedown = function () {
+    return false
+  };
   var that = this;
 
   function handle(e) {
@@ -35,7 +36,6 @@ EPUB.Selections.prototype.initSelection = function () {
     }
     that.reInitSelections();
     that.getSelectionElements();
-//    that.selectionElements = that.getSelectedNodes();
     that.createRects();
     that.inserRects();
   }
@@ -49,11 +49,11 @@ EPUB.Selections.prototype.initSelection = function () {
     that.reInitSelections();
     that.svg.addEventListener("mousemove", handle, false);
   }, false);
-  this.svg.addEventListener("mouseup", function () {
+  this.svg.addEventListener("mouseup", function (e) {
     that.svg.removeEventListener("mousemove", handle, false);
     that.notation.svgSelected = that.selectionElements;
     that.notation.bacRects = that.rects;
-    that.notation.showPostion = that.endXY;
+    that.notation.showPostion = {x: e.pageX, y: e.pageY};
     that.notation.initNotation();
   });
 };
@@ -125,81 +125,19 @@ EPUB.Selections.prototype.inserRects = function () {
 };
 
 /**
- * 获取选中的节点
- * @returns {*}
+ * 获取元素在页面中的文档坐标
+ * @param element
+ * @returns {{left: (Number|number), top: (Number|number)}}
  */
-EPUB.Selections.prototype.getSelectedNodes = function () {
-  var selection = window.getSelection();
-  if (selection.isCollapsed) {
-    return [];
-  }
-  var node1 = selection.anchorNode;
-  var node2 = selection.focusNode;
-  return this.getNodesBetween(this.svg, node1, node2);
-};
-
-/**
- * 判断是否是后代元素
- * @param parent
- * @param child
- * @returns {boolean}
- */
-EPUB.Selections.prototype.isDescendant = function (parent, child) {
-  var node = child;
-  while(node != null){
-    if(node == parent){
-      return true;
-    }
-    node = node.parentNode;
-  }
-  return false;
-};
-
-/**
- * 获取两个节点之间的节点
- * @param rootNode
- * @param node1
- * @param node2
- * @returns {*}
- */
-EPUB.Selections.prototype.getNodesBetween = function(rootNode, node1, node2){
-  var resultNodes = [];
-  var isBetweenNodes = false;
-  for(var i = 0; i < rootNode.childNodes.length; i+=1){
-    if(this.isDescendant(rootNode.childNodes[i], node1) || this.isDescendant(rootNode.childNodes[i], node2)){
-      if(resultNodes.length == 0){
-        isBetweenNodes = true;
-      }else{
-        isBetweenNodes = false
-      }
-      resultNodes.push(rootNode.childNodes[i]);
-    }else if(resultNodes.length == 0){
-
-    }else if(isBetweenNodes){
-      resultNodes.push(rootNode.childNodes[i]);
-    }else{
-      return resultNodes;
-    }
-  }
-  if(resultNodes.length == 0){
-    return [rootNode];
-  }else if(this.isDescendant(resultNodes[resultNodes.length - 1], node1) || this.isDescendant(resultNodes[resultNodes - 1], node2)){
-    return resultNodes;
-  }else{
-    return [resultNodes[0]]
-  }
-};
-
-EPUB.Selections.prototype.getElementPosition = function(element){
+EPUB.Selections.prototype.getElementPosition = function (element) {
   var actualLeft = element.offsetLeft,
       actualTop = element.offsetTop,
       current = element.offsetParent;
-  while(current != null){
+  while (current != null) {
     actualLeft += current.offsetLeft;
     actualTop += current.offsetTop;
     current = current.offsetParent;
   }
-
   return {
     left: actualLeft,
     top: actualTop
