@@ -174,7 +174,9 @@ EPUB.Render.prototype.typeSetting = function (ele) {
       rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, xOffset, eleStyle.fontSize);
       this.currentPositionX += xOffset;
     }
-
+    if(this.paragraph.isSpace(charCode) && this.currentPositionX != 0){
+      char = '&nbsp';
+    }
     glyph = new Glyph(char, rect);
     this.currentLine.push(glyph);
   }

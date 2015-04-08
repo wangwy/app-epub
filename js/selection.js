@@ -21,12 +21,12 @@ EPUB.Selections.prototype.initSelection = function () {
   this.notation.showMark();
   //禁用浏览器选重
   this.svg.onmousedown = function(){return false};
-  this.svgPosition = this.svg.getBoundingClientRect();
+//  this.svgPosition = this.svg.getBoundingClientRect();
   var that = this;
 
   function handle(e) {
     //选择区域终点坐标
-    that.endXY = {x: e.clientX, y: e.clientY};
+    that.endXY = {x: e.pageX, y: e.pageY};
     if (that.unChangeXY.y > that.endXY.y) {
       that.startXY = that.endXY;
       that.endXY = that.unChangeXY;
@@ -35,13 +35,15 @@ EPUB.Selections.prototype.initSelection = function () {
     }
     that.reInitSelections();
     that.getSelectionElements();
+//    that.selectionElements = that.getSelectedNodes();
     that.createRects();
     that.inserRects();
   }
 
   this.svg.addEventListener("mousedown", function (e) {
+    that.svgPosition = that.getElementPosition(that.svg);
     //选择区域起点坐标
-    that.startXY = {x: e.clientX, y: e.clientY};
+    that.startXY = {x: e.pageX, y: e.pageY};
     //鼠标点击区域坐标
     that.unChangeXY = that.startXY;
     that.reInitSelections();
@@ -97,14 +99,14 @@ EPUB.Selections.prototype.createRects = function () {
   if (this.selectionElements.length > 0) {
     var that = this;
     this.selectionElements.forEach(function (value) {
-      if(value.tagName == "text"){
+      if (value.tagName == "text") {
         var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         rect.setAttribute("x", value.getAttribute("x"));
         rect.setAttribute("y", value.getAttribute("y") - value.getAttribute("font-size"));
         rect.setAttribute("width", value.getAttribute("data-width"));
         rect.setAttribute("height", value.getAttribute("data-height"));
         rect.setAttribute("fill", "yellow");
-        rect.setAttribute("class","svgBackRect");
+        rect.setAttribute("class", "svgBackRect");
         that.rects.push(rect);
       }
     });
@@ -119,5 +121,87 @@ EPUB.Selections.prototype.inserRects = function () {
     for (var i = 0; i < this.rects.length; i++) {
       this.svg.insertBefore(this.rects[i], this.svg.firstChild);
     }
+  }
+};
+
+/**
+ * 获取选中的节点
+ * @returns {*}
+ */
+EPUB.Selections.prototype.getSelectedNodes = function () {
+  var selection = window.getSelection();
+  if (selection.isCollapsed) {
+    return [];
+  }
+  var node1 = selection.anchorNode;
+  var node2 = selection.focusNode;
+  return this.getNodesBetween(this.svg, node1, node2);
+};
+
+/**
+ * 判断是否是后代元素
+ * @param parent
+ * @param child
+ * @returns {boolean}
+ */
+EPUB.Selections.prototype.isDescendant = function (parent, child) {
+  var node = child;
+  while(node != null){
+    if(node == parent){
+      return true;
+    }
+    node = node.parentNode;
+  }
+  return false;
+};
+
+/**
+ * 获取两个节点之间的节点
+ * @param rootNode
+ * @param node1
+ * @param node2
+ * @returns {*}
+ */
+EPUB.Selections.prototype.getNodesBetween = function(rootNode, node1, node2){
+  var resultNodes = [];
+  var isBetweenNodes = false;
+  for(var i = 0; i < rootNode.childNodes.length; i+=1){
+    if(this.isDescendant(rootNode.childNodes[i], node1) || this.isDescendant(rootNode.childNodes[i], node2)){
+      if(resultNodes.length == 0){
+        isBetweenNodes = true;
+      }else{
+        isBetweenNodes = false
+      }
+      resultNodes.push(rootNode.childNodes[i]);
+    }else if(resultNodes.length == 0){
+
+    }else if(isBetweenNodes){
+      resultNodes.push(rootNode.childNodes[i]);
+    }else{
+      return resultNodes;
+    }
+  }
+  if(resultNodes.length == 0){
+    return [rootNode];
+  }else if(this.isDescendant(resultNodes[resultNodes.length - 1], node1) || this.isDescendant(resultNodes[resultNodes - 1], node2)){
+    return resultNodes;
+  }else{
+    return [resultNodes[0]]
+  }
+};
+
+EPUB.Selections.prototype.getElementPosition = function(element){
+  var actualLeft = element.offsetLeft,
+      actualTop = element.offsetTop,
+      current = element.offsetParent;
+  while(current != null){
+    actualLeft += current.offsetLeft;
+    actualTop += current.offsetTop;
+    current = current.offsetParent;
+  }
+
+  return {
+    left: actualLeft,
+    top: actualTop
   }
 };

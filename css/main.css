@@ -838,7 +838,7 @@ ul{list-style-type:none;}
 	font:26px/1 "微软雅黑";
 	color:#85540f;
 	margin:30px 0px;
-	}	
+	}
 .tbparagra{
 	text-align:left;
 	text-indent:2em;
@@ -1180,8 +1180,8 @@ ul{list-style-type:none;}
 .notepup{
 	display:none;
 	position:absolute;
-	top:20%;
-	left:50%;
+	top:0;
+	left:0;
 	width:145px;
 	height:200px;
 	border:solid 1px #c2c2c2;
@@ -1189,6 +1189,7 @@ ul{list-style-type:none;}
 	color:#7d3a08;
 	font:12px/1.2 "宋体";
 	overflow: auto;
+	overflow-x:hidden;
 	padding:5px;
 	}	
 .notepup p{

@@ -121,7 +121,7 @@ EPUB.Notation.prototype.initialDialog = function () {
   });
 
   //笔记内容框
-  this.textNode = document.getElementById("popup-note");
+  this.textNode = document.getElementById("note");
 
   //书签
   this.markNode = document.getElementById("markNode");
@@ -156,7 +156,7 @@ EPUB.Notation.prototype.initNotation = function () {
     window.jiathis_config.summary = copyText;
     var shareButton = document.getElementById("share");
     shareButton.addEventListener("click", function (e) {
-      that.showShareNode(e.clientX, e.clientY)
+      that.showShareNode(e.pageX, e.pageY)
     });
 
     var showDialog = document.getElementById("show-dialog");
@@ -167,6 +167,7 @@ EPUB.Notation.prototype.initNotation = function () {
     this.hideHasNote();
     this.hideHasDel();
     this.hideShareNode();
+    this.hideText();
   }
 };
 
@@ -386,7 +387,7 @@ EPUB.Notation.prototype.createUnderline = function (noteid) {
       underRect.setAttribute("fill", "red");
       underRect.setAttribute("class", noteid);
       underRect.addEventListener("click", function (e) {
-        that.show(e.clientX, e.clientY)
+        that.show(e.pageX, e.pageY)
       });
       that.svg.appendChild(underRect);
     }
@@ -403,7 +404,7 @@ EPUB.Notation.prototype.createUnderline = function (noteid) {
     window.jiathis_config.summary = string;
     var sharedButton = document.getElementById("shared");
     sharedButton.addEventListener("click", function (e) {
-      that.showShareNode(e.clientX, e.clientY)
+      that.showShareNode(e.pageX, e.pageY)
     });
 
     var copiedButton = document.getElementById("copied-button");
@@ -413,7 +414,7 @@ EPUB.Notation.prototype.createUnderline = function (noteid) {
     var delA = document.getElementById("del-note");
     delA.setAttribute("data-noteid", noteid);
 
-    that.showHasDel(e.clientX, e.clientY);
+    that.showHasDel(e.pageX, e.pageY);
   });
 };
 
@@ -434,11 +435,8 @@ EPUB.Notation.prototype.createTextCircle = function (noteid, digestnote) {
   circleElem.setAttribute("r", "5");
   circleElem.setAttribute("fill", "red");
   circleElem.setAttribute("class", noteid);
-  circleElem.addEventListener("mouseover", function (e) {
-    that.showText(e.x, e.y, digestnote);
-  });
-  circleElem.addEventListener("mouseout", function () {
-    that.hideText();
+  circleElem.addEventListener("click", function (e) {
+    that.showText(e.pageX, e.pageY, digestnote);
   });
   that.svg.appendChild(circleElem);
   that.bacRects.length = 0;
