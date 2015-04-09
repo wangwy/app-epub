@@ -825,31 +825,47 @@ ul{list-style-type:none;}
 .cpf{width:100%;margin:-2px 0px -3px;}
 
 /*阅读器在线阅读*/
-.tbbody{background:#ebe7df;min-width:950px;height:980px;}
-.container{margin:0px auto;background:#ebe7df;}
+.tbbody{
+	background:#ebe7df;
+	min-width:950px;
+	height:100%;
+	}
+.container{
+	margin:0px auto;
+	background:#ebe7df;
+	height:100%;
+	}
 .container ul li{list-style-type:none;}
-.md_book{position:absolute;left:50%;}
+.md_book{
+	position:absolute;
+	left:50%;
+	height:100%;
+	}
 .tbbox{
 	margin:40px 20px 20px;
 	font:16px/1.5 "宋体";
 	color:#252525;
+	height:100%;
 	}
+.tbboxcon{
+	height:100%;
+	}	
 .tbbox h3{
 	font:26px/1 "微软雅黑";
 	color:#85540f;
 	margin:30px 0px;
-	}
+	}	
 .tbparagra{
 	text-align:left;
 	text-indent:2em;
 	}
 .book_page_wrapr{
 	width:750px;
-	height:973px;
 	background:#FFF;
 	position:absolute;
 	left:-375px;
 	overflow:hidden;
+	height:100%;
 	}
 .page_header{
 	font:14px/1 "宋体";
@@ -874,7 +890,7 @@ ul{list-style-type:none;}
 	top:45px;
 	cursor:pointer;
 	}	
-.menubox_zz{width:750px;height:973px;background:#b6b6b6;position:absolute;top:0%;left:0%;opacity:0.6;filter:alpha(opacity=60);-khtml-opacity: 0.6;}
+.menubox_zz{width:750px;height:100%;background:#b6b6b6;position:absolute;top:0%;left:0%;opacity:0.6;filter:alpha(opacity=60);-khtml-opacity: 0.6;}
 .l_fct{margin-left:15px;margin-top:15px;float:left;}
 .l_fct li{cursor:pointer;}
 .r_fct{position:absolute;left:50%;margin-left:395px;margin-top:15px;}
@@ -893,10 +909,12 @@ ul{list-style-type:none;}
 	position:absolute;
 	display:block;
 	width:630px;
-	height:970px;
+	height:100%;
 	right:-630px;
 	top:0px;
 	background:#fafafa;
+	overflow:auto;
+	overflow-x:hidden;
 	}
 .tablistcon{
 	width:522px;

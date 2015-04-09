@@ -5,8 +5,8 @@
 EPUB.Render = function (book) {
   this.book = book;
   this.el = this.book.el;
-  this.width = parseInt(this.el.style.width.slice(0, -2));
-  this.height = parseInt(this.el.style.height.slice(0, -2));
+  this.width = this.el.clientWidth;
+  this.height = this.el.clientHeight - 50;
   this.paragraph = new EPUB.Paragraph();
   this.lineGap = EPUB.LINEGAP;
   this.selections = new EPUB.Selections(this);
@@ -83,7 +83,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
       this.currentLine = new Array();
       this.currentPage.push(this.currentLine);
       if (node.nodeName == "img") {
-        this.currentPositionY -= this.lineGap/2;
+        this.currentPositionY -= this.lineGap / 2;
         this.imageSetting(node);
       }
     }
@@ -118,8 +118,8 @@ EPUB.Render.prototype.imageSetting = function (ele) {
     this.currentLine.push(image);
     this.currentLine = new Array();
     this.currentPage.push(this.currentLine);
-    this.currentPositionY += (height+this.lineGap * 1.5)
-  }else if(hScale > 5){
+    this.currentPositionY += (height + this.lineGap * 1.5)
+  } else if (hScale > 5) {
     hScale = img.height / this.height;
     wScale = img.width / this.width;
     maxScale = Math.max(hScale, wScale);
@@ -145,7 +145,7 @@ EPUB.Render.prototype.imageSetting = function (ele) {
     this.currentLine.push(image);
     this.currentLine = new Array();
     this.currentPage.push(this.currentLine);
-    this.currentPositionY += (height+this.lineGap * 1.5);
+    this.currentPositionY += (height + this.lineGap * 1.5);
   }
 };
 
@@ -255,14 +255,14 @@ EPUB.Render.prototype.display = function (index) {
   this.el.innerHTML = "";
   this.displayedPage = index;
   var page = this.pages[this.displayedPage - 1];
-  var textHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" + this.el.style.width + "\" height=\"" + this.el.style.height + "\">";
+  var textHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" + this.width + "\" height=\"" + this.height + "\">";
   for (var i = 0; i < page.length; i++) {
     for (var j = 0; j < page[i].length; j++) {
       var glyph = page[i][j];
       if (glyph.type == "text") {
         textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
       } else if (glyph.type == "image") {
-        textHTML += "<image xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "' data-height = '"+glyph.h+"'/>";
+        textHTML += "<image xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "' data-height = '" + glyph.h + "'/>";
       }
     }
   }

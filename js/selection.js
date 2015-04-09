@@ -41,7 +41,8 @@ EPUB.Selections.prototype.initSelection = function () {
   }
 
   this.svg.addEventListener("mousedown", function (e) {
-    that.svgPosition = that.getElementPosition(that.svg);
+//    that.svgPosition = that.getElementPosition(that.svg);
+    that.svgPosition = EPUB.Utils.offset(that.svg);
     //选择区域起点坐标
     that.startXY = {x: e.pageX, y: e.pageY};
     //鼠标点击区域坐标
@@ -121,25 +122,5 @@ EPUB.Selections.prototype.inserRects = function () {
     for (var i = 0; i < this.rects.length; i++) {
       this.svg.insertBefore(this.rects[i], this.svg.firstChild);
     }
-  }
-};
-
-/**
- * 获取元素在页面中的文档坐标
- * @param element
- * @returns {{left: (Number|number), top: (Number|number)}}
- */
-EPUB.Selections.prototype.getElementPosition = function (element) {
-  var actualLeft = element.offsetLeft,
-      actualTop = element.offsetTop,
-      current = element.offsetParent;
-  while (current != null) {
-    actualLeft += current.offsetLeft;
-    actualTop += current.offsetTop;
-    current = current.offsetParent;
-  }
-  return {
-    left: actualLeft,
-    top: actualTop
   }
 };

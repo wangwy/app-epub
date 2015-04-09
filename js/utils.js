@@ -115,6 +115,62 @@ Date.prototype.Format = function (fmt) {
  * @param key
  * @returns {*}
  */
-EPUB.Utils.getCss = function(o,key){
-  return o.currentStyle ? o.currentStyle[key] : window.getComputedStyle(o,null)[key];
+EPUB.Utils.getCss = function (o, key) {
+  return o.currentStyle ? o.currentStyle[key] : window.getComputedStyle(o, null)[key];
+};
+
+
+/**
+ * 获取元素在页面中的文档坐标
+ * @param element
+ * @returns {{top: number, left: number}}
+ */
+EPUB.Utils.offset = function (element) {
+  var docElem, win, elem = element, box = {top: 0, left: 0}, doc = elem && elem.ownerDocument;
+  if (!doc) {
+    return;
+  }
+  docElem = doc.documentElement;
+  if (!this.contains(docElem, elem)) {
+    return box;
+  }
+
+  if (typeof elem.getBoundingClientRect() !== "undefined") {
+    box = elem.getBoundingClientRect();
+  }
+  win = this.getWindow(doc);
+  return {
+    top: box.top + win.pageYOffset - docElem.clientTop,
+    left: box.left + win.pageXOffset - docElem.clientLeft
+  };
+};
+
+/**
+ * 判断a,b是否是断开的节点
+ * @param a
+ * @param b
+ * @returns {boolean}
+ */
+EPUB.Utils.contains = function (a, b) {
+  var adown = a.nodeType === 9 ? a.documentElement : a,
+      bup = b && b.parentNode;
+  return a === bup || !!( bup && bup.nodeType === 1 && adown.contains(bup) );
+};
+
+/**
+ * 判断这个节点是否是window
+ * @param obj
+ * @returns {boolean}
+ */
+EPUB.Utils.isWindow = function (obj) {
+  return obj != null && obj === obj.window;
+};
+
+/**
+ * 获取window
+ * @param elem
+ * @returns {*}
+ */
+EPUB.Utils.getWindow = function (elem) {
+  return this.isWindow(elem) ? elem : elem.nodeType === 9 && elem.defaultView;
 };
