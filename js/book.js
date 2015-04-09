@@ -36,7 +36,14 @@ EPUB.Book.prototype.beforeDisplay = function () {
     return book.getMarks();
   }).then(function () {
     return book.display();
+  }).then(function (context) {
+    return book.initialChapter(context);
   }).then(function () {
+    window.addEventListener("resize",function(){
+      book.initialChapter(book.renderContext).then(function(){
+        book.render.display(1);
+      })
+    });
     book.render.display(1);
   });
 };
@@ -47,23 +54,35 @@ EPUB.Book.prototype.beforeDisplay = function () {
  */
 EPUB.Book.prototype.display = function (url, spineNum) {
   var that = this;
+  var deferred = new RSVP.defer();
   this.spineNum = spineNum || this.spineNum;
-  var path = url || that.manifest[that.spine[that.spineNum].id].url;
-  var chapterXml = EPUB.Request.loadFile(path, 'xml').then(function (context) {
+  var path = url || that.manifest[that.spine[this.spineNum].id].url;
+  EPUB.Request.loadFile(path, 'xml').then(function (context) {
     //获得章节标题
     var chapterString = context.getElementsByTagName("header")[0].getElementsByTagName("h1")[0].textContent;
     var chapterNode = document.getElementById("chapterId");
     chapterNode.textContent = chapterString;
+    deferred.resolve(context);
+    that.renderContext = context;
+  });
+  return deferred.promise;
+};
 
-    return that.render.initialize(context);
-  }).then(function (context) {
+/**
+ * 初始化章节
+ * @param context
+ * @returns {*|Promise}
+ */
+EPUB.Book.prototype.initialChapter = function (context) {
+  var that = this;
+  var retru = this.render.initialize(context).then(function (docBody) {
     that.render.spineNum = that.spineNum;
     that.render.chapterName = that.format.toc[that.spineNum].label;
-    that.render.getPagesNum(context);
+    that.render.getPagesNum(docBody);
     that.render.notes = that.getChapterNotes(that.spineNum);
     that.render.marks = that.getChapterMarks(that.spineNum);
   });
-  return chapterXml;
+  return retru;
 };
 
 /**
