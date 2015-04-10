@@ -126,9 +126,9 @@ EPUB.Notation.prototype.initialDialog = function () {
   //书签
   this.markNode = document.getElementById("markNode");
   this.markNode.addEventListener("click", function () {
-    var markId = that.markNode.getAttribute("data-markId");
-    if (markId) {
-      that.deleteMark(markId);
+    var markid = that.markNode.getAttribute("data-markid");
+    if (markid) {
+      that.deleteMark(markid);
     } else {
       that.saveMark();
     }
@@ -343,7 +343,7 @@ EPUB.Notation.prototype.saveMark = function () {
   EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/bookmark", data).then(function (r) {
     if (r.flag == "1") {
       that.markNode.style.background = "url(images/redsign.png) no-repeat";
-      that.markNode.setAttribute("data-markId", r.id);
+      that.markNode.setAttribute("data-markid", r.bookmarkid);
       that.render.book.getMarks();
     }
   });
@@ -351,18 +351,18 @@ EPUB.Notation.prototype.saveMark = function () {
 
 /**
  * 删除书签
- * @param markId
+ * @param markid
  */
-EPUB.Notation.prototype.deleteMark = function (markId) {
+EPUB.Notation.prototype.deleteMark = function (markid) {
   var that = this, data = {
     "userid": EPUB.USERID,
     "authtoken": EPUB.AUTHTOKEN,
-    "bookmarkid": markId
+    "bookmarkid": markid
   };
   EPUB.Request.bookStoreRequest("/bookstore/mobile/post/delete/my/bookmark", data).then(function (r) {
     if (r.flag == "1") {
       that.markNode.style.background = "url(images/sign.png) no-repeat";
-      that.markNode.setAttribute("data-markId", "");
+      that.markNode.setAttribute("data-markid", "");
       that.render.book.getMarks();
     }
   });
@@ -530,10 +530,10 @@ EPUB.Notation.prototype.showMark = function () {
 
   if (showMark) {
     that.markNode.style.background = "url(images/redsign.png) no-repeat";
-    that.markNode.setAttribute("data-markId", showMark.id);
+    that.markNode.setAttribute("data-markid", showMark.id);
   } else {
     that.markNode.style.background = "url(images/sign.png) no-repeat";
-    that.markNode.setAttribute("data-markId", "");
+    that.markNode.setAttribute("data-markid", "");
   }
 };
 
