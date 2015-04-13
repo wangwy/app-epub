@@ -113,7 +113,9 @@ EPUB.Book.prototype.nextPage = function () {
   if (!next) {
     if (this.spineNum < this.spine.length) {
       this.spineNum++;
-      this.display().then(function () {
+      this.display().then(function (context) {
+        return that.initialChapter(context);
+      }).then(function () {
         that.render.display(1);
       });
     } else {
@@ -131,7 +133,9 @@ EPUB.Book.prototype.prevPage = function () {
   if (!prev) {
     if (this.spineNum > 0) {
       this.spineNum--;
-      this.display().then(function () {
+      this.display().then(function (context) {
+        return that.initialChapter(context);
+      }).then(function () {
         var num = that.render.pages.length;
         that.render.display(num);
       });
@@ -171,7 +175,9 @@ EPUB.Book.prototype.createToc = function (doc) {
         ul.appendChild(li);
         var a = document.createElement("a");
         a.addEventListener("click", function () {
-          that.display(item.url, item.spineNum).then(function () {
+          that.display(item.url, item.spineNum).then(function (context) {
+            return that.initialChapter(context);
+          }).then(function () {
             that.render.display(1);
           });
           document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
@@ -255,7 +261,9 @@ EPUB.Book.prototype.createNote = function (notelist) {
       p.setAttribute("class", "coninfop");
       p.textContent = item.summary;
       p.addEventListener("click", function (e) {
-        that.display('', item.catindex).then(function () {
+        that.display('', item.catindex).then(function (context) {
+          return that.initialChapter(context);
+        }).then(function () {
           var num = that.render.calculateDisplayNum(parseInt(item.ranges.split(",")[0]));
           that.render.display(num);
         });
@@ -348,7 +356,9 @@ EPUB.Book.prototype.createMark = function (marklist) {
       markListP.setAttribute("class", "coninfop");
       markListP.textContent = value.summary;
       markListP.addEventListener("click", function () {
-        that.display('', value.catindex).then(function () {
+        that.display('', value.catindex).then(function (context) {
+          return that.initialChapter(context);
+        }).then(function () {
           var num = that.render.calculateDisplayNum(parseInt(value.positions));
           that.render.display(num);
         });

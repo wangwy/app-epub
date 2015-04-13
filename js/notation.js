@@ -275,7 +275,9 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
       that.render.book.getNotes().then(function () {
         that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
       });
+      return true;
     }
+    return false;
   });
 };
 
@@ -298,6 +300,16 @@ EPUB.Notation.prototype.sendNotation = function () {
     "ranges": that.selectedOffset().startOffset + "," + that.svgSelected.length,
     "noteid": ''
   };
+  var group = [], groupid;
+  this.svgSelected.forEach(function(value){
+    if(value.parentNode.tagName == "g"){
+      groupid = value.parentNode.getAttribute("id");
+      if(group.indexOf(groupid) == -1){
+        that.deletNotation(groupid);
+        group.push(groupid);
+      }
+    }
+  });
   EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
     if (r.flag == "1") {
 
@@ -380,7 +392,7 @@ EPUB.Notation.prototype.createUnderline = function (noteid) {
   that.svg.insertBefore(g, that.svgSelected[0]);
 
   that.svgSelected.forEach(function (value) {
-    if(value.tagName == "text"){
+    if(value.tagName != "image"){
       var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       underRect.setAttribute("x", value.getAttribute("x"));
       underRect.setAttribute("y", value.getAttribute("y"));
@@ -450,14 +462,13 @@ EPUB.Notation.prototype.createTextCircle = function (noteid, digestnote) {
  */
 EPUB.Notation.prototype.selectedOffset = function () {
   var startOffset = 0, endOffset = 0,
-      svgArray = Array.prototype.slice.call(this.svg.children),
-      backRect = this.svg.getElementsByClassName("svgBackRect");
+      svgArray = Array.prototype.slice.call(this.svg.getElementsByClassName("context"));
   for (var i = 0; i < this.pageIndex - 1; i++) {
     for (var j = 0; j < this.pages[i].length; j++) {
       startOffset += this.pages[i][j].length;
     }
   }
-  startOffset += svgArray.indexOf(this.svgSelected[0]) - backRect.length;
+  startOffset += svgArray.indexOf(this.svgSelected[0]);
 
   endOffset = startOffset + this.svgSelected.length;
   return {
@@ -485,21 +496,21 @@ EPUB.Notation.prototype.showNotation = function () {
       if (pageStartLength > startOffset && pageStartLength < endOffset && pageEndLength >= endOffset) {
         notationStart = 0;
         notationEnd = endOffset - pageStartLength;
-        svgArray = Array.prototype.slice.call(that.svg.children);
+        svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
         that.createTextCircle(value.id, value.digestnote);
       } else if (pageStartLength <= startOffset && pageEndLength >= endOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = endOffset - pageStartLength;
-        svgArray = Array.prototype.slice.call(that.svg.children);
+        svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
         that.createTextCircle(value.id, value.digestnote);
       } else if (pageStartLength <= startOffset && pageEndLength < endOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = pageEndLength - pageStartLength;
-        svgArray = Array.prototype.slice.call(that.svg.children);
+        svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
       }

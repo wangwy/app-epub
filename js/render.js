@@ -260,9 +260,9 @@ EPUB.Render.prototype.display = function (index) {
     for (var j = 0; j < page[i].length; j++) {
       var glyph = page[i][j];
       if (glyph.type == "text") {
-        textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
+        textHTML += "<text class=\"context\"  font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
       } else if (glyph.type == "image") {
-        textHTML += "<image xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "' data-height = '"+glyph.h+"'/>";
+        textHTML += "<image class=\"context\" xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "' data-height = '"+glyph.h+"'/>";
       }
     }
   }
