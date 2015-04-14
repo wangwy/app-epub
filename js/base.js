@@ -1,7 +1,6 @@
 /**
  * Created by wangwy on 15-1-8.
  */
-var EPUB = EPUB || {};
 EPUB.VERSION = "1.0.0";
 EPUB.LINEGAP = 15;
 

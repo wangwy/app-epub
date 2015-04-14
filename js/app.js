@@ -1,6 +1,7 @@
 /**
  * Created by wangwy on 15-1-9.
  */
+var EPUB = EPUB || {};
 EPUB.App = {};
 EPUB.App.init = (function ($) {
   var Book;
