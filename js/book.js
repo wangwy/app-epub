@@ -210,15 +210,15 @@ EPUB.Book.prototype.createToc = function (doc) {
  */
 EPUB.Book.prototype.getNotes = function () {
   var that = this,
-      path = "/bookstore/mobile/get/my/readnote",
-      data = {
-        "userid": EPUB.USERID,
-        "authtoken": EPUB.AUTHTOKEN,
-        "pagesize": "10",
-        "pagenum": "1",
-        "bookid": EPUB.BOOKID};
+      path = "/retech-bookstore/mobile/post/my/singlebook/note/list",
+      data = new FormData();
+
+  data.append("user_id",EPUB.USERID);
+  data.append("auth_token",EPUB.AUTHTOKEN);
+  data.append("book_id",EPUB.BOOKID);
+
   var getNoteRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    that.notelist = r.notelist;
+    that.notelist = r.user_note_list;
     that.createNote(that.notelist);
   });
   return getNoteRet;
@@ -254,17 +254,17 @@ EPUB.Book.prototype.createNote = function (notelist) {
 
       var span1 = document.createElement("span");
       span1.setAttribute("class", "browcolor");
-      span1.textContent = item.adddate;
+      span1.textContent = item.add_time;
       div.appendChild(span1);
 
       var p = document.createElement("p");
       p.setAttribute("class", "coninfop");
-      p.textContent = item.summary;
+      p.textContent = item.summary_content;
       p.addEventListener("click", function (e) {
-        that.display('', item.catindex).then(function (context) {
+        that.display('', item.chapter_index).then(function (context) {
           return that.initialChapter(context);
         }).then(function () {
-          var num = that.render.calculateDisplayNum(parseInt(item.ranges.split(",")[0]));
+          var num = that.render.calculateDisplayNum(parseInt(item.position.split(",")[0]));
           that.render.display(num);
         });
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
@@ -275,7 +275,7 @@ EPUB.Book.prototype.createNote = function (notelist) {
 
       var span2 = document.createElement("span");
       span2.setAttribute("class", "browcolor");
-      span2.textContent = item.digestnote;
+      span2.textContent = item.note_content;
       div.appendChild(span2);
 
       var span3 = document.createElement("span");
@@ -305,16 +305,15 @@ EPUB.Book.prototype.createNote = function (notelist) {
  */
 EPUB.Book.prototype.getMarks = function () {
   var that = this,
-      path = "/bookstore/mobile/get/my/bookmark",
-      data = {
-        "userid": EPUB.USERID,
-        "authtoken": EPUB.AUTHTOKEN,
-        "pagesize": "10",
-        "pagenum": "1",
-        "bookid": EPUB.BOOKID
-      };
+      path = "/retech-bookstore/mobile/post/my/singlebook/bookmark/list",
+      data = new FormData();
+
+  data.append("user_id",EPUB.USERID);
+  data.append("book_id",EPUB.BOOKID);
+  data.append("auth_token",EPUB.AUTHTOKEN);
+
   var getMarkRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    that.markList = r.bookmarklist;
+    that.markList = r.user_bookmark_list;
     that.createMark(that.markList);
   });
   return getMarkRet;
@@ -349,17 +348,17 @@ EPUB.Book.prototype.createMark = function (marklist) {
 
       var markListSpan = document.createElement("span");
       markListSpan.setAttribute("class", "browcolor");
-      markListSpan.textContent = value.adddate;
+      markListSpan.textContent = value.add_time;
       markListDiv.appendChild(markListSpan);
 
       var markListP = document.createElement("p");
       markListP.setAttribute("class", "coninfop");
-      markListP.textContent = value.summary;
+      markListP.textContent = value.summary_content;
       markListP.addEventListener("click", function () {
-        that.display('', value.catindex).then(function (context) {
+        that.display('', value.chapter_index).then(function (context) {
           return that.initialChapter(context);
         }).then(function () {
-          var num = that.render.calculateDisplayNum(parseInt(value.positions));
+          var num = that.render.calculateDisplayNum(parseInt(value.position));
           that.render.display(num);
         });
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
@@ -394,7 +393,7 @@ EPUB.Book.prototype.createMark = function (marklist) {
 EPUB.Book.prototype.getChapterNotes = function (spineNum) {
   var notes = [];
   this.notelist.forEach(function (value) {
-    if (value.catindex == spineNum) {
+    if (value.chapter_index == spineNum) {
       notes.push(value);
     }
   });
@@ -409,7 +408,7 @@ EPUB.Book.prototype.getChapterNotes = function (spineNum) {
 EPUB.Book.prototype.getChapterMarks = function (spineNum) {
   var marks = [];
   this.markList.forEach(function (value) {
-    if (value.catindex == spineNum) {
+    if (value.chapter_index == spineNum) {
       marks.push(value);
     }
   });

@@ -46,8 +46,8 @@ EPUB.Request.bookStoreRequest = function (url, data) {
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url);
   xhr.onreadystatechange = handler;
-  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-  xhr.send(JSON.stringify(data));
+//  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+  xhr.send(data);
 
   function handler() {
     if (this.readyState === 4) {

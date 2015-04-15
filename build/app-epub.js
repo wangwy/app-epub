@@ -11,7 +11,7 @@ EPUB.App.init = (function ($) {
   function init(elem, bookUrl) {
 
     EPUB.USERID = "1";
-    EPUB.BOOKID = "14";
+    EPUB.BOOKID = "20";
     EPUB.AUTHTOKEN = "dfdfdf";
     EPUB.PROCESS = "222";
 
@@ -350,15 +350,15 @@ EPUB.Book.prototype.createToc = function (doc) {
  */
 EPUB.Book.prototype.getNotes = function () {
   var that = this,
-      path = "/bookstore/mobile/get/my/readnote",
-      data = {
-        "userid": EPUB.USERID,
-        "authtoken": EPUB.AUTHTOKEN,
-        "pagesize": "10",
-        "pagenum": "1",
-        "bookid": EPUB.BOOKID};
+      path = "/retech-bookstore/mobile/post/my/singlebook/note/list",
+      data = new FormData();
+
+  data.append("user_id",EPUB.USERID);
+  data.append("auth_token",EPUB.AUTHTOKEN);
+  data.append("book_id",EPUB.BOOKID);
+
   var getNoteRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    that.notelist = r.notelist;
+    that.notelist = r.user_note_list;
     that.createNote(that.notelist);
   });
   return getNoteRet;
@@ -394,17 +394,17 @@ EPUB.Book.prototype.createNote = function (notelist) {
 
       var span1 = document.createElement("span");
       span1.setAttribute("class", "browcolor");
-      span1.textContent = item.adddate;
+      span1.textContent = item.add_time;
       div.appendChild(span1);
 
       var p = document.createElement("p");
       p.setAttribute("class", "coninfop");
-      p.textContent = item.summary;
+      p.textContent = item.summary_content;
       p.addEventListener("click", function (e) {
-        that.display('', item.catindex).then(function (context) {
+        that.display('', item.chapter_index).then(function (context) {
           return that.initialChapter(context);
         }).then(function () {
-          var num = that.render.calculateDisplayNum(parseInt(item.ranges.split(",")[0]));
+          var num = that.render.calculateDisplayNum(parseInt(item.position.split(",")[0]));
           that.render.display(num);
         });
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
@@ -415,7 +415,7 @@ EPUB.Book.prototype.createNote = function (notelist) {
 
       var span2 = document.createElement("span");
       span2.setAttribute("class", "browcolor");
-      span2.textContent = item.digestnote;
+      span2.textContent = item.note_content;
       div.appendChild(span2);
 
       var span3 = document.createElement("span");
@@ -445,16 +445,15 @@ EPUB.Book.prototype.createNote = function (notelist) {
  */
 EPUB.Book.prototype.getMarks = function () {
   var that = this,
-      path = "/bookstore/mobile/get/my/bookmark",
-      data = {
-        "userid": EPUB.USERID,
-        "authtoken": EPUB.AUTHTOKEN,
-        "pagesize": "10",
-        "pagenum": "1",
-        "bookid": EPUB.BOOKID
-      };
+      path = "/retech-bookstore/mobile/post/my/singlebook/bookmark/list",
+      data = new FormData();
+
+  data.append("user_id",EPUB.USERID);
+  data.append("book_id",EPUB.BOOKID);
+  data.append("auth_token",EPUB.AUTHTOKEN);
+
   var getMarkRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    that.markList = r.bookmarklist;
+    that.markList = r.user_bookmark_list;
     that.createMark(that.markList);
   });
   return getMarkRet;
@@ -489,17 +488,17 @@ EPUB.Book.prototype.createMark = function (marklist) {
 
       var markListSpan = document.createElement("span");
       markListSpan.setAttribute("class", "browcolor");
-      markListSpan.textContent = value.adddate;
+      markListSpan.textContent = value.add_time;
       markListDiv.appendChild(markListSpan);
 
       var markListP = document.createElement("p");
       markListP.setAttribute("class", "coninfop");
-      markListP.textContent = value.summary;
+      markListP.textContent = value.summary_content;
       markListP.addEventListener("click", function () {
-        that.display('', value.catindex).then(function (context) {
+        that.display('', value.chapter_index).then(function (context) {
           return that.initialChapter(context);
         }).then(function () {
-          var num = that.render.calculateDisplayNum(parseInt(value.positions));
+          var num = that.render.calculateDisplayNum(parseInt(value.position));
           that.render.display(num);
         });
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
@@ -534,7 +533,7 @@ EPUB.Book.prototype.createMark = function (marklist) {
 EPUB.Book.prototype.getChapterNotes = function (spineNum) {
   var notes = [];
   this.notelist.forEach(function (value) {
-    if (value.catindex == spineNum) {
+    if (value.chapter_index == spineNum) {
       notes.push(value);
     }
   });
@@ -549,7 +548,7 @@ EPUB.Book.prototype.getChapterNotes = function (spineNum) {
 EPUB.Book.prototype.getChapterMarks = function (spineNum) {
   var marks = [];
   this.markList.forEach(function (value) {
-    if (value.catindex == spineNum) {
+    if (value.chapter_index == spineNum) {
       marks.push(value);
     }
   });
@@ -1018,7 +1017,7 @@ EPUB.Notation.prototype.getString = function (node) {
  */
 EPUB.Notation.prototype.showText = function (x, y, text) {
   this.textNode.getElementsByTagName("p")[0].textContent = text;
-  var height = EPUB.Utils.getCss(this.textNode,"height").slice(0,-2);
+  var height = EPUB.Utils.getCss(this.textNode, "height").slice(0, -2);
   y + parseInt(height) > this.render.height ? y = y - height : y;
   this.textNode.style.left = x + "px";
   this.textNode.style.top = y + "px";
@@ -1077,12 +1076,14 @@ EPUB.Notation.prototype.hideShareNode = function () {
  * @param noteid
  */
 EPUB.Notation.prototype.deletNotation = function (noteid) {
-  var that = this, data = {
-    "userid": EPUB.USERID,
-    "authtoken": EPUB.AUTHTOKEN,
-    "noteid": noteid
-  };
-  EPUB.Request.bookStoreRequest("/bookstore/mobile/post/delete/my/readnote", data).then(function (r) {
+  var that = this,
+      data = new FormData();
+
+  data.append("id", noteid);
+  data.append("user_id", EPUB.USERID);
+  data.append("auth_token", EPUB.AUTHTOKEN);
+
+  EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/delete", data).then(function (r) {
     if (r.flag == "1") {
       var backRect = that.svg.getElementsByClassName(noteid);
       var items = Array.prototype.slice.call(backRect);
@@ -1109,37 +1110,38 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
  *保存笔记
  */
 EPUB.Notation.prototype.sendNotation = function () {
-  var that = this, data = {
-    "userid": EPUB.USERID,
-    "authtoken": EPUB.AUTHTOKEN,
-    "bookid": EPUB.BOOKID,
-    "process": EPUB.PROCESS,
-    "adddate": new Date().Format("yyyy-MM-dd hh:mm:ss"),
-    "catindex": that.render.spineNum,
-    "catname": that.render.chapterName,
-    "summary": this.getString(that.svgSelected),
-    "digestnote": document.getElementById("comment-content").value,
-    "linecolor": "",
-    "numbers": that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset,
-    "ranges": that.selectedOffset().startOffset + "," + that.svgSelected.length,
-    "noteid": ''
-  };
+  var that = this,
+      data = new FormData();
+
+  data.append("user_id",EPUB.USERID);
+  data.append("auth_token",EPUB.authtoken);
+  data.append("book_id",EPUB.BOOKID);
+  data.append("chapter_index", that.render.spineNum);
+  data.append("chapter_name", that.render.chapterName);
+  data.append("position", that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset);
+  data.append("position_offset", that.selectedOffset().startOffset + "," + that.svgSelected.length);
+  data.append("summary_content", that.getString(that.svgSelected));
+  data.append("note_content", document.getElementById("comment-content").value);
+  data.append("summary_underline_color","red");
+  data.append("add_time", new Date().Format("yyyy-MM-dd hh:mm:ss"));
+  data.append("process",EPUB.PROCESS);
+
   var group = [], groupid;
-  this.svgSelected.forEach(function(value){
-    if(value.parentNode.tagName == "g"){
+  this.svgSelected.forEach(function (value) {
+    if (value.parentNode.tagName == "g") {
       groupid = value.parentNode.getAttribute("id");
-      if(group.indexOf(groupid) == -1){
+      if (group.indexOf(groupid) == -1) {
         that.deletNotation(groupid);
         group.push(groupid);
       }
     }
   });
-  EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
+  EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/save", data).then(function (r) {
     if (r.flag == "1") {
 
-      that.createUnderline(r.noteid);
+      that.createUnderline(r.note_id);
 
-      that.createTextCircle(r.noteid, data.digestnote);
+      that.createTextCircle(r.note_id, document.getElementById("comment-content").value);
 
       that.render.book.getNotes().then(function () {
         that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
@@ -1166,20 +1168,20 @@ EPUB.Notation.prototype.saveMark = function () {
     }
   }
   var summary = that.getString(that.svg.children).slice(0, 100);
-  var data = {
-    "userid": EPUB.USERID,
-    "authtoken": EPUB.AUTHTOKEN,
-    "bookid": EPUB.BOOKID,
-    "adddate": new Date().Format("yyyy-MM-dd hh:mm:ss"),
-    "catindex": that.render.spineNum,
-    "catname": that.render.chapterName,
-    "summary": summary,
-    "positions": pageStartPosition
-  };
-  EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/bookmark", data).then(function (r) {
+  var data = new FormData();
+
+  data.append("user_id",EPUB.USERID);
+  data.append("auth_token",EPUB.AUTHTOKEN);
+  data.append("book_id",EPUB.BOOKID);
+  data.append("chapter_index", that.render.spineNum);
+  data.append("chapter_name", that.render.chapterName);
+  data.append("position", pageStartPosition);
+  data.append("summary_content",summary);
+
+  EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
     if (r.flag == "1") {
       that.markNode.style.background = "url(images/redsign.png) no-repeat";
-      that.markNode.setAttribute("data-markid", r.bookmarkid);
+      that.markNode.setAttribute("data-markid", r.bookmark_id);
       that.render.book.getMarks();
     }
   });
@@ -1190,12 +1192,14 @@ EPUB.Notation.prototype.saveMark = function () {
  * @param markid
  */
 EPUB.Notation.prototype.deleteMark = function (markid) {
-  var that = this, data = {
-    "userid": EPUB.USERID,
-    "authtoken": EPUB.AUTHTOKEN,
-    "bookmarkid": markid
-  };
-  EPUB.Request.bookStoreRequest("/bookstore/mobile/post/delete/my/bookmark", data).then(function (r) {
+  var that = this,
+      data = new FormData();
+
+  data.append("user_id",EPUB.USERID);
+  data.append("auth_token",EPUB.AUTHTOKEN);
+  data.append("id",markid);
+
+  EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/delete", data).then(function (r) {
     if (r.flag == "1") {
       that.markNode.style.background = "url(images/sign.png) no-repeat";
       that.markNode.setAttribute("data-markid", "");
@@ -1216,7 +1220,7 @@ EPUB.Notation.prototype.createUnderline = function (noteid) {
   that.svg.insertBefore(g, that.svgSelected[0]);
 
   that.svgSelected.forEach(function (value) {
-    if(value.tagName != "image"){
+    if (value.tagName != "image") {
       var underRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       underRect.setAttribute("x", value.getAttribute("x"));
       underRect.setAttribute("y", value.getAttribute("y"));
@@ -1315,7 +1319,7 @@ EPUB.Notation.prototype.showNotation = function () {
       }
     }
     that.render.notes.forEach(function (value) {
-      var startOffset = value.numbers.split(",")[0], endOffset = value.numbers.split(",")[1];
+      var startOffset = value.position.split(",")[0], endOffset = value.position.split(",")[1];
       var notationStart, notationEnd, svgArray;
       if (pageStartLength > startOffset && pageStartLength < endOffset && pageEndLength >= endOffset) {
         notationStart = 0;
@@ -1323,14 +1327,14 @@ EPUB.Notation.prototype.showNotation = function () {
         svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
-        that.createTextCircle(value.id, value.digestnote);
+        that.createTextCircle(value.id, value.summary_content);
       } else if (pageStartLength <= startOffset && pageEndLength >= endOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = endOffset - pageStartLength;
         svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
-        that.createTextCircle(value.id, value.digestnote);
+        that.createTextCircle(value.id, value.summary_content);
       } else if (pageStartLength <= startOffset && pageEndLength < endOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = pageEndLength - pageStartLength;
@@ -1357,7 +1361,7 @@ EPUB.Notation.prototype.showMark = function () {
       }
     }
     that.render.marks.forEach(function (mark) {
-      if (mark.positions >= pageStartPosition && mark.positions < pageEndPosition) {
+      if (mark.position >= pageStartPosition && mark.position < pageEndPosition) {
         showMark = mark;
       }
     });
@@ -1924,8 +1928,8 @@ EPUB.Request.bookStoreRequest = function (url, data) {
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url);
   xhr.onreadystatechange = handler;
-  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-  xhr.send(JSON.stringify(data));
+//  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+  xhr.send(data);
 
   function handler() {
     if (this.readyState === 4) {

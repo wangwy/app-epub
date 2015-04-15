@@ -9,36 +9,75 @@
     <script>
         $(function () {
             $("#b01").click(function () {
-                EPUB.Request.bookStoreRequest("/bookstore/mobile/get/my/readnote", {"userid": "1", "authtoken": "dfdfdf", "pagesize": "10", "pagenum": "1", "bookid": "14"}).then(function (r) {
+                var data = new FormData();
+                data.append("user_id","1");
+                data.append("book_id","20");
+                data.append("auth_token","1111");
+                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/singlebook/note/list", data).then(function (r) {
                     $("#showNote").html(JSON.stringify(r));
                 });
             });
 
             $("#b02").click(function () {
-                var data = {"userid": "1", "authtoken": "dfdfdf", "bookid": "14", "process": "222", "adddate": "2015-03-10 14:02:00", "catindex": "3", "catname": "Moby-Dick", "summary": "wwy test", "digestnote": "wwy test", "linecolor": "", "numbers": "322,379", "ranges": "322, 57", "noteid": ''}
-                EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/readnote", data).then(function (r) {
+                var data = new FormData();
+                data.append("user_id","1");
+                data.append("book_id","20");
+                data.append("auth_token","1111");
+                data.append("chapter_index", "111");
+                data.append("chapter_name", "2222");
+                data.append("position", "1,20");
+                data.append("position_offset", "1,20");
+                data.append("summary_content", "234235234534");
+                data.append("note_content", "565643453");
+                data.append("summary_underline_color","red");
+                data.append("add_time", "2014-09-01 22:11:22");
+                data.append("process","11");
+                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/save", data).then(function (r) {
                     $("#saveNote").html(JSON.stringify(r));
                 });
             });
-
             $("#b03").click(function () {
                 var noteid = $("#deleNote").val();
-                var data = {"userid": "1", "authtoken": "dfdfdf", "noteid": noteid};
-                EPUB.Request.bookStoreRequest("/bookstore/mobile/post/delete/my/readnote", data).then(function (r) {
+                var data = new FormData();
+                data.append("user_id","1");
+                data.append("auth_token","1111");
+                data.append("id",noteid);
+                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/delete", data).then(function (r) {
                     alert(JSON.stringify(r))
                 });
             });
 
             $("#b04").click(function () {
-                EPUB.Request.bookStoreRequest("/bookstore/mobile/get/my/bookmark", {"userid": "1", "authtoken": "dfdfdf", "pagesize": "10", "pagenum": "1", "bookid": "14"}).then(function (r) {
+                var data = new FormData();
+                data.append("user_id","1");
+                data.append("auth_token","dfdfdf");
+                data.append("book_id","20");
+                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/singlebook/bookmark/list", data).then(function (r) {
                     $("#showMark").html(JSON.stringify(r));
                 });
             });
 
             $("#b05").click(function () {
-                var data = {"userid": "1", "authtoken": "dfdfdf", "bookid": "14", "adddate": "2015-03-10 14:02:00", "catindex": "3", "catname": "Moby-Dick", "summary": "wwy test", "positions": "12"};
-                EPUB.Request.bookStoreRequest("/bookstore/mobile/post/save/my/bookmark", data).then(function (r) {
+                var data = new FormData();
+                data.append("user_id","1");
+                data.append("auth_token","1111");
+                data.append("book_id","20");
+                data.append("chapter_index","3");
+                data.append("chapter_name","111");
+                data.append("position","10");
+                data.append("summary_content","322452353464356");
+                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
                     $("#saveMark").html(JSON.stringify(r));
+                });
+            });
+            $("#b06").click(function () {
+                var markid = $("#deleMark").val();
+                var data = new FormData();
+                data.append("user_id","1");
+                data.append("auth_token","1111");
+                data.append("id",markid);
+                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/delete", data).then(function (r) {
+                    alert(JSON.stringify(r))
                 });
             });
         });
@@ -78,15 +117,10 @@
     保存书签
 </button>
 
-<div class="item">
-    <input type="button" value="button" />
-    <input type="file" style="visibility: hidden"/>
+<div>
+    <input type="text" id="deleMark"/>
 </div>
-<form action="/home/index" method="POST" novalidate="true">
-    <input type="file" multiple="multiple" name="fileDemo" id="fileDemo" /><br/>
-    <input type="button" value="获取文件的名字" id="btnGetFile"/>
-    <div id="result"></div>
-</form>
+<button id="b06"> 删除书签</button>
 <hr/>
 <!-- JiaThis Button BEGIN -->
 <div class="jiathis_style_32x32" style=" width: 216px; position: absolute; top: 441px; left: 673px;">
@@ -99,19 +133,6 @@
 <!-- JiaThis Button END -->
 </body>
 <script>
-    $(function () {
-    $("#btnGetFile").click(function (e) {
-        var fileList = document.getElementById("fileDemo").files;
-        for (var i = 0; i < fileList.length; i++) {
-            if (!(/image\/\w+/.test(fileList[i].type))) {
-                $("#result").append("<span>type:"+fileList[i].type+"--******非图片类型*****--name:"+fileList[i].name+"--size:"+fileList[i].size+"</span><br />");
-            }
-            else {
-                $("#result").append("<span>type:"+fileList[i].type+"--name:"+fileList[i].name+"--size:"+fileList[i].size+"</span><br />");
-            }
-        }
-    });
-});
     /*$('input[type=button]').click(function() {
         $('input[type=file]').trigger('click');
     });
