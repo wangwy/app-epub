@@ -3,6 +3,7 @@
  * 段落内容渲染
  */
 EPUB.Render = function (book) {
+  this.position = 0;
   this.book = book;
   this.el = this.book.el;
   this.paragraph = new EPUB.Paragraph();
@@ -254,6 +255,7 @@ EPUB.Render.prototype.reSettingLine = function (width) {
 EPUB.Render.prototype.display = function (index) {
   this.el.innerHTML = "";
   this.displayedPage = index;
+  this.position = this.getPosition(index);
   var page = this.pages[this.displayedPage - 1];
   var textHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" + this.width + "\" height=\"" + this.height + "\">";
   for (var i = 0; i < page.length; i++) {
@@ -271,6 +273,20 @@ EPUB.Render.prototype.display = function (index) {
   this.selections.initSelection();
 };
 
+/**
+ * 获取本页起点偏移量
+ * @param index
+ * @returns {number}
+ */
+EPUB.Render.prototype.getPosition = function(index){
+  var pageStartPosition = 0;
+  for (var i = 0; i < index - 1; i++) {
+    for (var j = 0; j < this.pages[i].length; j++) {
+      pageStartPosition += this.pages[i][j].length;
+    }
+  }
+  return pageStartPosition;
+};
 /**
  * 根据偏移量计算显示页码
  * @param offset

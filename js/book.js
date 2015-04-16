@@ -3,7 +3,6 @@
  * 书本的基本功能操作
  */
 EPUB.Book = function (elem, bookUrl) {
-  this.spineNum = 6;
   this.bookUrl = bookUrl;
   this.el = this.getEl(elem);
   this.render = new EPUB.Render(this);
@@ -30,6 +29,8 @@ EPUB.Book.prototype.beforeDisplay = function () {
     var bookData = book.format.formatOpfFile(context);
     book.manifest = bookData.manifest;
     book.spine = bookData.spine;
+  }).then(function(){
+    return book.getProgress();
   }).then(function () {
     return book.getNotes();
   }).then(function () {
@@ -39,12 +40,25 @@ EPUB.Book.prototype.beforeDisplay = function () {
   }).then(function (context) {
     return book.initialChapter(context);
   }).then(function () {
-    window.addEventListener("resize",function(){
-      book.initialChapter(book.renderContext).then(function(){
-        book.render.display(1);
+    window.addEventListener("resize", function () {
+      book.initialChapter(book.renderContext).then(function () {
+        var displayNum = book.render.calculateDisplayNum(book.render.position);
+        book.render.display(displayNum);
       })
     });
-    book.render.display(1);
+    window.onbeforeunload = function (event) {
+      var message = 'Important: Please click on \'Save\' button to leave this page.';
+      if (typeof event == 'undefined') {
+        event = window.event;
+      }
+      if (event) {
+        event.returnValue = message;
+        book.saveProgress();
+      }
+      return message;
+    };
+    var displayNum = book.render.calculateDisplayNum(book.render.position);
+    book.render.display(displayNum);
   });
 };
 
@@ -119,6 +133,7 @@ EPUB.Book.prototype.nextPage = function () {
         that.render.display(1);
       });
     } else {
+      that.progress = "yes";
       alert("已经是最后一页");
     }
   }
@@ -205,6 +220,39 @@ EPUB.Book.prototype.createToc = function (doc) {
   }
 };
 
+EPUB.Book.prototype.saveProgress = function(){
+
+  var data = new FormData();
+  data.append("user_id", EPUB.USERID);
+  data.append("auth_token", EPUB.AUTHTOKEN);
+  data.append("book_id", EPUB.BOOKID);
+  data.append("chapter_index",this.spineNum);
+  data.append("position",this.render.position);
+  data.append("progress",this.progress);
+  EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/readprogress/save", data)
+};
+
+/**
+ * 获取阅读进度
+ * @returns {*}
+ */
+EPUB.Book.prototype.getProgress = function () {
+  var that = this,
+      path = "/retech-bookstore/mobile/post/my/singlebook/readprogress/get",
+      data = new FormData();
+
+  data.append("user_id", EPUB.USERID);
+  data.append("auth_token", EPUB.AUTHTOKEN);
+  data.append("book_id", EPUB.BOOKID);
+
+  var getProgressRet = EPUB.Request.bookStoreRequest(path, data).then(function(r){
+    that.spineNum = r.user_readprogress.chapter_index;
+    that.render.position = r.user_readprogress.position;
+    that.progress = r.user_readprogress.progress;
+  });
+  return getProgressRet;
+};
+
 /**
  * 获取笔记列表
  */
@@ -213,9 +261,9 @@ EPUB.Book.prototype.getNotes = function () {
       path = "/retech-bookstore/mobile/post/my/singlebook/note/list",
       data = new FormData();
 
-  data.append("user_id",EPUB.USERID);
-  data.append("auth_token",EPUB.AUTHTOKEN);
-  data.append("book_id",EPUB.BOOKID);
+  data.append("user_id", EPUB.USERID);
+  data.append("auth_token", EPUB.AUTHTOKEN);
+  data.append("book_id", EPUB.BOOKID);
 
   var getNoteRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
     that.notelist = r.user_note_list;
@@ -308,9 +356,9 @@ EPUB.Book.prototype.getMarks = function () {
       path = "/retech-bookstore/mobile/post/my/singlebook/bookmark/list",
       data = new FormData();
 
-  data.append("user_id",EPUB.USERID);
-  data.append("book_id",EPUB.BOOKID);
-  data.append("auth_token",EPUB.AUTHTOKEN);
+  data.append("user_id", EPUB.USERID);
+  data.append("book_id", EPUB.BOOKID);
+  data.append("auth_token", EPUB.AUTHTOKEN);
 
   var getMarkRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
     that.markList = r.user_bookmark_list;

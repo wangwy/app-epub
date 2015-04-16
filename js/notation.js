@@ -290,18 +290,18 @@ EPUB.Notation.prototype.sendNotation = function () {
   var that = this,
       data = new FormData();
 
-  data.append("user_id",EPUB.USERID);
-  data.append("auth_token",EPUB.authtoken);
-  data.append("book_id",EPUB.BOOKID);
+  data.append("user_id", EPUB.USERID);
+  data.append("auth_token", EPUB.AUTHTOKEN);
+  data.append("book_id", EPUB.BOOKID);
   data.append("chapter_index", that.render.spineNum);
   data.append("chapter_name", that.render.chapterName);
   data.append("position", that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset);
   data.append("position_offset", that.selectedOffset().startOffset + "," + that.svgSelected.length);
   data.append("summary_content", that.getString(that.svgSelected));
   data.append("note_content", document.getElementById("comment-content").value);
-  data.append("summary_underline_color","red");
+  data.append("summary_underline_color", "red");
   data.append("add_time", new Date().Format("yyyy-MM-dd hh:mm:ss"));
-  data.append("process",EPUB.PROCESS);
+  data.append("process", EPUB.PROCESS);
 
   var group = [], groupid;
   this.svgSelected.forEach(function (value) {
@@ -338,22 +338,17 @@ EPUB.Notation.prototype.sendNotation = function () {
  */
 EPUB.Notation.prototype.saveMark = function () {
   var that = this;
-  var pageStartPosition = 0;
-  for (var i = 0; i < this.pageIndex - 1; i++) {
-    for (var j = 0; j < this.pages[i].length; j++) {
-      pageStartPosition += this.pages[i][j].length;
-    }
-  }
+  var pageStartPosition = this.render.position;
   var summary = that.getString(that.svg.children).slice(0, 100);
   var data = new FormData();
 
-  data.append("user_id",EPUB.USERID);
-  data.append("auth_token",EPUB.AUTHTOKEN);
-  data.append("book_id",EPUB.BOOKID);
+  data.append("user_id", EPUB.USERID);
+  data.append("auth_token", EPUB.AUTHTOKEN);
+  data.append("book_id", EPUB.BOOKID);
   data.append("chapter_index", that.render.spineNum);
   data.append("chapter_name", that.render.chapterName);
   data.append("position", pageStartPosition);
-  data.append("summary_content",summary);
+  data.append("summary_content", summary);
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
     if (r.flag == "1") {
@@ -372,9 +367,9 @@ EPUB.Notation.prototype.deleteMark = function (markid) {
   var that = this,
       data = new FormData();
 
-  data.append("user_id",EPUB.USERID);
-  data.append("auth_token",EPUB.AUTHTOKEN);
-  data.append("id",markid);
+  data.append("user_id", EPUB.USERID);
+  data.append("auth_token", EPUB.AUTHTOKEN);
+  data.append("id", markid);
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/delete", data).then(function (r) {
     if (r.flag == "1") {
@@ -466,13 +461,8 @@ EPUB.Notation.prototype.createTextCircle = function (noteid, digestnote) {
  * @returns {{startOffset: number, endOffset: *}}
  */
 EPUB.Notation.prototype.selectedOffset = function () {
-  var startOffset = 0, endOffset = 0,
+  var startOffset = this.render.position, endOffset = 0,
       svgArray = Array.prototype.slice.call(this.svg.getElementsByClassName("context"));
-  for (var i = 0; i < this.pageIndex - 1; i++) {
-    for (var j = 0; j < this.pages[i].length; j++) {
-      startOffset += this.pages[i][j].length;
-    }
-  }
   startOffset += svgArray.indexOf(this.svgSelected[0]);
 
   endOffset = startOffset + this.svgSelected.length;
@@ -489,12 +479,11 @@ EPUB.Notation.prototype.showNotation = function () {
   var that = this;
   if (that.render.notes.length > 0) {
     var pageEndLength = 0, pageStartLength = 0;
-    for (var i = 0; i < this.pageIndex; i++) {
-      pageStartLength = pageEndLength;
-      for (var j = 0; j < this.pages[i].length; j++) {
-        pageEndLength += this.pages[i][j].length;
-      }
+    pageStartLength = this.render.position;
+    for (var j = 0; j < this.pages[this.pageIndex - 1].length; j++) {
+      pageEndLength += this.pages[this.pageIndex - 1][j].length;
     }
+    pageEndLength += pageStartLength;
     that.render.notes.forEach(function (value) {
       var startOffset = value.position.split(",")[0], endOffset = value.position.split(",")[1];
       var notationStart, notationEnd, svgArray;
@@ -531,12 +520,11 @@ EPUB.Notation.prototype.showMark = function () {
       showMark = "";
   if (that.render.marks.length > 0) {
     var pageEndPosition = 0, pageStartPosition = 0;
-    for (var i = 0; i < this.pageIndex; i++) {
-      pageStartPosition = pageEndPosition;
-      for (var j = 0; j < this.pages[i].length; j++) {
-        pageEndPosition += this.pages[i][j].length;
-      }
+    pageStartPosition = this.render.position;
+    for (var j = 0; j < this.pages[this.pageIndex - 1].length; j++) {
+      pageEndPosition += this.pages[this.pageIndex - 1][j].length;
     }
+    pageEndPosition += pageStartPosition;
     that.render.marks.forEach(function (mark) {
       if (mark.position >= pageStartPosition && mark.position < pageEndPosition) {
         showMark = mark;

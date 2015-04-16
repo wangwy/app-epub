@@ -8,6 +8,9 @@
     <script src="js/request.js"></script>
     <script>
         $(function () {
+
+            $(window).unload( function () { alert("再见了!"); } );
+            //查询笔记
             $("#b01").click(function () {
                 var data = new FormData();
                 data.append("user_id","1");
@@ -18,6 +21,7 @@
                 });
             });
 
+            //保存笔记
             $("#b02").click(function () {
                 var data = new FormData();
                 data.append("user_id","1");
@@ -36,6 +40,8 @@
                     $("#saveNote").html(JSON.stringify(r));
                 });
             });
+
+            //删除笔记
             $("#b03").click(function () {
                 var noteid = $("#deleNote").val();
                 var data = new FormData();
@@ -47,6 +53,7 @@
                 });
             });
 
+            //查询书签
             $("#b04").click(function () {
                 var data = new FormData();
                 data.append("user_id","1");
@@ -57,6 +64,7 @@
                 });
             });
 
+            //保存书签
             $("#b05").click(function () {
                 var data = new FormData();
                 data.append("user_id","1");
@@ -70,6 +78,8 @@
                     $("#saveMark").html(JSON.stringify(r));
                 });
             });
+
+            //删除书签
             $("#b06").click(function () {
                 var markid = $("#deleMark").val();
                 var data = new FormData();
@@ -80,7 +90,41 @@
                     alert(JSON.stringify(r))
                 });
             });
+
+            //查询进度
+            $("#b07").click(function () {
+                var data = new FormData();
+                data.append("user_id","1");
+                data.append("auth_token","dfdfdf");
+                data.append("book_id","20");
+                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/singlebook/readprogress/get", data).then(function (r) {
+                    $("#showProgress").html(JSON.stringify(r));
+                });
+            });
+
+            $("#b08").click(function () {
+                var data = new FormData();
+                data.append("user_id","1");
+                data.append("auth_token","dfdfdf");
+                data.append("book_id","20");
+                data.append("chapter_index","3");
+                data.append("position","10");
+                data.append("progress","no");
+                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/readprogress/save", data).then(function (r) {
+                    $("#saveProgress").html(JSON.stringify(r));
+                });
+            });
         });
+        window.onbeforeunload = function (event) {
+            var message = 'Important: Please click on \'Save\' button to leave this page.';
+            if (typeof event == 'undefined') {
+                event = window.event;
+            }
+            if (event) {
+                event.returnValue = message;
+            }
+            return message;
+        };
     </script>
 </head>
 <body>
@@ -121,6 +165,21 @@
     <input type="text" id="deleMark"/>
 </div>
 <button id="b06"> 删除书签</button>
+
+<div id="showProgress">
+    显示进度
+</div>
+<button id="b07" type="button">
+    显示进度
+</button>
+
+<div id="saveProgress">
+    保存进度
+</div>
+<button id="b08" type="button">
+    保存进度
+</button>
+
 <hr/>
 <!-- JiaThis Button BEGIN -->
 <div class="jiathis_style_32x32" style=" width: 216px; position: absolute; top: 441px; left: 673px;">
@@ -141,6 +200,7 @@
         summary: "wwytest",
         siteName: "网站名字"
     }
+
 </script>
 <script type="text/javascript" src="http://v2.jiathis.com/code/jia.js" charset="utf-8"></script>
 </html>

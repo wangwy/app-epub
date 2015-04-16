@@ -12,7 +12,7 @@ EPUB.Request.loadFile = function (url, type) {
   if (type == "json") {
     xhr.setRequestHeader("Accept", "application/json");
   }
-  if (type == "xml") {
+  if (type == "xml" && xhr.overrideMimeType) {
     xhr.overrideMimeType('text/xml');
   }
   xhr.send();
@@ -46,7 +46,6 @@ EPUB.Request.bookStoreRequest = function (url, data) {
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url);
   xhr.onreadystatechange = handler;
-//  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
   xhr.send(data);
 
   function handler() {
