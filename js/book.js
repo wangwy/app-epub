@@ -47,7 +47,7 @@ EPUB.Book.prototype.beforeDisplay = function () {
       })
     });
     window.onbeforeunload = function (event) {
-      var message = 'Important: Please click on \'Save\' button to leave this page.';
+      var message = '离开此页将关闭浏览器，你的阅读进度将自动保存';
       if (typeof event == 'undefined') {
         event = window.event;
       }

@@ -348,6 +348,7 @@ EPUB.Notation.prototype.saveMark = function () {
   data.append("chapter_index", that.render.spineNum);
   data.append("chapter_name", that.render.chapterName);
   data.append("position", pageStartPosition);
+  data.append("add_time", new Date().Format("yyyy-MM-dd hh:mm:ss"));
   data.append("summary_content", summary);
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {

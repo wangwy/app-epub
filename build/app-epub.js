@@ -187,7 +187,7 @@ EPUB.Book.prototype.beforeDisplay = function () {
       })
     });
     window.onbeforeunload = function (event) {
-      var message = 'Important: Please click on \'Save\' button to leave this page.';
+      var message = '离开此页将关闭浏览器，你的阅读进度将自动保存';
       if (typeof event == 'undefined') {
         event = window.event;
       }
@@ -1219,6 +1219,7 @@ EPUB.Notation.prototype.saveMark = function () {
   data.append("chapter_index", that.render.spineNum);
   data.append("chapter_name", that.render.chapterName);
   data.append("position", pageStartPosition);
+  data.append("add_time", new Date().Format("yyyy-MM-dd hh:mm:ss"));
   data.append("summary_content", summary);
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
