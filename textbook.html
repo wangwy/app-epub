@@ -45,9 +45,11 @@
             <div class="page_header">
                 <p>
                     <span id="chapterId"></span>
-                    <span class="rdprogres">5%</span>
+                    <span class="rdprogres">5%</span><!--
                     <a class="signpic" id="markNode" data-markid=""
-                       style="background:url(images/sign.png) no-repeat;"></a>
+                       style="background:url(images/sign.png) no-repeat;"></a>-->
+
+                    <a id="markNode" class="icon-gernal icon-tag"></a>
                 </p>
             </div>
             <div class="tbbox">
@@ -79,24 +81,25 @@
             </div>
         </div>
     </div>
+    <!--中间部分结束右边图标开始-->
     <div class="r_fct">
-        <ul class="btn_cntrl">
-            <li class="btn_zoom" data-show="false">
-                <img src="images/zoom.png" title="目录">
+        <ul>
+            <li>
+                <a class="icon-gernal icon-menu" id="btnZoom"></a>
             </li>
-            <li class="btn_tag">
-                <img src="images/tag.png" title="书签">
+            <li>
+                <a class="icon-gernal icon_zoom"></a>
             </li>
-            <li class="btn_note">
-                <img src="images/note.png" title="笔记">
+            <!--        <li>
+                        <a class="icon-gernal icon-tag"></a>
+                    </li>
+            -->    </ul>
+        <ul>
+            <li>
+                <a class="icon-gernal icon_pglf" id="prev"></a>
             </li>
-        </ul>
-        <ul class="page">
-            <li class="page_lf">
-                <img src="images/btleft.png" id="prev">
-            </li>
-            <li class="page_rg">
-                <img src="images/btright.png" id="next">
+            <li>
+                <a class="icon-gernal icon_pgrt" id="next"></a>
             </li>
         </ul>
     </div>

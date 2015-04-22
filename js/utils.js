@@ -174,3 +174,27 @@ EPUB.Utils.isWindow = function (obj) {
 EPUB.Utils.getWindow = function (elem) {
   return this.isWindow(elem) ? elem : elem.nodeType === 9 && elem.defaultView;
 };
+
+EPUB.Utils.JsonToString = function (json) {
+  var string = "";
+  for (var o in json) {
+    string += o + "=" + json[o] + "&"
+  }
+  return string.slice(0, -1);
+};
+
+EPUB.Utils.getStyle = function (sname) {
+  for (var i = 0; i < document.styleSheets.length; i++) {
+    var rules;
+    if (document.styleSheets[i].cssRules) {
+      rules = document.styleSheets[i].cssRules;
+    } else {
+      rules = document.styleSheets[i].rules;
+    }
+    for (var j = 0; j < rules.length; j++) {
+      if (rules[j].selectorText == sname) {
+        return rules[j].style;
+      }
+    }
+  }
+}

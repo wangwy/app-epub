@@ -12,18 +12,15 @@ EPUB.Request.loadFile = function (url, type) {
   if (type == "json") {
     xhr.setRequestHeader("Accept", "application/json");
   }
-  if (type == "xml" && xhr.overrideMimeType) {
-    xhr.overrideMimeType('text/xml');
-  }
   xhr.send();
   function handler() {
     if (this.readyState === this.DONE) {
       if (this.status === 200 || this.responseXML) {
         var r;
         if (type == 'xml') {
-          r = this.responseXML;
+          r = new DOMParser().parseFromString(this.responseText,'text/xml');
         } else if (type == 'json') {
-          r = JSON.parse(this.response);
+          r = JSON.parse(this.responseText);
         } else {
           r = this.responseText;
         }
@@ -34,6 +31,7 @@ EPUB.Request.loadFile = function (url, type) {
 
   return deferred.promise;
 };
+
 
 /**
  * 后台数据交互接口
@@ -46,7 +44,8 @@ EPUB.Request.bookStoreRequest = function (url, data) {
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url);
   xhr.onreadystatechange = handler;
-  xhr.send(data);
+  xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xhr.send(EPUB.Utils.JsonToString(data));
 
   function handler() {
     if (this.readyState === 4) {

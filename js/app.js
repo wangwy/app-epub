@@ -20,7 +20,7 @@ EPUB.App.init = (function ($) {
       controls();
       var width = $(".menubox").width();
       Book.showMenu = true;
-      $(".btn_zoom").click(function () {
+      $("#btnZoom").click(function () {
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "";
         if (Book.showMenu) {

@@ -254,11 +254,11 @@ EPUB.Notation.prototype.hideShareNode = function () {
  */
 EPUB.Notation.prototype.deletNotation = function (noteid) {
   var that = this,
-      data = new FormData();
-
-  data.append("id", noteid);
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
+      data = {
+        "id": noteid,
+        "user_id": EPUB.USERID,
+        "auth_token": EPUB.AUTHTOKEN
+      };
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/delete", data).then(function (r) {
     if (r.flag == "1") {
@@ -288,21 +288,20 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
  */
 EPUB.Notation.prototype.sendNotation = function () {
   var that = this,
-      data = new FormData();
-
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("book_id", EPUB.BOOKID);
-  data.append("chapter_index", that.render.spineNum);
-  data.append("chapter_name", that.render.chapterName);
-  data.append("position", that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset);
-  data.append("position_offset", that.selectedOffset().startOffset + "," + that.svgSelected.length);
-  data.append("summary_content", that.getString(that.svgSelected));
-  data.append("note_content", document.getElementById("comment-content").value);
-  data.append("summary_underline_color", "red");
-  data.append("add_time", new Date().Format("yyyy-MM-dd hh:mm:ss"));
-  data.append("process", EPUB.PROCESS);
-
+      data = {
+        "user_id": EPUB.USERID,
+        "auth_token": EPUB.AUTHTOKEN,
+        "book_id": EPUB.BOOKID,
+        "chapter_index": that.render.spineNum,
+        "chapter_name": that.render.chapterName,
+        "position": that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset,
+        "position_offset": that.selectedOffset().startOffset + "," + that.svgSelected.length,
+        "summary_content": that.getString(that.svgSelected),
+        "note_content": document.getElementById("comment-content").value,
+        "summary_underline_color": "red",
+        "add_time": new Date().Format("yyyy-MM-dd hh:mm:ss"),
+        "process": EPUB.PROCESS
+      };
   var group = [], groupid;
   this.svgSelected.forEach(function (value) {
     if (value.parentNode.tagName == "g") {
@@ -340,22 +339,24 @@ EPUB.Notation.prototype.saveMark = function () {
   var that = this;
   var pageStartPosition = this.render.position;
   var summary = that.getString(that.svg.children).slice(0, 100);
-  var data = new FormData();
-
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("book_id", EPUB.BOOKID);
-  data.append("chapter_index", that.render.spineNum);
-  data.append("chapter_name", that.render.chapterName);
-  data.append("position", pageStartPosition);
-  data.append("add_time", new Date().Format("yyyy-MM-dd hh:mm:ss"));
-  data.append("summary_content", summary);
+  var data = {
+    "user_id": EPUB.USERID,
+    "auth_token": EPUB.AUTHTOKEN,
+    "book_id": EPUB.BOOKID,
+    "chapter_index": that.render.spineNum,
+    "chapter_name": that.render.chapterName,
+    "position": pageStartPosition,
+    "add_time": new Date().Format("yyyy-MM-dd hh:mm:ss"),
+    "summary_content": summary
+  };
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
     if (r.flag == "1") {
-      that.markNode.style.background = "url(images/redsign.png) no-repeat";
+      that.markNode.style.backgroundPosition = "-106px -70px";
       that.markNode.setAttribute("data-markid", r.bookmark_id);
-      that.render.book.getMarks();
+      that.render.book.getMarks().then(function(){
+        that.render.marks = that.render.book.getChapterMarks(that.render.book.spineNum);
+      });
     }
   });
 };
@@ -366,17 +367,19 @@ EPUB.Notation.prototype.saveMark = function () {
  */
 EPUB.Notation.prototype.deleteMark = function (markid) {
   var that = this,
-      data = new FormData();
-
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("id", markid);
+      data = {
+        "user_id": EPUB.USERID,
+        "auth_token": EPUB.AUTHTOKEN,
+        "id": markid
+      };
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/delete", data).then(function (r) {
     if (r.flag == "1") {
-      that.markNode.style.background = "url(images/sign.png) no-repeat";
+      that.markNode.style.backgroundPosition = "-106px 0px";
       that.markNode.setAttribute("data-markid", "");
-      that.render.book.getMarks();
+      that.render.book.getMarks().then(function(){
+        that.render.marks = that.render.book.getChapterMarks(that.render.book.spineNum);
+      });
     }
   });
 };
@@ -463,7 +466,7 @@ EPUB.Notation.prototype.createTextCircle = function (noteid, digestnote) {
  */
 EPUB.Notation.prototype.selectedOffset = function () {
   var startOffset = this.render.position, endOffset = 0,
-      svgArray = Array.prototype.slice.call(this.svg.getElementsByClassName("context"));
+      svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
   startOffset += svgArray.indexOf(this.svgSelected[0]);
 
   endOffset = startOffset + this.svgSelected.length;
@@ -491,21 +494,21 @@ EPUB.Notation.prototype.showNotation = function () {
       if (pageStartLength > startOffset && pageStartLength < endOffset && pageEndLength >= endOffset) {
         notationStart = 0;
         notationEnd = endOffset - pageStartLength;
-        svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
+        svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
-        that.createTextCircle(value.id, value.summary_content);
+        that.createTextCircle(value.id, value.note_content);
       } else if (pageStartLength <= startOffset && pageEndLength >= endOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = endOffset - pageStartLength;
-        svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
+        svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
-        that.createTextCircle(value.id, value.summary_content);
+        that.createTextCircle(value.id, value.note_content);
       } else if (pageStartLength <= startOffset && pageEndLength < endOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = pageEndLength - pageStartLength;
-        svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
+        svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
       }
@@ -534,11 +537,11 @@ EPUB.Notation.prototype.showMark = function () {
   }
 
   if (showMark) {
-    that.markNode.style.background = "url(images/redsign.png) no-repeat";
-    that.markNode.setAttribute("data-markid", showMark.id);
-  } else {
-    that.markNode.style.background = "url(images/sign.png) no-repeat";
-    that.markNode.setAttribute("data-markid", "");
-  }
+   that.markNode.style.backgroundPosition = "-106px -70px";
+   that.markNode.setAttribute("data-markid", showMark.id);
+   } else {
+   that.markNode.style.backgroundPosition = "-106px 0px";
+   that.markNode.setAttribute("data-markid", "");
+   }
 };
 

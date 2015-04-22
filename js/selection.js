@@ -77,7 +77,7 @@ EPUB.Selections.prototype.reInitSelections = function () {
  * 获取选择区域内的节点
  */
 EPUB.Selections.prototype.getSelectionElements = function () {
-  var items = Array.prototype.slice.call(this.svg.getElementsByClassName("context")), that = this;
+  var items = Array.prototype.slice.call(document.getElementsByClassName("context")), that = this;
   items.forEach(function (value) {
     var lineHeight = parseInt(value.getAttribute("data-height"), 10);
     var eleY = parseInt(value.getAttribute("y"), 10) + parseInt(that.svgPosition.top, 10),

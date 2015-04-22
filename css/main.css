@@ -835,14 +835,16 @@ ul{list-style-type:none;}
 	background:#ebe7df;
 	height:100%;
 	}
-.container ul li{list-style-type:none;}
+.container ul li{
+	list-style-type:none;
+	}
 .md_book{
 	position:absolute;
 	left:50%;
 	height:100%;
 	}
 .tbbox{
-	margin:40px 20px 20px;
+	margin:40px 35px 20px;
 	font:16px/1.5 "宋体";
 	color:#252525;
 	height:100%;
@@ -880,30 +882,93 @@ ul{list-style-type:none;}
 .rdprogres{
 	float:right;
 	}	
-.signpic{
-	display:inline-block;
-	width:17px;
-	height:31px;
-	background:url(../images/sign.png) no-repeat;
+.menubox_zz{
+	width:750px;
+	height:100%;
+	background:#b6b6b6;
 	position:absolute;
-	right:0px;
-	top:45px;
+	top:0%;left:0%;
+	opacity:0.6;
+	filter:alpha(opacity=60);
+	-khtml-opacity: 0.6;
+	}
+.r_fct{
+	position:absolute;
+	left:50%;
+	margin-left:395px;
+	margin-top:15px;
+	}
+.r_fct li{
 	cursor:pointer;
-	}	
-.menubox_zz{width:750px;height:100%;background:#b6b6b6;position:absolute;top:0%;left:0%;opacity:0.6;filter:alpha(opacity=60);-khtml-opacity: 0.6;}
+	}
 .l_fct{margin-left:15px;margin-top:15px;float:left;}
 .l_fct li{cursor:pointer;}
-.r_fct{position:absolute;left:50%;margin-left:395px;margin-top:15px;}
-.r_fct li{cursor:pointer;}
 .le_back{margin-bottom:15px;}
 .le_like{margin-bottom:15px;}
 .le_share{margin-bottom:10px;}
-.btn_cntrl{}
-.btn_zoom{margin-bottom:15px;}
-.btn_tag{margin-bottom:15px;}
-.btn_note{margin-bottom:60px;}
-.page_lf{margin-bottom:20px;}
-.page_rg{}
+.icon-gernal{
+	display:inline-block;
+	width:25px;
+	height:21px;
+	background:url(../images/readicon.png) no-repeat;
+	margin-bottom:20px;
+	margin-bottom:20px;
+	}
+.icon-menu{
+	background-position:-81px 0px;
+	}	
+.icon-menu:hover{
+	background-position:-81px -23px;
+	}
+.icon_zoom{
+	height:25px;
+	background-position:-55px 0px;
+	margin-bottom:80px;
+	}
+.icon_zoom:hover{
+	background-position:-55px -26px;
+	}
+.icon_zoomout{
+	height:25px;
+	background-position:-55px -52px;
+	margin-bottom:80px;
+	}	
+.icon_zoomout:hover{
+	background-position:-55px -79px;
+	}
+.zoom_in{
+	display:none;
+	}		
+.icon-tag{
+	height:32px;
+	position:absolute;
+	right:0px;
+	top:45px;
+	background-position:-106px 0px;
+	cursor:pointer;
+	}
+.icon-tag:hover{
+	background-position:-106px -35px;
+	}
+.clicktag{
+	background-position:-106px -70px;
+	}
+.icon_pglf{
+	width:53px;
+	height:53px;
+	background-position:0px 0px;
+	}
+.icon_pglf:hover{
+	background-position:0px -109px;
+	}	
+.icon_pgrt{
+	width:53px;
+	height:53px;
+	background-position:0px -55px;
+	}
+.icon_pgrt:hover{
+	background-position:0px -164px;
+	}		
 /*目录里面的样式*/
 .menubox{
 	position:absolute;
@@ -918,8 +983,8 @@ ul{list-style-type:none;}
 	}
 .tablistcon{
 	width:522px;
-	height:32px;
-	line-height:32px;
+	height:33px;
+	line-height:33px;
 	margin:30px auto 10px;
 	border:solid 1px #b5b5b5;
 	border-radius:3px;
@@ -937,7 +1002,7 @@ ul{list-style-type:none;}
 .tablistcon li.now{
 	background:#e5d4c6;
 	}
-.tablistcon li span{
+.tablistcon li a{
 	line-height:22px;
 	height:22px;
 	display:inline-block;
@@ -956,7 +1021,7 @@ ul{list-style-type:none;}
 	}
 .tabcon{
 	width:530px;
-	/*height:500px;*/
+	
 	padding:0px 50px;
 	font-size:14px;
 	text-align:left;
@@ -969,6 +1034,9 @@ ul{list-style-type:none;}
 	width:100%;
 	display:none;
 	}
+.hidden{
+	display:none;
+	}	
 .block{
 	display:block;
 	}
@@ -986,6 +1054,13 @@ ul{list-style-type:none;}
 .tabcon li a:hover{
 	color:#e87313;
 	}
+.tablistcon li:hover{
+	color:#e87313;
+	}	
+.coninfbox p:hover{
+	color:#e87313;
+	}	
+	
 .menuconlist li .menuconum{
 	float:right;
 	color:#ac8662;
@@ -1013,14 +1088,16 @@ ul{list-style-type:none;}
 	text-indent:2em;
 	margin:10px 0px;
 	line-height:1.2;
+	cursor:default;
 	}
 .browcolor{
 	color:#ac8662;
 	}
 .noconbox{
 	text-align:center;
-	margin-top:40%;
-	display:none;
+	margin-top:35%;
+	position:relative;
+	/*display:none;*/
 	}
 .nothings{
 	width:102px;
@@ -1028,7 +1105,6 @@ ul{list-style-type:none;}
 	display:inline-block;
 	text-align:center;
 	padding-top:120px;
-	
 	}	
 .nomenu{
 	background:url(../images/no_menu.png) no-repeat;
@@ -1040,8 +1116,15 @@ ul{list-style-type:none;}
 	background:url(../images/no_tag.png) no-repeat;
 	}
 .nothingp{
-	margin-top:-70px;
+	position:absolute;
+	top:150px;
+	left:153px;
 	}
+g,circle{
+	cursor:pointer;
+	}	
+	
+	
 
 /*专题列表*/
 .speciallist{width:945px;margin:0px auto;text-align:center;}

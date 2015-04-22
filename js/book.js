@@ -29,7 +29,7 @@ EPUB.Book.prototype.beforeDisplay = function () {
     var bookData = book.format.formatOpfFile(context);
     book.manifest = bookData.manifest;
     book.spine = bookData.spine;
-  }).then(function(){
+  }).then(function () {
     return book.getProgress();
   }).then(function () {
     return book.getNotes();
@@ -220,15 +220,15 @@ EPUB.Book.prototype.createToc = function (doc) {
   }
 };
 
-EPUB.Book.prototype.saveProgress = function(){
-
-  var data = new FormData();
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("book_id", EPUB.BOOKID);
-  data.append("chapter_index",this.spineNum);
-  data.append("position",this.render.position);
-  data.append("progress",this.progress);
+EPUB.Book.prototype.saveProgress = function () {
+  var data = {
+    "user_id": EPUB.USERID,
+    "auth_token": EPUB.AUTHTOKEN,
+    "book_id": EPUB.BOOKID,
+    "chapter_index": this.spineNum,
+    "position": this.render.position,
+    "progress": this.progress
+  };
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/readprogress/save", data)
 };
 
@@ -239,13 +239,13 @@ EPUB.Book.prototype.saveProgress = function(){
 EPUB.Book.prototype.getProgress = function () {
   var that = this,
       path = "/retech-bookstore/mobile/post/my/singlebook/readprogress/get",
-      data = new FormData();
+      data = {
+        "user_id": EPUB.USERID,
+        "auth_token": EPUB.AUTHTOKEN,
+        "book_id": EPUB.BOOKID
+      };
 
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("book_id", EPUB.BOOKID);
-
-  var getProgressRet = EPUB.Request.bookStoreRequest(path, data).then(function(r){
+  var getProgressRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
     that.spineNum = r.user_readprogress.chapter_index;
     that.render.position = r.user_readprogress.position;
     that.progress = r.user_readprogress.progress;
@@ -259,11 +259,11 @@ EPUB.Book.prototype.getProgress = function () {
 EPUB.Book.prototype.getNotes = function () {
   var that = this,
       path = "/retech-bookstore/mobile/post/my/singlebook/note/list",
-      data = new FormData();
-
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("book_id", EPUB.BOOKID);
+      data = {
+        "user_id": EPUB.USERID,
+        "auth_token": EPUB.AUTHTOKEN,
+        "book_id": EPUB.BOOKID
+      };
 
   var getNoteRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
     that.notelist = r.user_note_list;
@@ -354,11 +354,11 @@ EPUB.Book.prototype.createNote = function (notelist) {
 EPUB.Book.prototype.getMarks = function () {
   var that = this,
       path = "/retech-bookstore/mobile/post/my/singlebook/bookmark/list",
-      data = new FormData();
-
-  data.append("user_id", EPUB.USERID);
-  data.append("book_id", EPUB.BOOKID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
+      data = {
+        "user_id": EPUB.USERID,
+        "book_id": EPUB.BOOKID,
+        "auth_token": EPUB.AUTHTOKEN
+      };
 
   var getMarkRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
     that.markList = r.user_bookmark_list;
