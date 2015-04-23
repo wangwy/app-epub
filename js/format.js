@@ -32,6 +32,7 @@ EPUB.Format.prototype.formatContainerXML = function (containerXML) {
  * @returns {{metadata: *, manifest: {}, spine: Array}}
  */
 EPUB.Format.prototype.formatOpfFile = function (opfFileXML) {
+  var that = this;
   var metadataNode, manifestNode, spineNode;
   var metadata, manifest, spine;
 
@@ -41,8 +42,10 @@ EPUB.Format.prototype.formatOpfFile = function (opfFileXML) {
 
   metadata = this.formatMetadata(metadataNode);
   manifest = this.formatManifest(manifestNode);
-  spine = this.formatSpine(spineNode);
-
+  spine = this.formatSpine(spineNode,manifest);
+  spine.forEach(function(item){
+    that.spineIndex[item.href] = item.index;
+  });
   return {
     'metadata': metadata,
     'manifest': manifest,
@@ -123,11 +126,10 @@ EPUB.Format.prototype.formatManifest = function (xml) {
  * @param xml
  * @returns {Array}
  */
-EPUB.Format.prototype.formatSpine = function (xml) {
-  var that = this;
+EPUB.Format.prototype.formatSpine = function (spineNode, manifest) {
   var spine = [];
   this.spineIndex = {};
-  var selected = xml.getElementsByTagName("itemref"),
+  var selected = spineNode.getElementsByTagName("itemref"),
       items = Array.prototype.slice.call(selected);
   items.forEach(function (item, index) {
     var id = item.getAttribute("idref"),
@@ -136,10 +138,12 @@ EPUB.Format.prototype.formatSpine = function (xml) {
     var vert = {
       'id': id,
       'properties': properties,
-      'linear': linear
+      'linear': linear,
+      'href': manifest[id].href,
+      'url': manifest[id].url,
+      'index': index
     };
     spine.push(vert);
-    that.spineIndex[id] = index;
   });
 
   return spine;
@@ -181,7 +185,7 @@ EPUB.Format.prototype.formatToc = function (path) {
           "href": href,
           "label": text,
           "url": url,
-          "spineNum": parseInt(that.spineIndex[id]),
+          "spineNum": parseInt(that.spineIndex[href]),
           "subitems": subs
         });
       });

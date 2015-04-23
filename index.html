@@ -94,7 +94,7 @@
                     alert(JSON.stringify(r))
                 });
             });
-
+            $.isEmptyObject();
             //查询进度
             $("#b07").click(function () {
                 /*var data = new FormData();
@@ -107,6 +107,7 @@
                 });
             });
 
+            //保存进度
             $("#b08").click(function () {
                 /*var data = new FormData();
                 data.append("user_id","1");
@@ -115,7 +116,7 @@
                 data.append("chapter_index","3");
                 data.append("position","10");
                 data.append("progress","no");*/
-                var data = {"user_id":"1","book_id":"20","auth_token":"1111","chapter_index":"3","position":"23018","progress":"no"};
+                var data = {"user_id":"1","book_id":"20","auth_token":"1111","chapter_index":"3","position":"23","progress":"no"};
                 EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/readprogress/save", data).then(function (r) {
                     $("#saveProgress").html(JSON.stringify(r));
                 });

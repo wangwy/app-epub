@@ -71,11 +71,17 @@ EPUB.Book.prototype.display = function (url, spineNum) {
   var deferred = new RSVP.defer();
   this.spineNum = spineNum || this.spineNum;
   var path = url || that.manifest[that.spine[this.spineNum].id].url;
+  that.render.chapterUrl = path;
   EPUB.Request.loadFile(path, 'xml').then(function (context) {
     //获得章节标题
-    var chapterString = context.getElementsByTagName("header")[0].getElementsByTagName("h1")[0].textContent;
+    that.render.chapterName = "";
+    var chapterElem = context.querySelectorAll("h1,h2,h3");
+    if(chapterElem.length > 0){
+      that.render.chapterName = chapterElem[0].textContent;
+    }
+//    var chapterString = "22"; //context.querySelectorAll("h1,h2,h3")[0].textContent;
     var chapterNode = document.getElementById("chapterId");
-    chapterNode.textContent = chapterString;
+    chapterNode.textContent = that.render.chapterName;
     deferred.resolve(context);
     that.renderContext = context;
   });
@@ -91,7 +97,7 @@ EPUB.Book.prototype.initialChapter = function (context) {
   var that = this;
   var retru = this.render.initialize(context).then(function (docBody) {
     that.render.spineNum = that.spineNum;
-    that.render.chapterName = that.format.toc[that.spineNum].label;
+//    that.render.chapterName = that.format.toc[that.spineNum].label;
     that.render.getPagesNum(docBody);
     that.render.notes = that.getChapterNotes(that.spineNum);
     that.render.marks = that.getChapterMarks(that.spineNum);
@@ -112,7 +118,6 @@ EPUB.Book.prototype.loadOpfFile = function (bookPath) {
   opfFileXml = EPUB.Request.loadFile(containerPath, 'xml').then(function (context) {
     return book.format.formatContainerXML(context);
   }).then(function (paths) {
-    book.render.bookUrl = paths.bookUrl;
     return EPUB.Request.loadFile(bookPath + paths.packagePath, 'xml');
   });
   return opfFileXml;
@@ -125,7 +130,7 @@ EPUB.Book.prototype.nextPage = function () {
   var next, that = this;
   next = this.render.nextPage();
   if (!next) {
-    if (this.spineNum < this.spine.length) {
+    if (this.spineNum < this.spine.length-1) {
       this.spineNum++;
       this.display().then(function (context) {
         return that.initialChapter(context);
@@ -220,6 +225,9 @@ EPUB.Book.prototype.createToc = function (doc) {
   }
 };
 
+/**
+ * 保存阅读进度
+ */
 EPUB.Book.prototype.saveProgress = function () {
   var data = {
     "user_id": EPUB.USERID,

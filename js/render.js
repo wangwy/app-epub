@@ -36,12 +36,13 @@ EPUB.Render.prototype.initialize = function (context) {
     var count = images.length;
     images.forEach(function (value) {
       var image = new Image();
-      var url = EPUB.Utils.parseUrl(value.src);
+      var htmlUrl = EPUB.Utils.parseUrl(that.chapterUrl);
+      var url = EPUB.Utils.parseUrl(value.getAttribute("src"));
       image.onload = function () {
         count--;
         if (!that.imagesAll.hasOwnProperty(url.filename)) {
           that.imagesAll[url.filename] = {
-            src: url.origin + that.bookUrl + value.getAttribute("src"),
+            src: htmlUrl.directory + value.getAttribute("src"),
             height: image.height,
             width: image.width
           };
@@ -50,7 +51,7 @@ EPUB.Render.prototype.initialize = function (context) {
           deffer.resolve(documentBody);
         }
       };
-      image.src = url.origin + that.bookUrl + value.getAttribute("src");
+      image.src = htmlUrl.directory + value.getAttribute("src");
     });
   } else {
     deffer.resolve(documentBody);
@@ -102,7 +103,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
  * @param ele
  */
 EPUB.Render.prototype.imageSetting = function (ele) {
-  var url = EPUB.Utils.parseUrl(ele.src);
+  var url = EPUB.Utils.parseUrl(ele.getAttribute("src"));
   var img = this.imagesAll[url.filename];
   var hScale = img.height / (this.height - this.currentPositionY);
   var wScale = img.width / this.width;
@@ -155,7 +156,7 @@ EPUB.Render.prototype.imageSetting = function (ele) {
  * @param txt
  */
 EPUB.Render.prototype.typeSetting = function (ele) {
-  var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName];
+  var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName] || EPUB.ELEMENTS["p"];
   for (var i = 0; i < txt.length; i++) {
     var char = txt.charAt(i);
     var charCode = txt.charCodeAt(i);

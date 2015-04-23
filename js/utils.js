@@ -175,7 +175,13 @@ EPUB.Utils.getWindow = function (elem) {
   return this.isWindow(elem) ? elem : elem.nodeType === 9 && elem.defaultView;
 };
 
-EPUB.Utils.JsonToString = function (json) {
+/**
+ * 将json转换成formdata形式的字符串
+ * @param json
+ * @returns {string}
+ * @constructor
+ */
+EPUB.Utils.JsonToFormData = function (json) {
   var string = "";
   for (var o in json) {
     string += o + "=" + json[o] + "&"

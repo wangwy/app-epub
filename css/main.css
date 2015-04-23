@@ -1059,6 +1059,7 @@ ul{list-style-type:none;}
 	}	
 .coninfbox p:hover{
 	color:#e87313;
+	cursor:pointer;
 	}	
 	
 .menuconlist li .menuconum{
