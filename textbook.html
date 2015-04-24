@@ -5,23 +5,6 @@
     <title>电子图书</title>
     <link href="css/main.css" rel="stylesheet">
     <link href="css/textBook.css" rel="stylesheet">
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/rsvp/rsvp.min.js"></script>
-    <script src="bower_components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
-    <script src="bower_components/jszip/dist/jszip.min.js"></script>
-    <!--<script src="build/app-epub.min.js"></script>-->
-    <!--<script src="build/app-epub.js"></script>-->
-    <script src="js/app.js"></script>
-    <script src="js/base.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/book.js"></script>
-    <script src="js/format.js"></script>
-    <script src="js/paragraph.js"></script>
-    <script src="js/request.js"></script>
-    <script src="js/render.js"></script>
-    <script src="js/notation.js"></script>
-    <script src="js/selection.js"></script>
-    <script src="js/events.js"></script>
 </head>
 <body class="tbbody">
 <div class="container">
@@ -46,10 +29,7 @@
             <div class="page_header">
                 <p>
                     <span id="chapterId"></span>
-                    <span class="rdprogres">5%</span><!--
-                    <a class="signpic" id="markNode" data-markid=""
-                       style="background:url(images/sign.png) no-repeat;"></a>-->
-
+                    <span class="rdprogres">5%</span>
                     <a id="markNode" class="icon-gernal icon-tag"></a>
                 </p>
             </div>
@@ -91,10 +71,7 @@
             <li>
                 <a class="icon-gernal icon_zoom"></a>
             </li>
-            <!--        <li>
-                        <a class="icon-gernal icon-tag"></a>
-                    </li>
-            -->    </ul>
+        </ul>
         <ul>
             <li>
                 <a class="icon-gernal icon_pglf" id="prev"></a>
@@ -143,16 +120,29 @@
     <a class="jiathis_button_renren"></a>
     <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
 </div>
+
+<script src="bower_components/rsvp/rsvp.min.js"></script>
+<script src="bower_components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
+<script src="bower_components/jszip/dist/jszip.min.js"></script>
+<!--<script src="build/app-epub.min.js"></script>-->
+<script src="build/app-epub.js"></script>
+<!--<script src="js/app.js"></script>
+<script src="js/base.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/book.js"></script>
+<script src="js/format.js"></script>
+<script src="js/paragraph.js"></script>
+<script src="js/request.js"></script>
+<script src="js/render.js"></script>
+<script src="js/notation.js"></script>
+<script src="js/selection.js"></script>
+<script src="js/events.js"></script>-->
 <script>
     //分享功能的配置文件
     var jiathis_config = {
         nota: true
     };
-    document.onreadystatechange = function () {
-        if (document.readyState == "complete") {
-            EPUB.App.init("area", "books/1王小波全集/");
-        }
-    }
+    var book = ePub("area", "books/progit/", "1", "22", "dfdfdf");
 </script>
 <script type="text/javascript" src="http://v2.jiathis.com/code/jia.js" charset="utf-8"></script>
 </html>

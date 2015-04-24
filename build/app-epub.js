@@ -3,100 +3,145 @@
  */
 var EPUB = EPUB || {};
 EPUB.App = {};
-EPUB.App.init = (function ($) {
-  var Book;
-  RSVP.on('error', function(reason) {
-    console.log(reason);
-  });
-  function init(elem, bookUrl) {
-
-    EPUB.USERID = "1";
-    EPUB.BOOKID = "20";
-    EPUB.AUTHTOKEN = "dfdfdf";
-    EPUB.PROCESS = "222";
-
-    Book = new EPUB.Book(elem, bookUrl);
-    $(function () {
-      controls();
-      var width = $(".menubox").width();
-      Book.showMenu = true;
-      $(".btn_zoom").click(function () {
-        document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
-        document.getElementsByClassName("menubox")[0].style.display = "";
-        if (Book.showMenu) {
-          $(".menubox").stop().animate({right: 0}, 100);
-          Book.showMenu = false;
-        } else {
-          $(".menubox").stop().animate({right: -width}, 100);
-          Book.showMenu = true;
-        }
-      });
-
-      new tab('test2_li_now_');
+(function (root) {
+  root.ePub = function (ele, bookUrl,userid,bookid,authtoken) {
+    EPUB.USERID = userid;
+    EPUB.BOOKID = bookid;
+    EPUB.AUTHTOKEN = authtoken;
+    var book = new EPUB.Book(ele, bookUrl);
+    var prevEle = document.getElementById("prev");
+    var nextEle = document.getElementById("next");
+    prevEle.addEventListener("click", function () {
+      book.prevPage();
     });
+    nextEle.addEventListener("click", function () {
+      book.nextPage();
+    });
+    return book;
   }
+})(window);
 
-  /**
-   * 为页面元素添加事件
-   */
-  function controls() {
-    $("#next").on("click", function () {
-      Book.nextPage();
-    });
-    $("#prev").on("click", function () {
-      Book.prevPage();
-    });
+/**
+ * tab切换（目录、书签、笔记）
+ * @param o
+ * @param s
+ * @param cb
+ * @param ev
+ * @returns {jQuery|HTMLElement}
+ */
+function tab(o, s, cb, ev) {
+  var $ = function (o) {
+    return document.getElementById(o)
+  };
+  var css = o.split((s || '_'));
+  if (css.length != 4)return;
+  this.event = ev || 'onclick';
+  o = $(o);
+  if (o) {
+    this.ITEM = [];
+    o.id = css[0];
+    var item = o.getElementsByTagName(css[1]);
+    var j = 1;
+    for (var i = 0; i < item.length; i++) {
+      if (item[i].className.indexOf(css[2]) >= 0 || item[i].className.indexOf(css[3]) >= 0) {
+        if (item[i].className == css[2])o['cur'] = item[i];
+        item[i].callBack = cb || function () {
+        };
+        item[i]['css'] = css;
+        item[i]['link'] = o;
+        this.ITEM[j] = item[i];
+        item[i]['Index'] = j++;
+        item[i][this.event] = this.ACTIVE;
+      }
+    }
+    return o;
   }
+}
 
-  function tab(o, s, cb, ev) { //tab切换类
+tab.prototype = {
+  ACTIVE: function () {
     var $ = function (o) {
       return document.getElementById(o)
     };
-    var css = o.split((s || '_'));
-    if (css.length != 4)return;
-    this.event = ev || 'onclick';
-    o = $(o);
-    if (o) {
-      this.ITEM = [];
-      o.id = css[0];
-      var item = o.getElementsByTagName(css[1]);
-      var j = 1;
-      for (var i = 0; i < item.length; i++) {
-        if (item[i].className.indexOf(css[2]) >= 0 || item[i].className.indexOf(css[3]) >= 0) {
-          if (item[i].className == css[2])o['cur'] = item[i];
-          item[i].callBack = cb || function () {
-          };
-          item[i]['css'] = css;
-          item[i]['link'] = o;
-          this.ITEM[j] = item[i];
-          item[i]['Index'] = j++;
-          item[i][this.event] = this.ACTIVE;
-        }
-      }
-      return o;
+    this['link']['cur'].className = this['css'][3];
+    this.className = this['css'][2];
+    try {
+      $(this['link']['id'] + '_' + this['link']['cur']['Index']).style.display = 'none';
+      $(this['link']['id'] + '_' + this['Index']).style.display = 'block';
+    } catch (e) {
     }
+    this.callBack.call(this);
+    this['link']['cur'] = this;
   }
+};
+new tab('test2_li_now_');
 
-  tab.prototype = {
-    ACTIVE: function () {
-      var $ = function (o) {
-        return document.getElementById(o)
-      };
-      this['link']['cur'].className = this['css'][3];
-      this.className = this['css'][2];
-      try {
-        $(this['link']['id'] + '_' + this['link']['cur']['Index']).style.display = 'none';
-        $(this['link']['id'] + '_' + this['Index']).style.display = 'block';
-      } catch (e) {
-      }
-      this.callBack.call(this);
-      this['link']['cur'] = this;
+var width = getComputedStyle(document.getElementsByClassName("menubox")[0])["width"].slice(0, -2);
+EPUB.SHOWMENU = true;
+var btnZoom = document.getElementById("btnZoom");
+
+var menubox = document.getElementsByClassName("menubox")[0];
+
+//控制目录显示或者隐藏
+btnZoom.addEventListener("click", function () {
+  document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
+  document.getElementsByClassName("menubox")[0].style.display = "";
+  if (EPUB.SHOWMENU) {
+    startrun(menubox, "right", 0, function () {
+      startrun(menubox, "opacity", "100")
+    });
+    EPUB.SHOWMENU = false;
+  } else {
+    startrun(menubox, "right", -width, function () {
+      startrun(menubox, "opacity", "100");
+    });
+    EPUB.SHOWMENU = true;
+  }
+});
+
+function getstyle(obj, name) {
+  if (obj.currentStyle) {
+    return obj.currentStyle[name];
+  } else {
+    return getComputedStyle(obj, false)[name];
+  }
+}
+
+/**
+ * 模拟jquery的animate函数
+ * @param obj
+ * @param attr
+ * @param target
+ * @param fn
+ */
+function startrun(obj, attr, target, fn) {
+  clearInterval(obj.timer);
+  obj.timer = setInterval(function () {
+    var cur = 0;
+    if (attr == "opacity") {
+      cur = Math.round(parseFloat(getstyle(obj, attr)) * 100);
+    } else {
+      cur = parseInt(getstyle(obj, attr));
     }
-  }
+    var speed = (target - cur) / 8;
+    speed = speed > 0 ? Math.ceil(speed) : Math.floor(speed);
 
-  return init;
-})(jQuery);
-;/**
+    if (cur == target) {
+      clearInterval(obj.timer);
+      if (fn) {
+        fn();
+      }
+    } else {
+      if (attr == "opacity") {
+        obj.style.filter = "alpha(opacity=" + (cur + speed) + ")";
+        obj.style.opacity = (cur + speed) / 100;
+      } else {
+        obj.style[attr] = cur + speed + "px";
+      }
+    }
+
+  }, 30)
+};/**
  * Created by wangwy on 15-1-8.
  */
 EPUB.VERSION = "1.0.0";
@@ -136,7 +181,6 @@ EPUB.ELEMENTS = {
 EPUB.USERID = "";//用户id
 EPUB.BOOKID = "";//书籍id
 EPUB.AUTHTOKEN = "";//认证
-EPUB.PROCESS = "";
 
 ;/**
  * Created by wangwy on 15-1-7.
@@ -169,7 +213,7 @@ EPUB.Book.prototype.beforeDisplay = function () {
     var bookData = book.format.formatOpfFile(context);
     book.manifest = bookData.manifest;
     book.spine = bookData.spine;
-  }).then(function(){
+  }).then(function () {
     return book.getProgress();
   }).then(function () {
     return book.getNotes();
@@ -211,11 +255,17 @@ EPUB.Book.prototype.display = function (url, spineNum) {
   var deferred = new RSVP.defer();
   this.spineNum = spineNum || this.spineNum;
   var path = url || that.manifest[that.spine[this.spineNum].id].url;
+  that.render.chapterUrl = path;
   EPUB.Request.loadFile(path, 'xml').then(function (context) {
     //获得章节标题
-    var chapterString = context.getElementsByTagName("header")[0].getElementsByTagName("h1")[0].textContent;
+    that.render.chapterName = "";
+    var chapterElem = context.querySelectorAll("h1,h2,h3");
+    if(chapterElem.length > 0){
+      that.render.chapterName = chapterElem[0].textContent;
+    }
+//    var chapterString = "22"; //context.querySelectorAll("h1,h2,h3")[0].textContent;
     var chapterNode = document.getElementById("chapterId");
-    chapterNode.textContent = chapterString;
+    chapterNode.textContent = that.render.chapterName;
     deferred.resolve(context);
     that.renderContext = context;
   });
@@ -231,7 +281,7 @@ EPUB.Book.prototype.initialChapter = function (context) {
   var that = this;
   var retru = this.render.initialize(context).then(function (docBody) {
     that.render.spineNum = that.spineNum;
-    that.render.chapterName = that.format.toc[that.spineNum].label;
+//    that.render.chapterName = that.format.toc[that.spineNum].label;
     that.render.getPagesNum(docBody);
     that.render.notes = that.getChapterNotes(that.spineNum);
     that.render.marks = that.getChapterMarks(that.spineNum);
@@ -252,7 +302,6 @@ EPUB.Book.prototype.loadOpfFile = function (bookPath) {
   opfFileXml = EPUB.Request.loadFile(containerPath, 'xml').then(function (context) {
     return book.format.formatContainerXML(context);
   }).then(function (paths) {
-    book.render.bookUrl = paths.bookUrl;
     return EPUB.Request.loadFile(bookPath + paths.packagePath, 'xml');
   });
   return opfFileXml;
@@ -265,7 +314,7 @@ EPUB.Book.prototype.nextPage = function () {
   var next, that = this;
   next = this.render.nextPage();
   if (!next) {
-    if (this.spineNum < this.spine.length) {
+    if (this.spineNum < this.spine.length-1) {
       this.spineNum++;
       this.display().then(function (context) {
         return that.initialChapter(context);
@@ -337,7 +386,7 @@ EPUB.Book.prototype.createToc = function (doc) {
           });
           document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
           document.getElementsByClassName("menubox")[0].style.display = "none";
-          that.showMenu = true;
+          EPUB.SHOWMENU = true;
         });
         a.textContent = item.label;
         li.appendChild(a);
@@ -360,15 +409,18 @@ EPUB.Book.prototype.createToc = function (doc) {
   }
 };
 
-EPUB.Book.prototype.saveProgress = function(){
-
-  var data = new FormData();
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("book_id", EPUB.BOOKID);
-  data.append("chapter_index",this.spineNum);
-  data.append("position",this.render.position);
-  data.append("progress",this.progress);
+/**
+ * 保存阅读进度
+ */
+EPUB.Book.prototype.saveProgress = function () {
+  var data = {
+    "user_id": EPUB.USERID,
+    "auth_token": EPUB.AUTHTOKEN,
+    "book_id": EPUB.BOOKID,
+    "chapter_index": this.spineNum,
+    "position": this.render.position,
+    "progress": this.progress
+  };
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/readprogress/save", data)
 };
 
@@ -379,16 +431,22 @@ EPUB.Book.prototype.saveProgress = function(){
 EPUB.Book.prototype.getProgress = function () {
   var that = this,
       path = "/retech-bookstore/mobile/post/my/singlebook/readprogress/get",
-      data = new FormData();
+      data = {
+        "user_id": EPUB.USERID,
+        "auth_token": EPUB.AUTHTOKEN,
+        "book_id": EPUB.BOOKID
+      };
 
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("book_id", EPUB.BOOKID);
-
-  var getProgressRet = EPUB.Request.bookStoreRequest(path, data).then(function(r){
-    that.spineNum = r.user_readprogress.chapter_index;
-    that.render.position = r.user_readprogress.position;
-    that.progress = r.user_readprogress.progress;
+  var getProgressRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
+    if(r.user_readprogress != ""){
+      that.spineNum = r.user_readprogress.chapter_index;
+      that.render.position = r.user_readprogress.position;
+      that.progress = r.user_readprogress.progress;
+    }else{
+      that.spineNum = 0;
+      that.render.position = 0;
+      that.progress = "no";
+    }
   });
   return getProgressRet;
 };
@@ -399,11 +457,11 @@ EPUB.Book.prototype.getProgress = function () {
 EPUB.Book.prototype.getNotes = function () {
   var that = this,
       path = "/retech-bookstore/mobile/post/my/singlebook/note/list",
-      data = new FormData();
-
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("book_id", EPUB.BOOKID);
+      data = {
+        "user_id": EPUB.USERID,
+        "auth_token": EPUB.AUTHTOKEN,
+        "book_id": EPUB.BOOKID
+      };
 
   var getNoteRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
     that.notelist = r.user_note_list;
@@ -457,7 +515,7 @@ EPUB.Book.prototype.createNote = function (notelist) {
         });
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
-        that.showMenu = true;
+        EPUB.SHOWMENU = true;
       });
       div.appendChild(p);
 
@@ -494,11 +552,11 @@ EPUB.Book.prototype.createNote = function (notelist) {
 EPUB.Book.prototype.getMarks = function () {
   var that = this,
       path = "/retech-bookstore/mobile/post/my/singlebook/bookmark/list",
-      data = new FormData();
-
-  data.append("user_id", EPUB.USERID);
-  data.append("book_id", EPUB.BOOKID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
+      data = {
+        "user_id": EPUB.USERID,
+        "book_id": EPUB.BOOKID,
+        "auth_token": EPUB.AUTHTOKEN
+      };
 
   var getMarkRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
     that.markList = r.user_bookmark_list;
@@ -551,7 +609,7 @@ EPUB.Book.prototype.createMark = function (marklist) {
         });
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
-        that.showMenu = true;
+        EPUB.SHOWMENU = true;
       });
       markListDiv.appendChild(markListP);
     });
@@ -711,6 +769,7 @@ EPUB.Format.prototype.formatContainerXML = function (containerXML) {
  * @returns {{metadata: *, manifest: {}, spine: Array}}
  */
 EPUB.Format.prototype.formatOpfFile = function (opfFileXML) {
+  var that = this;
   var metadataNode, manifestNode, spineNode;
   var metadata, manifest, spine;
 
@@ -720,8 +779,10 @@ EPUB.Format.prototype.formatOpfFile = function (opfFileXML) {
 
   metadata = this.formatMetadata(metadataNode);
   manifest = this.formatManifest(manifestNode);
-  spine = this.formatSpine(spineNode);
-
+  spine = this.formatSpine(spineNode,manifest);
+  spine.forEach(function(item){
+    that.spineIndex[item.href] = item.index;
+  });
   return {
     'metadata': metadata,
     'manifest': manifest,
@@ -802,11 +863,10 @@ EPUB.Format.prototype.formatManifest = function (xml) {
  * @param xml
  * @returns {Array}
  */
-EPUB.Format.prototype.formatSpine = function (xml) {
-  var that = this;
+EPUB.Format.prototype.formatSpine = function (spineNode, manifest) {
   var spine = [];
   this.spineIndex = {};
-  var selected = xml.getElementsByTagName("itemref"),
+  var selected = spineNode.getElementsByTagName("itemref"),
       items = Array.prototype.slice.call(selected);
   items.forEach(function (item, index) {
     var id = item.getAttribute("idref"),
@@ -815,10 +875,12 @@ EPUB.Format.prototype.formatSpine = function (xml) {
     var vert = {
       'id': id,
       'properties': properties,
-      'linear': linear
+      'linear': linear,
+      'href': manifest[id].href,
+      'url': manifest[id].url,
+      'index': index
     };
     spine.push(vert);
-    that.spineIndex[id] = index;
   });
 
   return spine;
@@ -860,7 +922,7 @@ EPUB.Format.prototype.formatToc = function (path) {
           "href": href,
           "label": text,
           "url": url,
-          "spineNum": parseInt(that.spineIndex[id]),
+          "spineNum": parseInt(that.spineIndex[href]),
           "subitems": subs
         });
       });
@@ -1125,11 +1187,11 @@ EPUB.Notation.prototype.hideShareNode = function () {
  */
 EPUB.Notation.prototype.deletNotation = function (noteid) {
   var that = this,
-      data = new FormData();
-
-  data.append("id", noteid);
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
+      data = {
+        "id": noteid,
+        "user_id": EPUB.USERID,
+        "auth_token": EPUB.AUTHTOKEN
+      };
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/delete", data).then(function (r) {
     if (r.flag == "1") {
@@ -1159,21 +1221,20 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
  */
 EPUB.Notation.prototype.sendNotation = function () {
   var that = this,
-      data = new FormData();
-
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("book_id", EPUB.BOOKID);
-  data.append("chapter_index", that.render.spineNum);
-  data.append("chapter_name", that.render.chapterName);
-  data.append("position", that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset);
-  data.append("position_offset", that.selectedOffset().startOffset + "," + that.svgSelected.length);
-  data.append("summary_content", that.getString(that.svgSelected));
-  data.append("note_content", document.getElementById("comment-content").value);
-  data.append("summary_underline_color", "red");
-  data.append("add_time", new Date().Format("yyyy-MM-dd hh:mm:ss"));
-  data.append("process", EPUB.PROCESS);
-
+      data = {
+        "user_id": EPUB.USERID,
+        "auth_token": EPUB.AUTHTOKEN,
+        "book_id": EPUB.BOOKID,
+        "chapter_index": that.render.spineNum,
+        "chapter_name": that.render.chapterName,
+        "position": that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset,
+        "position_offset": that.selectedOffset().startOffset + "," + that.svgSelected.length,
+        "summary_content": that.getString(that.svgSelected),
+        "note_content": document.getElementById("comment-content").value,
+        "summary_underline_color": "red",
+        "add_time": new Date().Format("yyyy-MM-dd hh:mm:ss"),
+        "process": that.render.book.progress
+      };
   var group = [], groupid;
   this.svgSelected.forEach(function (value) {
     if (value.parentNode.tagName == "g") {
@@ -1211,22 +1272,24 @@ EPUB.Notation.prototype.saveMark = function () {
   var that = this;
   var pageStartPosition = this.render.position;
   var summary = that.getString(that.svg.children).slice(0, 100);
-  var data = new FormData();
-
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("book_id", EPUB.BOOKID);
-  data.append("chapter_index", that.render.spineNum);
-  data.append("chapter_name", that.render.chapterName);
-  data.append("position", pageStartPosition);
-  data.append("add_time", new Date().Format("yyyy-MM-dd hh:mm:ss"));
-  data.append("summary_content", summary);
+  var data = {
+    "user_id": EPUB.USERID,
+    "auth_token": EPUB.AUTHTOKEN,
+    "book_id": EPUB.BOOKID,
+    "chapter_index": that.render.spineNum,
+    "chapter_name": that.render.chapterName,
+    "position": pageStartPosition,
+    "add_time": new Date().Format("yyyy-MM-dd hh:mm:ss"),
+    "summary_content": summary
+  };
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
     if (r.flag == "1") {
-      that.markNode.style.background = "url(images/redsign.png) no-repeat";
+      that.markNode.style.backgroundPosition = "-106px -70px";
       that.markNode.setAttribute("data-markid", r.bookmark_id);
-      that.render.book.getMarks();
+      that.render.book.getMarks().then(function(){
+        that.render.marks = that.render.book.getChapterMarks(that.render.book.spineNum);
+      });
     }
   });
 };
@@ -1237,17 +1300,19 @@ EPUB.Notation.prototype.saveMark = function () {
  */
 EPUB.Notation.prototype.deleteMark = function (markid) {
   var that = this,
-      data = new FormData();
-
-  data.append("user_id", EPUB.USERID);
-  data.append("auth_token", EPUB.AUTHTOKEN);
-  data.append("id", markid);
+      data = {
+        "user_id": EPUB.USERID,
+        "auth_token": EPUB.AUTHTOKEN,
+        "id": markid
+      };
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/delete", data).then(function (r) {
     if (r.flag == "1") {
-      that.markNode.style.background = "url(images/sign.png) no-repeat";
+      that.markNode.style.backgroundPosition = "-106px 0px";
       that.markNode.setAttribute("data-markid", "");
-      that.render.book.getMarks();
+      that.render.book.getMarks().then(function(){
+        that.render.marks = that.render.book.getChapterMarks(that.render.book.spineNum);
+      });
     }
   });
 };
@@ -1334,7 +1399,7 @@ EPUB.Notation.prototype.createTextCircle = function (noteid, digestnote) {
  */
 EPUB.Notation.prototype.selectedOffset = function () {
   var startOffset = this.render.position, endOffset = 0,
-      svgArray = Array.prototype.slice.call(this.svg.getElementsByClassName("context"));
+      svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
   startOffset += svgArray.indexOf(this.svgSelected[0]);
 
   endOffset = startOffset + this.svgSelected.length;
@@ -1362,21 +1427,21 @@ EPUB.Notation.prototype.showNotation = function () {
       if (pageStartLength > startOffset && pageStartLength < endOffset && pageEndLength >= endOffset) {
         notationStart = 0;
         notationEnd = endOffset - pageStartLength;
-        svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
+        svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
-        that.createTextCircle(value.id, value.summary_content);
+        that.createTextCircle(value.id, value.note_content);
       } else if (pageStartLength <= startOffset && pageEndLength >= endOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = endOffset - pageStartLength;
-        svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
+        svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
-        that.createTextCircle(value.id, value.summary_content);
+        that.createTextCircle(value.id, value.note_content);
       } else if (pageStartLength <= startOffset && pageEndLength < endOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = pageEndLength - pageStartLength;
-        svgArray = Array.prototype.slice.call(that.svg.getElementsByClassName("context"));
+        svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
       }
@@ -1405,12 +1470,12 @@ EPUB.Notation.prototype.showMark = function () {
   }
 
   if (showMark) {
-    that.markNode.style.background = "url(images/redsign.png) no-repeat";
-    that.markNode.setAttribute("data-markid", showMark.id);
-  } else {
-    that.markNode.style.background = "url(images/sign.png) no-repeat";
-    that.markNode.setAttribute("data-markid", "");
-  }
+   that.markNode.style.backgroundPosition = "-106px -70px";
+   that.markNode.setAttribute("data-markid", showMark.id);
+   } else {
+   that.markNode.style.backgroundPosition = "-106px 0px";
+   that.markNode.setAttribute("data-markid", "");
+   }
 };
 
 ;/**
@@ -1521,12 +1586,13 @@ EPUB.Render.prototype.initialize = function (context) {
     var count = images.length;
     images.forEach(function (value) {
       var image = new Image();
-      var url = EPUB.Utils.parseUrl(value.src);
+      var htmlUrl = EPUB.Utils.parseUrl(that.chapterUrl);
+      var url = EPUB.Utils.parseUrl(value.getAttribute("src"));
       image.onload = function () {
         count--;
         if (!that.imagesAll.hasOwnProperty(url.filename)) {
           that.imagesAll[url.filename] = {
-            src: url.origin + that.bookUrl + value.getAttribute("src"),
+            src: htmlUrl.directory + value.getAttribute("src"),
             height: image.height,
             width: image.width
           };
@@ -1535,7 +1601,7 @@ EPUB.Render.prototype.initialize = function (context) {
           deffer.resolve(documentBody);
         }
       };
-      image.src = url.origin + that.bookUrl + value.getAttribute("src");
+      image.src = htmlUrl.directory + value.getAttribute("src");
     });
   } else {
     deffer.resolve(documentBody);
@@ -1587,7 +1653,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
  * @param ele
  */
 EPUB.Render.prototype.imageSetting = function (ele) {
-  var url = EPUB.Utils.parseUrl(ele.src);
+  var url = EPUB.Utils.parseUrl(ele.getAttribute("src"));
   var img = this.imagesAll[url.filename];
   var hScale = img.height / (this.height - this.currentPositionY);
   var wScale = img.width / this.width;
@@ -1640,7 +1706,7 @@ EPUB.Render.prototype.imageSetting = function (ele) {
  * @param txt
  */
 EPUB.Render.prototype.typeSetting = function (ele) {
-  var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName];
+  var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName] || EPUB.ELEMENTS["p"];
   for (var i = 0; i < txt.length; i++) {
     var char = txt.charAt(i);
     var charCode = txt.charCodeAt(i);
@@ -1947,18 +2013,15 @@ EPUB.Request.loadFile = function (url, type) {
   if (type == "json") {
     xhr.setRequestHeader("Accept", "application/json");
   }
-  if (type == "xml" && xhr.overrideMimeType) {
-    xhr.overrideMimeType('text/xml');
-  }
   xhr.send();
   function handler() {
     if (this.readyState === this.DONE) {
       if (this.status === 200 || this.responseXML) {
         var r;
         if (type == 'xml') {
-          r = this.responseXML;
+          r = new DOMParser().parseFromString(this.responseText,'text/xml');
         } else if (type == 'json') {
-          r = JSON.parse(this.response);
+          r = JSON.parse(this.responseText);
         } else {
           r = this.responseText;
         }
@@ -1969,6 +2032,7 @@ EPUB.Request.loadFile = function (url, type) {
 
   return deferred.promise;
 };
+
 
 /**
  * 后台数据交互接口
@@ -1981,7 +2045,8 @@ EPUB.Request.bookStoreRequest = function (url, data) {
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url);
   xhr.onreadystatechange = handler;
-  xhr.send(data);
+  xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xhr.send(EPUB.Utils.JsonToFormData(data));
 
   function handler() {
     if (this.readyState === 4) {
@@ -2072,7 +2137,7 @@ EPUB.Selections.prototype.reInitSelections = function () {
  * 获取选择区域内的节点
  */
 EPUB.Selections.prototype.getSelectionElements = function () {
-  var items = Array.prototype.slice.call(this.svg.getElementsByClassName("context")), that = this;
+  var items = Array.prototype.slice.call(document.getElementsByClassName("context")), that = this;
   items.forEach(function (value) {
     var lineHeight = parseInt(value.getAttribute("data-height"), 10);
     var eleY = parseInt(value.getAttribute("y"), 10) + parseInt(that.svgPosition.top, 10),
@@ -2294,4 +2359,18 @@ EPUB.Utils.isWindow = function (obj) {
  */
 EPUB.Utils.getWindow = function (elem) {
   return this.isWindow(elem) ? elem : elem.nodeType === 9 && elem.defaultView;
+};
+
+/**
+ * 将json转换成formdata形式的字符串
+ * @param json
+ * @returns {string}
+ * @constructor
+ */
+EPUB.Utils.JsonToFormData = function (json) {
+  var string = "";
+  for (var o in json) {
+    string += o + "=" + json[o] + "&"
+  }
+  return string.slice(0, -1);
 };

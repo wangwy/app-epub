@@ -101,7 +101,7 @@
                 data.append("user_id","1");
                 data.append("auth_token","dfdfdf");
                 data.append("book_id","20");*/
-                var data = {"user_id":"1","book_id":"20","auth_token":"1111"};
+                var data = {"user_id":"1","book_id":"21","auth_token":"1111"};
                 EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/singlebook/readprogress/get", data).then(function (r) {
                     $("#showProgress").html(JSON.stringify(r));
                 });

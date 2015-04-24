@@ -188,19 +188,3 @@ EPUB.Utils.JsonToFormData = function (json) {
   }
   return string.slice(0, -1);
 };
-
-EPUB.Utils.getStyle = function (sname) {
-  for (var i = 0; i < document.styleSheets.length; i++) {
-    var rules;
-    if (document.styleSheets[i].cssRules) {
-      rules = document.styleSheets[i].cssRules;
-    } else {
-      rules = document.styleSheets[i].rules;
-    }
-    for (var j = 0; j < rules.length; j++) {
-      if (rules[j].selectorText == sname) {
-        return rules[j].style;
-      }
-    }
-  }
-}

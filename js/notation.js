@@ -300,7 +300,7 @@ EPUB.Notation.prototype.sendNotation = function () {
         "note_content": document.getElementById("comment-content").value,
         "summary_underline_color": "red",
         "add_time": new Date().Format("yyyy-MM-dd hh:mm:ss"),
-        "process": EPUB.PROCESS
+        "process": that.render.book.progress
       };
   var group = [], groupid;
   this.svgSelected.forEach(function (value) {

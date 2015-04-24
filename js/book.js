@@ -202,7 +202,7 @@ EPUB.Book.prototype.createToc = function (doc) {
           });
           document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
           document.getElementsByClassName("menubox")[0].style.display = "none";
-          that.showMenu = true;
+          EPUB.SHOWMENU = true;
         });
         a.textContent = item.label;
         li.appendChild(a);
@@ -254,9 +254,15 @@ EPUB.Book.prototype.getProgress = function () {
       };
 
   var getProgressRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    that.spineNum = r.user_readprogress.chapter_index;
-    that.render.position = r.user_readprogress.position;
-    that.progress = r.user_readprogress.progress;
+    if(r.user_readprogress != ""){
+      that.spineNum = r.user_readprogress.chapter_index;
+      that.render.position = r.user_readprogress.position;
+      that.progress = r.user_readprogress.progress;
+    }else{
+      that.spineNum = 0;
+      that.render.position = 0;
+      that.progress = "no";
+    }
   });
   return getProgressRet;
 };
@@ -325,7 +331,7 @@ EPUB.Book.prototype.createNote = function (notelist) {
         });
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
-        that.showMenu = true;
+        EPUB.SHOWMENU = true;
       });
       div.appendChild(p);
 
@@ -419,7 +425,7 @@ EPUB.Book.prototype.createMark = function (marklist) {
         });
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
-        that.showMenu = true;
+        EPUB.SHOWMENU = true;
       });
       markListDiv.appendChild(markListP);
     });
