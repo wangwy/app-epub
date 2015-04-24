@@ -259,16 +259,16 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
         "user_id": EPUB.USERID,
         "auth_token": EPUB.AUTHTOKEN
       };
-
+  var deffer = new RSVP.defer();
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/delete", data).then(function (r) {
     if (r.flag == "1") {
-      var backRect = that.svg.getElementsByClassName(noteid);
+      var backRect = document.getElementsByClassName(noteid);
       var items = Array.prototype.slice.call(backRect);
       items.forEach(function (value) {
         that.svg.removeChild(value);
       });
       var g = that.svg.getElementById(noteid);
-      var gChild = Array.prototype.slice.call(g.children);
+      var gChild = Array.prototype.slice.call(g.childNodes);
       gChild.forEach(function (value) {
         that.svg.insertBefore(value, g);
       });
@@ -277,10 +277,32 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
       that.render.book.getNotes().then(function () {
         that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
       });
-      return true;
+      deffer.resolve(true);
     }
-    return false;
+    deffer.resolve(false);
   });
+  return deffer.promise;
+};
+
+/**
+ * 删除选中的笔记
+ * @param group
+ * @returns {Promise.promise|*}
+ */
+EPUB.Notation.prototype.delSelectedNotation = function (group) {
+  var deffer = new RSVP.defer(), that = this, count = group.length;
+  if (group.length > 0) {
+    group.forEach(function (vaule) {
+      that.deletNotation(vaule).then(function () {
+        count--
+      });
+      if (count == 0) {
+        deffer.resolve(true);
+      }
+    });
+  }
+  deffer.resolve(true);
+  return deffer.promise;
 };
 
 /**
@@ -307,12 +329,13 @@ EPUB.Notation.prototype.sendNotation = function () {
     if (value.parentNode.tagName == "g") {
       groupid = value.parentNode.getAttribute("id");
       if (group.indexOf(groupid) == -1) {
-        that.deletNotation(groupid);
         group.push(groupid);
       }
     }
   });
-  EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/save", data).then(function (r) {
+  that.delSelectedNotation(group).then(function(){
+    return EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/save", data)
+  }).then(function (r) {
     if (r.flag == "1") {
 
       that.createUnderline(r.note_id);
@@ -338,7 +361,7 @@ EPUB.Notation.prototype.sendNotation = function () {
 EPUB.Notation.prototype.saveMark = function () {
   var that = this;
   var pageStartPosition = this.render.position;
-  var summary = that.getString(that.svg.children).slice(0, 100);
+  var summary = that.getString(that.svg.childNodes).slice(0, 100);
   var data = {
     "user_id": EPUB.USERID,
     "auth_token": EPUB.AUTHTOKEN,
@@ -354,7 +377,7 @@ EPUB.Notation.prototype.saveMark = function () {
     if (r.flag == "1") {
       that.markNode.style.backgroundPosition = "-106px -70px";
       that.markNode.setAttribute("data-markid", r.bookmark_id);
-      that.render.book.getMarks().then(function(){
+      that.render.book.getMarks().then(function () {
         that.render.marks = that.render.book.getChapterMarks(that.render.book.spineNum);
       });
     }
@@ -377,7 +400,7 @@ EPUB.Notation.prototype.deleteMark = function (markid) {
     if (r.flag == "1") {
       that.markNode.style.backgroundPosition = "-106px 0px";
       that.markNode.setAttribute("data-markid", "");
-      that.render.book.getMarks().then(function(){
+      that.render.book.getMarks().then(function () {
         that.render.marks = that.render.book.getChapterMarks(that.render.book.spineNum);
       });
     }
@@ -416,7 +439,7 @@ EPUB.Notation.prototype.createUnderline = function (noteid) {
   });
 
   g.addEventListener("click", function (e) {
-    var g = e.target.parentElement;
+    var g = e.target.parentNode;
     var string = that.getString(g.childNodes);
 
     window.jiathis_config.summary = string;
@@ -537,11 +560,11 @@ EPUB.Notation.prototype.showMark = function () {
   }
 
   if (showMark) {
-   that.markNode.style.backgroundPosition = "-106px -70px";
-   that.markNode.setAttribute("data-markid", showMark.id);
-   } else {
-   that.markNode.style.backgroundPosition = "-106px 0px";
-   that.markNode.setAttribute("data-markid", "");
-   }
+    that.markNode.style.backgroundPosition = "-106px -70px";
+    that.markNode.setAttribute("data-markid", showMark.id);
+  } else {
+    that.markNode.style.backgroundPosition = "-106px 0px";
+    that.markNode.setAttribute("data-markid", "");
+  }
 };
 
