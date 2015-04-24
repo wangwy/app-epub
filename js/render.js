@@ -17,7 +17,7 @@ EPUB.Render = function (book) {
  */
 EPUB.Render.prototype.initialize = function (context) {
   this.width = this.el.clientWidth;
-  this.height = this.el.clientHeight - 50;
+  this.height = this.el.clientHeight - 60;
   this.imagesAll = {};
   var that = this;
   var deffer = new RSVP.defer();
@@ -105,7 +105,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
 EPUB.Render.prototype.imageSetting = function (ele) {
   var url = EPUB.Utils.parseUrl(ele.getAttribute("src"));
   var img = this.imagesAll[url.filename];
-  var hScale = img.height / (this.height - this.currentPositionY);
+  var hScale = img.height / (this.height - this.currentPositionY - this.lineGap*2);
   var wScale = img.width / this.width;
   var image;
   var maxScale = Math.max(hScale, wScale);

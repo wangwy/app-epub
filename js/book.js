@@ -74,12 +74,11 @@ EPUB.Book.prototype.display = function (url, spineNum) {
   that.render.chapterUrl = path;
   EPUB.Request.loadFile(path, 'xml').then(function (context) {
     //获得章节标题
-    that.render.chapterName = "";
+    that.render.chapterName = that.spineNum.toString();
     var chapterElem = context.querySelectorAll("h1,h2,h3");
     if(chapterElem.length > 0){
       that.render.chapterName = chapterElem[0].textContent;
     }
-//    var chapterString = "22"; //context.querySelectorAll("h1,h2,h3")[0].textContent;
     var chapterNode = document.getElementById("chapterId");
     chapterNode.textContent = that.render.chapterName;
     deferred.resolve(context);
@@ -97,7 +96,6 @@ EPUB.Book.prototype.initialChapter = function (context) {
   var that = this;
   var retru = this.render.initialize(context).then(function (docBody) {
     that.render.spineNum = that.spineNum;
-//    that.render.chapterName = that.format.toc[that.spineNum].label;
     that.render.getPagesNum(docBody);
     that.render.notes = that.getChapterNotes(that.spineNum);
     that.render.marks = that.getChapterMarks(that.spineNum);

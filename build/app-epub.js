@@ -258,12 +258,11 @@ EPUB.Book.prototype.display = function (url, spineNum) {
   that.render.chapterUrl = path;
   EPUB.Request.loadFile(path, 'xml').then(function (context) {
     //获得章节标题
-    that.render.chapterName = "";
+    that.render.chapterName = that.spineNum.toString();
     var chapterElem = context.querySelectorAll("h1,h2,h3");
     if(chapterElem.length > 0){
       that.render.chapterName = chapterElem[0].textContent;
     }
-//    var chapterString = "22"; //context.querySelectorAll("h1,h2,h3")[0].textContent;
     var chapterNode = document.getElementById("chapterId");
     chapterNode.textContent = that.render.chapterName;
     deferred.resolve(context);
@@ -281,7 +280,6 @@ EPUB.Book.prototype.initialChapter = function (context) {
   var that = this;
   var retru = this.render.initialize(context).then(function (docBody) {
     that.render.spineNum = that.spineNum;
-//    that.render.chapterName = that.format.toc[that.spineNum].label;
     that.render.getPagesNum(docBody);
     that.render.notes = that.getChapterNotes(that.spineNum);
     that.render.marks = that.getChapterMarks(that.spineNum);
@@ -1567,7 +1565,7 @@ EPUB.Render = function (book) {
  */
 EPUB.Render.prototype.initialize = function (context) {
   this.width = this.el.clientWidth;
-  this.height = this.el.clientHeight - 50;
+  this.height = this.el.clientHeight - 60;
   this.imagesAll = {};
   var that = this;
   var deffer = new RSVP.defer();
@@ -1655,7 +1653,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
 EPUB.Render.prototype.imageSetting = function (ele) {
   var url = EPUB.Utils.parseUrl(ele.getAttribute("src"));
   var img = this.imagesAll[url.filename];
-  var hScale = img.height / (this.height - this.currentPositionY);
+  var hScale = img.height / (this.height - this.currentPositionY - this.lineGap*2);
   var wScale = img.width / this.width;
   var image;
   var maxScale = Math.max(hScale, wScale);
