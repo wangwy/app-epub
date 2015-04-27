@@ -4,7 +4,7 @@
 var EPUB = EPUB || {};
 EPUB.App = {};
 (function (root) {
-  root.ePub = function (ele,userid,bookid,authtoken) {
+  root.ePub = function (ele, userid, bookid, authtoken) {
     EPUB.USERID = userid;
     EPUB.BOOKID = bookid;
     EPUB.AUTHTOKEN = authtoken;
@@ -78,12 +78,12 @@ new tab('test2_li_now_');
 
 var width = getComputedStyle(document.getElementsByClassName("menubox")[0])["width"].slice(0, -2);
 EPUB.SHOWMENU = true;
-var btnZoom = document.getElementById("btnZoom");
+var btnMenu = document.getElementById("btnMenu");
 
 var menubox = document.getElementsByClassName("menubox")[0];
 
 //控制目录显示或者隐藏
-btnZoom.addEventListener("click", function () {
+btnMenu.addEventListener("click", function () {
   document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
   document.getElementsByClassName("menubox")[0].style.display = "";
   if (EPUB.SHOWMENU) {
@@ -98,6 +98,7 @@ btnZoom.addEventListener("click", function () {
     EPUB.SHOWMENU = true;
   }
 });
+
 
 function getstyle(obj, name) {
   if (obj.currentStyle) {
@@ -141,7 +142,64 @@ function startrun(obj, attr, target, fn) {
     }
 
   }, 30)
-};/**
+}
+
+/**
+ * 触发全屏事件
+ * @type {HTMLElement}
+ */
+var iconZoom = document.getElementById("iconZoom");
+iconZoom.addEventListener("click",function(){
+  var elem = document.body; // Make the body go full screen.
+
+  var isInFullScreen = (document.msFullscreenElement && document.msFullscreenElement !== null) ||  (document.mozFullScreen || document.webkitIsFullScreen);
+
+  if (isInFullScreen) {
+    cancelFullScreen(document);
+    iconZoom.setAttribute("class","icon-gernal icon_zoom");
+  } else {
+    requestFullScreen(elem);
+    iconZoom.setAttribute("class","icon-gernal icon_zoomout");
+  }
+  return false;
+});
+
+/**
+ * 取消全屏
+ * @param el
+ */
+function cancelFullScreen(el) {
+  var requestMethod = el.cancelFullScreen||el.webkitCancelFullScreen||el.mozCancelFullScreen||el.msExitFullscreen;
+  if (requestMethod) { // cancel full screen.
+    requestMethod.call(el);
+  } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+    var wscript = new ActiveXObject("WScript.Shell");
+    if (wscript !== null) {
+      wscript.SendKeys("{F11}");
+    }
+  }
+}
+
+/**
+ * 全屏显示
+ * @param el
+ * @returns {boolean}
+ */
+function requestFullScreen(el) {
+  // Supports most browsers and their versions.
+  var requestMethod = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+
+  if (requestMethod) { // Native full screen.
+    requestMethod.call(el);
+  } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+    var wscript = new ActiveXObject("WScript.Shell");
+    if (wscript !== null) {
+      wscript.SendKeys("{F11}");
+    }
+  }
+  return false
+}
+;/**
  * Created by wangwy on 15-1-8.
  */
 EPUB.VERSION = "1.0.0";
@@ -1323,7 +1381,8 @@ EPUB.Notation.prototype.saveMark = function () {
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
     if (r.flag == "1") {
-      that.markNode.style.backgroundPosition = "-106px -70px";
+      that.markNode.setAttribute("class","icon-gernal clicktag");
+//      that.markNode.style.backgroundPosition = "-106px -70px";
       that.markNode.setAttribute("data-markid", r.bookmark_id);
       that.render.book.getMarks().then(function () {
         that.render.marks = that.render.book.getChapterMarks(that.render.book.spineNum);
@@ -1346,7 +1405,8 @@ EPUB.Notation.prototype.deleteMark = function (markid) {
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/delete", data).then(function (r) {
     if (r.flag == "1") {
-      that.markNode.style.backgroundPosition = "-106px 0px";
+      that.markNode.setAttribute("class","icon-gernal icon-tag");
+//      that.markNode.style.backgroundPosition = "-106px 0px";
       that.markNode.setAttribute("data-markid", "");
       that.render.book.getMarks().then(function () {
         that.render.marks = that.render.book.getChapterMarks(that.render.book.spineNum);
@@ -1508,10 +1568,12 @@ EPUB.Notation.prototype.showMark = function () {
   }
 
   if (showMark) {
-    that.markNode.style.backgroundPosition = "-106px -70px";
+//    that.markNode.style.backgroundPosition = "-106px -70px";
+    that.markNode.setAttribute("class","icon-gernal clicktag");
     that.markNode.setAttribute("data-markid", showMark.id);
   } else {
-    that.markNode.style.backgroundPosition = "-106px 0px";
+//    that.markNode.style.backgroundPosition = "-106px 0px";
+    that.markNode.setAttribute("class","icon-gernal icon-tag");
     that.markNode.setAttribute("data-markid", "");
   }
 };
@@ -2343,7 +2405,25 @@ EPUB.Utils.getCss = function (o, key) {
   return o.currentStyle ? o.currentStyle[key] : window.getComputedStyle(o, null)[key];
 };
 
-
+/**
+ * 改变css属性的值
+ * @param myclass
+ * @param attr
+ * @param value
+ */
+EPUB.Utils.changeCss = function(myclass,attr,value){
+  var CSSRules;
+  if(document.all){
+    CSSRules = 'rules';
+  }else if(document.getElementById){
+    CSSRules = 'cssRules';
+  }
+  for(var i = 0; i < document.styleSheets[0][CSSRules].length; i++){
+    if(document.styleSheets[0][CSSRules][i].selectorText == myclass){
+      document.styleSheets[0][CSSRules][i].style[attr] = value;
+    }
+  }
+};
 /**
  * 获取元素在页面中的文档坐标
  * @param element

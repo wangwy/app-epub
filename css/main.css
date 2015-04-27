@@ -923,7 +923,6 @@ ul{list-style-type:none;}
 .icon_zoom{
 	height:25px;
 	background-position:-55px 0px;
-	margin-bottom:80px;
 	}
 .icon_zoom:hover{
 	background-position:-55px -26px;
@@ -931,14 +930,10 @@ ul{list-style-type:none;}
 .icon_zoomout{
 	height:25px;
 	background-position:-55px -52px;
-	margin-bottom:80px;
 	}	
 .icon_zoomout:hover{
 	background-position:-55px -79px;
 	}
-.zoom_in{
-	display:none;
-	}		
 .icon-tag{
 	height:32px;
 	position:absolute;
@@ -951,12 +946,18 @@ ul{list-style-type:none;}
 	background-position:-106px -35px;
 	}
 .clicktag{
+	height:32px;
+	position:absolute;
+	right:0px;
+	top:45px;
+	cursor:pointer;
 	background-position:-106px -70px;
 	}
 .icon_pglf{
 	width:53px;
 	height:53px;
 	background-position:0px 0px;
+	margin-top:80px;
 	}
 .icon_pglf:hover{
 	background-position:0px -109px;
@@ -982,30 +983,34 @@ ul{list-style-type:none;}
 	overflow-x:hidden;
 	}
 .tablistcon{
-	width:522px;
-	height:33px;
-	line-height:33px;
+	width:512px;
+	height:32px;
 	margin:30px auto 10px;
+	}
+.tablistcon ul{
+	width:512px;
+	height:32px;
 	border:solid 1px #b5b5b5;
 	border-radius:3px;
-	}	
-.tablistcon li{
-	display:inline;
-	padding:5px 54px;
+	}		
+.tablistcon ul li{
+	width:170px;
+	height:32px;
+	float:left;
 	text-align:center;
 	cursor:pointer;
 	font:16px/1 "微软雅黑";
 	color:#ac8662;
 	background:#FFF;
+	border:none;
 	border-right:solid 1px #b5b5b5;
 	}
 .tablistcon li.now{
 	background:#e5d4c6;
 	}
 .tablistcon li a{
-	line-height:22px;
-	height:22px;
-	display:inline-block;
+	line-height:32px;
+	width:62px;
 	}	
 .tab_menu{
 	background:url(../images/tabmenu.png) no-repeat 0px 5px;
@@ -1021,7 +1026,6 @@ ul{list-style-type:none;}
 	}
 .tabcon{
 	width:530px;
-	
 	padding:0px 50px;
 	font-size:14px;
 	text-align:left;

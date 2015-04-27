@@ -375,7 +375,8 @@ EPUB.Notation.prototype.saveMark = function () {
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
     if (r.flag == "1") {
-      that.markNode.style.backgroundPosition = "-106px -70px";
+      that.markNode.setAttribute("class","icon-gernal clicktag");
+//      that.markNode.style.backgroundPosition = "-106px -70px";
       that.markNode.setAttribute("data-markid", r.bookmark_id);
       that.render.book.getMarks().then(function () {
         that.render.marks = that.render.book.getChapterMarks(that.render.book.spineNum);
@@ -398,7 +399,8 @@ EPUB.Notation.prototype.deleteMark = function (markid) {
 
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/delete", data).then(function (r) {
     if (r.flag == "1") {
-      that.markNode.style.backgroundPosition = "-106px 0px";
+      that.markNode.setAttribute("class","icon-gernal icon-tag");
+//      that.markNode.style.backgroundPosition = "-106px 0px";
       that.markNode.setAttribute("data-markid", "");
       that.render.book.getMarks().then(function () {
         that.render.marks = that.render.book.getChapterMarks(that.render.book.spineNum);
@@ -560,10 +562,12 @@ EPUB.Notation.prototype.showMark = function () {
   }
 
   if (showMark) {
-    that.markNode.style.backgroundPosition = "-106px -70px";
+//    that.markNode.style.backgroundPosition = "-106px -70px";
+    that.markNode.setAttribute("class","icon-gernal clicktag");
     that.markNode.setAttribute("data-markid", showMark.id);
   } else {
-    that.markNode.style.backgroundPosition = "-106px 0px";
+//    that.markNode.style.backgroundPosition = "-106px 0px";
+    that.markNode.setAttribute("class","icon-gernal icon-tag");
     that.markNode.setAttribute("data-markid", "");
   }
 };

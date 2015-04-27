@@ -119,7 +119,25 @@ EPUB.Utils.getCss = function (o, key) {
   return o.currentStyle ? o.currentStyle[key] : window.getComputedStyle(o, null)[key];
 };
 
-
+/**
+ * 改变css属性的值
+ * @param myclass
+ * @param attr
+ * @param value
+ */
+EPUB.Utils.changeCss = function(myclass,attr,value){
+  var CSSRules;
+  if(document.all){
+    CSSRules = 'rules';
+  }else if(document.getElementById){
+    CSSRules = 'cssRules';
+  }
+  for(var i = 0; i < document.styleSheets[0][CSSRules].length; i++){
+    if(document.styleSheets[0][CSSRules][i].selectorText == myclass){
+      document.styleSheets[0][CSSRules][i].style[attr] = value;
+    }
+  }
+};
 /**
  * 获取元素在页面中的文档坐标
  * @param element
