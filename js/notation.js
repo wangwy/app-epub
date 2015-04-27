@@ -117,7 +117,13 @@ EPUB.Notation.prototype.initialDialog = function () {
   });
   var saveButton = document.getElementById("noteSave");
   saveButton.addEventListener("click", function () {
-    that.sendNotation();
+    if(that.getString(that.svgSelected).length > 255){
+      alert("选择内容过大");
+    }else if(document.getElementById("comment-content").value.length > 255){
+      alert("笔记内容过大");
+    } else{
+      that.sendNotation();
+    }
   });
 
   //笔记内容框
