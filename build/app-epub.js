@@ -4,11 +4,11 @@
 var EPUB = EPUB || {};
 EPUB.App = {};
 (function (root) {
-  root.ePub = function (ele, bookUrl,userid,bookid,authtoken) {
+  root.ePub = function (ele,userid,bookid,authtoken) {
     EPUB.USERID = userid;
     EPUB.BOOKID = bookid;
     EPUB.AUTHTOKEN = authtoken;
-    var book = new EPUB.Book(ele, bookUrl);
+    var book = new EPUB.Book(ele);
     var prevEle = document.getElementById("prev");
     var nextEle = document.getElementById("next");
     prevEle.addEventListener("click", function () {
@@ -186,8 +186,7 @@ EPUB.AUTHTOKEN = "";//认证
  * Created by wangwy on 15-1-7.
  * 书本的基本功能操作
  */
-EPUB.Book = function (elem, bookUrl) {
-  this.bookUrl = bookUrl;
+EPUB.Book = function (elem) {
   this.el = this.getEl(elem);
   this.render = new EPUB.Render(this);
   this.events = new EPUB.Events(this, this.el);
@@ -209,7 +208,10 @@ EPUB.Book.prototype.getEl = function (elem) {
  */
 EPUB.Book.prototype.beforeDisplay = function () {
   var book = this;
-  book.loadOpfFile(this.format.bookUrlOptions.href).then(function (context) {
+  book.getBook(EPUB.USERID, EPUB.BOOKID, EPUB.AUTHTOKEN).then(function (path) {
+    book.bookUrl = EPUB.Utils.parseUrl(path).directory;
+    return book.loadOpfFile(book.bookUrl);
+  }).then(function (context) {
     var bookData = book.format.formatOpfFile(context);
     book.manifest = bookData.manifest;
     book.spine = bookData.spine;
@@ -247,6 +249,21 @@ EPUB.Book.prototype.beforeDisplay = function () {
 };
 
 /**
+ * 根据书籍id获取书籍路径
+ * @param userId
+ * @param bookId
+ * @param authToken
+ * @returns {Promise.promise|*}
+ */
+EPUB.Book.prototype.getBook = function (userId, bookId, authToken) {
+  var data = {"user_id": userId, "book_id": bookId, "auth_token": authToken}
+  var deferred = new RSVP.defer();
+  EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/get_epub_info", data).then(function (r) {
+    deferred.resolve(r.path);
+  });
+  return deferred.promise;
+};
+/**
  * 页面展示
  * @param mark
  */
@@ -260,7 +277,7 @@ EPUB.Book.prototype.display = function (url, spineNum) {
     //获得章节标题
     that.render.chapterName = that.spineNum.toString();
     var chapterElem = context.querySelectorAll("h1,h2,h3");
-    if(chapterElem.length > 0){
+    if (chapterElem.length > 0) {
       that.render.chapterName = chapterElem[0].textContent;
     }
     var chapterNode = document.getElementById("chapterId");
@@ -312,7 +329,7 @@ EPUB.Book.prototype.nextPage = function () {
   var next, that = this;
   next = this.render.nextPage();
   if (!next) {
-    if (this.spineNum < this.spine.length-1) {
+    if (this.spineNum < this.spine.length - 1) {
       this.spineNum++;
       this.display().then(function (context) {
         return that.initialChapter(context);
@@ -436,11 +453,11 @@ EPUB.Book.prototype.getProgress = function () {
       };
 
   var getProgressRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    if(r.user_readprogress != ""){
+    if (r.user_readprogress != "") {
       that.spineNum = r.user_readprogress.chapter_index;
       that.render.position = r.user_readprogress.position;
       that.progress = r.user_readprogress.progress;
-    }else{
+    } else {
       that.spineNum = 0;
       that.render.position = 0;
       that.progress = "no";
@@ -739,8 +756,7 @@ EPUB.Events.prototype.deafen = function(evt, func){
  */
 EPUB.Format = function (book) {
   this.book = book;
-  this.baseUrl = this.book.bookUrl || '';
-  this.bookUrlOptions = EPUB.Utils.parseUrl(this.baseUrl);
+//  this.bookUrlOptions = EPUB.Utils.parseUrl(this.baseUrl);
 };
 
 /**
@@ -749,6 +765,7 @@ EPUB.Format = function (book) {
  * @returns {{packagePath: string, encoding: string}}
  */
 EPUB.Format.prototype.formatContainerXML = function (containerXML) {
+  this.baseUrl = this.book.bookUrl || '';
   var rootfile, fullpath, encoding;
   rootfile = containerXML.querySelector("rootfile");
   fullpath = rootfile.getAttribute("full-path");

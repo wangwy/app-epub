@@ -4,8 +4,7 @@
  */
 EPUB.Format = function (book) {
   this.book = book;
-  this.baseUrl = this.book.bookUrl || '';
-  this.bookUrlOptions = EPUB.Utils.parseUrl(this.baseUrl);
+//  this.bookUrlOptions = EPUB.Utils.parseUrl(this.baseUrl);
 };
 
 /**
@@ -14,6 +13,7 @@ EPUB.Format = function (book) {
  * @returns {{packagePath: string, encoding: string}}
  */
 EPUB.Format.prototype.formatContainerXML = function (containerXML) {
+  this.baseUrl = this.book.bookUrl || '';
   var rootfile, fullpath, encoding;
   rootfile = containerXML.querySelector("rootfile");
   fullpath = rootfile.getAttribute("full-path");

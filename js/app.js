@@ -4,11 +4,11 @@
 var EPUB = EPUB || {};
 EPUB.App = {};
 (function (root) {
-  root.ePub = function (ele, bookUrl,userid,bookid,authtoken) {
+  root.ePub = function (ele,userid,bookid,authtoken) {
     EPUB.USERID = userid;
     EPUB.BOOKID = bookid;
     EPUB.AUTHTOKEN = authtoken;
-    var book = new EPUB.Book(ele, bookUrl);
+    var book = new EPUB.Book(ele);
     var prevEle = document.getElementById("prev");
     var nextEle = document.getElementById("next");
     prevEle.addEventListener("click", function () {
