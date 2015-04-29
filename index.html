@@ -118,7 +118,7 @@
                  data.append("chapter_index","3");
                  data.append("position","10");
                  data.append("progress","no");*/
-                var data = {"user_id": "1", "book_id": "22", "auth_token": "1111", "chapter_index": "3", "position": "23", "progress": "no"};
+                var data = {"user_id": "1", "book_id": "22", "auth_token": "1111", "chapter_index": "1", "position": "1", "progress": "no"};
                 EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/readprogress/save", data).then(function (r) {
                     $("#saveProgress").html(JSON.stringify(r));
                 });

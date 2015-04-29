@@ -3,6 +3,9 @@
  */
 var EPUB = EPUB || {};
 EPUB.App = {};
+RSVP.on('error',function(reason){
+  console.log(reason);
+});
 (function (root) {
   root.ePub = function (ele, userid, bookid, authtoken) {
     EPUB.USERID = userid;
@@ -82,16 +85,34 @@ var btnMenu = document.getElementById("btnMenu");
 
 var menubox = document.getElementsByClassName("menubox")[0];
 
+/**
+ * 鼠标滚动时翻页函数
+ * @param e
+ */
+function wheelPage(e){
+  if(e.wheelDelta > 0){
+    book.prevPage();
+  }else{
+    book.nextPage();
+  }
+}
+
+document.addEventListener("mousewheel",wheelPage,false);
+
 //控制目录显示或者隐藏
 btnMenu.addEventListener("click", function () {
   document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
   document.getElementsByClassName("menubox")[0].style.display = "";
   if (EPUB.SHOWMENU) {
+    //显示目录
     startrun(menubox, "right", 0, function () {
       startrun(menubox, "opacity", "100")
     });
+    document.removeEventListener("mousewheel",wheelPage,false);
     EPUB.SHOWMENU = false;
   } else {
+    //隐藏目录
+    document.addEventListener("mousewheel",wheelPage,false);
     startrun(menubox, "right", -width, function () {
       startrun(menubox, "opacity", "100");
     });
@@ -99,7 +120,12 @@ btnMenu.addEventListener("click", function () {
   }
 });
 
-
+/**
+ * 获取element样式
+ * @param obj
+ * @param name
+ * @returns {*}
+ */
 function getstyle(obj, name) {
   if (obj.currentStyle) {
     return obj.currentStyle[name];
@@ -150,7 +176,7 @@ function startrun(obj, attr, target, fn) {
  */
 var iconZoom = document.getElementById("iconZoom");
 iconZoom.addEventListener("click",function(){
-  var elem = document.body; // Make the body go full screen.
+  var elem = document.body;
 
   var isInFullScreen = (document.msFullscreenElement && document.msFullscreenElement !== null) ||  (document.mozFullScreen || document.webkitIsFullScreen);
 
@@ -170,7 +196,7 @@ iconZoom.addEventListener("click",function(){
  */
 function cancelFullScreen(el) {
   var requestMethod = el.cancelFullScreen||el.webkitCancelFullScreen||el.mozCancelFullScreen||el.msExitFullscreen;
-  if (requestMethod) { // cancel full screen.
+  if (requestMethod) {
     requestMethod.call(el);
   } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
     var wscript = new ActiveXObject("WScript.Shell");
@@ -186,10 +212,9 @@ function cancelFullScreen(el) {
  * @returns {boolean}
  */
 function requestFullScreen(el) {
-  // Supports most browsers and their versions.
   var requestMethod = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
 
-  if (requestMethod) { // Native full screen.
+  if (requestMethod) {
     requestMethod.call(el);
   } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
     var wscript = new ActiveXObject("WScript.Shell");
