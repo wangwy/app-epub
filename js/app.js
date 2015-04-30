@@ -3,7 +3,7 @@
  */
 var EPUB = EPUB || {};
 EPUB.App = {};
-RSVP.on('error',function(reason){
+RSVP.on('error', function (reason) {
   console.log(reason);
 });
 (function (root) {
@@ -12,6 +12,8 @@ RSVP.on('error',function(reason){
     EPUB.BOOKID = bookid;
     EPUB.AUTHTOKEN = authtoken;
     var book = new EPUB.Book(ele);
+
+    //翻页
     var prevEle = document.getElementById("prev");
     var nextEle = document.getElementById("next");
     prevEle.addEventListener("click", function () {
@@ -20,6 +22,46 @@ RSVP.on('error',function(reason){
     nextEle.addEventListener("click", function () {
       book.nextPage();
     });
+
+    //全屏
+    var iconZoom = document.getElementById("iconZoom");
+    iconZoom.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var elem = document.body;
+
+      var isInFullScreen = (document.msFullscreenElement && document.msFullscreenElement !== null) || (document.mozFullScreen || document.webkitIsFullScreen);
+
+      if (isInFullScreen) {
+        book.cancelFullScreen(document);
+        iconZoom.setAttribute("class", "icon-gernal icon_zoom");
+      } else {
+        book.requestFullScreen(elem);
+        iconZoom.setAttribute("class", "icon-gernal icon_zoomout");
+      }
+    });
+
+    var btnMenu = document.getElementById("btnMenu");
+    //显示目录、书签、笔记
+    btnMenu.addEventListener("click", function (e) {
+      if (document.getElementById('menubox_bg').style.display == 'none') {
+        book.showMenuBox(0);
+        e.stopPropagation();
+        document.removeEventListener("mousewheel", book.wheelPage, false);
+      }
+    });
+
+    //隐藏目录、书签、笔记
+    document.addEventListener("click", function (e) {
+      if (document.getElementById('menubox_bg').style.display != 'none') {
+        var width = getComputedStyle(document.getElementsByClassName("menubox")[0])["width"].slice(0, -2);
+        book.showMenuBox(-width);
+        e.stopPropagation();
+        document.addEventListener("mousewheel", book.wheelPage, false);
+      }
+    });
+
+    document.addEventListener("mousewheel", book.wheelPage, false);
+
     return book;
   }
 })(window);
@@ -79,157 +121,3 @@ tab.prototype = {
   }
 };
 new tab('test2_li_now_');
-
-var width = getComputedStyle(document.getElementsByClassName("menubox")[0])["width"].slice(0, -2);
-var btnMenu = document.getElementById("btnMenu");
-
-var menubox = document.getElementsByClassName("menubox")[0];
-
-/**
- * 鼠标滚动时翻页函数
- * @param e
- */
-function wheelPage(e){
-  if(e.wheelDelta > 0){
-    book.prevPage();
-  }else{
-    book.nextPage();
-  }
-}
-
-document.addEventListener("mousewheel",wheelPage,false);
-
-/**
- * 显示目录、书签、笔记
- * @param num
- */
-function showMenuBox(num){
-  document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
-  document.getElementsByClassName("menubox")[0].style.display = "";
-  startrun(menubox, "right", num, function () {
-    startrun(menubox, "opacity", "100")
-  });
-}
-
-//显示目录、书签、笔记
-btnMenu.addEventListener("click", function (e) {
-  if (document.getElementById('menubox_bg').style.display == 'none') {
-    showMenuBox(0);
-    e.stopPropagation();
-    document.removeEventListener("mousewheel",wheelPage,false);
-  }
-});
-
-//隐藏目录、书签、笔记
-document.addEventListener("click",function(e){
-  if(document.getElementById('menubox_bg').style.display != 'none'){
-    showMenuBox(-width);
-    e.stopPropagation();
-    document.addEventListener("mousewheel",wheelPage,false);
-  }
-});
-
-/**
- * 获取element样式
- * @param obj
- * @param name
- * @returns {*}
- */
-function getstyle(obj, name) {
-  if (obj.currentStyle) {
-    return obj.currentStyle[name];
-  } else {
-    return getComputedStyle(obj, false)[name];
-  }
-}
-
-/**
- * 模拟jquery的animate函数
- * @param obj
- * @param attr
- * @param target
- * @param fn
- */
-function startrun(obj, attr, target, fn) {
-  clearInterval(obj.timer);
-  obj.timer = setInterval(function () {
-    var cur = 0;
-    if (attr == "opacity") {
-      cur = Math.round(parseFloat(getstyle(obj, attr)) * 100);
-    } else {
-      cur = parseInt(getstyle(obj, attr));
-    }
-    var speed = (target - cur) / 8;
-    speed = speed > 0 ? Math.ceil(speed) : Math.floor(speed);
-
-    if (cur == target) {
-      clearInterval(obj.timer);
-      if (fn) {
-        fn();
-      }
-    } else {
-      if (attr == "opacity") {
-        obj.style.filter = "alpha(opacity=" + (cur + speed) + ")";
-        obj.style.opacity = (cur + speed) / 100;
-      } else {
-        obj.style[attr] = cur + speed + "px";
-      }
-    }
-
-  }, 30)
-}
-
-/**
- * 触发全屏事件
- * @type {HTMLElement}
- */
-var iconZoom = document.getElementById("iconZoom");
-iconZoom.addEventListener("click",function(){
-  var elem = document.body;
-
-  var isInFullScreen = (document.msFullscreenElement && document.msFullscreenElement !== null) ||  (document.mozFullScreen || document.webkitIsFullScreen);
-
-  if (isInFullScreen) {
-    cancelFullScreen(document);
-    iconZoom.setAttribute("class","icon-gernal icon_zoom");
-  } else {
-    requestFullScreen(elem);
-    iconZoom.setAttribute("class","icon-gernal icon_zoomout");
-  }
-  return false;
-});
-
-/**
- * 取消全屏
- * @param el
- */
-function cancelFullScreen(el) {
-  var requestMethod = el.cancelFullScreen||el.webkitCancelFullScreen||el.mozCancelFullScreen||el.msExitFullscreen;
-  if (requestMethod) {
-    requestMethod.call(el);
-  } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-    var wscript = new ActiveXObject("WScript.Shell");
-    if (wscript !== null) {
-      wscript.SendKeys("{F11}");
-    }
-  }
-}
-
-/**
- * 全屏显示
- * @param el
- * @returns {boolean}
- */
-function requestFullScreen(el) {
-  var requestMethod = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-
-  if (requestMethod) {
-    requestMethod.call(el);
-  } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-    var wscript = new ActiveXObject("WScript.Shell");
-    if (wscript !== null) {
-      wscript.SendKeys("{F11}");
-    }
-  }
-  return false
-}

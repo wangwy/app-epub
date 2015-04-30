@@ -215,7 +215,7 @@ EPUB.Book.prototype.createToc = function (doc) {
           }).then(function () {
             that.render.display(1);
           });
-          document.addEventListener("mousewheel",wheelPage,false);
+          document.addEventListener("mousewheel",that.wheelPage,false);
           document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
           document.getElementsByClassName("menubox")[0].style.display = "none";
         });
@@ -344,7 +344,7 @@ EPUB.Book.prototype.createNote = function (notelist) {
           var num = that.render.calculateDisplayNum(parseInt(item.position.split(",")[0]));
           that.render.display(num);
         });
-        document.addEventListener("mousewheel",wheelPage,false);
+        document.addEventListener("mousewheel",that.wheelPage,false);
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
       });
@@ -438,7 +438,7 @@ EPUB.Book.prototype.createMark = function (marklist) {
           var num = that.render.calculateDisplayNum(parseInt(value.position));
           that.render.display(num);
         });
-        document.addEventListener("mousewheel",wheelPage,false);
+        document.addEventListener("mousewheel",that.wheelPage,false);
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
       });
@@ -490,4 +490,64 @@ EPUB.Book.prototype.getChapterMarks = function (spineNum) {
     }
   });
   return marks;
+};
+
+/**
+ * 鼠标滚动时翻页函数
+ * @param e
+ */
+EPUB.Book.prototype.wheelPage = function(e){
+  if(e.wheelDelta > 0){
+    book.prevPage();
+  }else{
+    book.nextPage();
+  }
+};
+
+/**
+ * 取消全屏
+ * @param el
+ */
+EPUB.Book.prototype.cancelFullScreen = function(el){
+  var requestMethod = el.cancelFullScreen||el.webkitCancelFullScreen||el.mozCancelFullScreen||el.msExitFullscreen;
+  if (requestMethod) {
+    requestMethod.call(el);
+  } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+    var wscript = new ActiveXObject("WScript.Shell");
+    if (wscript !== null) {
+      wscript.SendKeys("{F11}");
+    }
+  }
+};
+
+/**
+ * 全屏显示
+ * @param el
+ * @returns {boolean}
+ */
+EPUB.Book.prototype.requestFullScreen = function(el){
+  var requestMethod = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+
+  if (requestMethod) {
+    requestMethod.call(el);
+  } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+    var wscript = new ActiveXObject("WScript.Shell");
+    if (wscript !== null) {
+      wscript.SendKeys("{F11}");
+    }
+  }
+  return false
+};
+
+/**
+ * 显示目录、书签、笔记
+ * @param num
+ */
+EPUB.Book.prototype.showMenuBox = function(num){
+  document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
+  document.getElementsByClassName("menubox")[0].style.display = "";
+  var menubox = document.getElementsByClassName("menubox")[0];
+  EPUB.Utils.startrun(menubox, "right", num, function () {
+    EPUB.Utils.startrun(menubox, "opacity", "100")
+  });
 };

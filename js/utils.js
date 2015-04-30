@@ -206,3 +206,39 @@ EPUB.Utils.JsonToFormData = function (json) {
   }
   return string.slice(0, -1);
 };
+
+/**
+ * 模拟jquery的animate函数
+ * @param obj
+ * @param attr
+ * @param target
+ * @param fn
+ */
+EPUB.Utils.startrun = function(obj, attr, target, fn){
+  var that = this;
+  clearInterval(obj.timer);
+  obj.timer = setInterval(function () {
+    var cur = 0;
+    if (attr == "opacity") {
+      cur = Math.round(parseFloat(that.getCss(obj, attr)) * 100);
+    } else {
+      cur = parseInt(that.getCss(obj, attr));
+    }
+    var speed = (target - cur) / 8;
+    speed = speed > 0 ? Math.ceil(speed) : Math.floor(speed);
+
+    if (cur == target) {
+      clearInterval(obj.timer);
+      if (fn) {
+        fn();
+      }
+    } else {
+      if (attr == "opacity") {
+        obj.style.filter = "alpha(opacity=" + (cur + speed) + ")";
+        obj.style.opacity = (cur + speed) / 100;
+      } else {
+        obj.style[attr] = cur + speed + "px";
+      }
+    }
+  }, 30)
+};
