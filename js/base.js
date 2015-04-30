@@ -7,31 +7,31 @@ EPUB.LINEGAP = 15;
 EPUB.ELEMENTS = {
   "p": {
     fontSize: 18,
-    fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
+    fontFamily: "SimSun, 宋体, 'Heiti SC'"
   },
   "a": {
     fontSize: 18,
-    fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
+    fontFamily: "SimSun, 宋体, 'Heiti SC"
   },
   "span": {
     fontSize: 18,
-    fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
+    fontFamily: "SimSun, 宋体, 'Heiti SC"
   },
   "h1": {
     fontSize: 22,
-    fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
+    fontFamily: "SimSun, 宋体, 'Heiti SC"
   },
   "h2": {
     fontSize: 20,
-    fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
+    fontFamily: "SimSun, 宋体, 'Heiti SC"
   },
   "h3": {
     fontSize: 18,
-    fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
+    fontFamily: "SimSun, 宋体, 'Heiti SC"
   },
   "img": {
     fontSize: 0,
-    fontFamily: "Monospace, 'Microsoft Yahei', 微软雅黑, STHeiti, Hei,'Heiti SC',黑体"
+    fontFamily: "SimSun, 宋体, 'Heiti SC"
   }
 };
 

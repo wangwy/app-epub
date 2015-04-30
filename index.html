@@ -127,7 +127,7 @@
 
             //获取书籍
             $("#b09").click(function () {
-                var data = {"user_id": "1", "book_id": "24", "auth_token": "1111"};
+                var data = {"user_id": "1", "book_id": "21", "auth_token": "1111"};
                 EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/get_epub_info", data).then(function (r) {
                     $("#getBook").html(JSON.stringify(r));
                 });

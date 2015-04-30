@@ -62,7 +62,7 @@ function tab(o, s, cb, ev) {
 }
 
 tab.prototype = {
-  ACTIVE: function () {
+  ACTIVE: function (evt) {
     var $ = function (o) {
       return document.getElementById(o)
     };
@@ -75,12 +75,12 @@ tab.prototype = {
     }
     this.callBack.call(this);
     this['link']['cur'] = this;
+    evt.stopPropagation();
   }
 };
 new tab('test2_li_now_');
 
 var width = getComputedStyle(document.getElementsByClassName("menubox")[0])["width"].slice(0, -2);
-EPUB.SHOWMENU = true;
 var btnMenu = document.getElementById("btnMenu");
 
 var menubox = document.getElementsByClassName("menubox")[0];
@@ -99,24 +99,33 @@ function wheelPage(e){
 
 document.addEventListener("mousewheel",wheelPage,false);
 
-//控制目录显示或者隐藏
-btnMenu.addEventListener("click", function () {
+/**
+ * 显示目录、书签、笔记
+ * @param num
+ */
+function showMenuBox(num){
   document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
   document.getElementsByClassName("menubox")[0].style.display = "";
-  if (EPUB.SHOWMENU) {
-    //显示目录
-    startrun(menubox, "right", 0, function () {
-      startrun(menubox, "opacity", "100")
-    });
+  startrun(menubox, "right", num, function () {
+    startrun(menubox, "opacity", "100")
+  });
+}
+
+//显示目录、书签、笔记
+btnMenu.addEventListener("click", function (e) {
+  if (document.getElementById('menubox_bg').style.display == 'none') {
+    showMenuBox(0);
+    e.stopPropagation();
     document.removeEventListener("mousewheel",wheelPage,false);
-    EPUB.SHOWMENU = false;
-  } else {
-    //隐藏目录
+  }
+});
+
+//隐藏目录、书签、笔记
+document.addEventListener("click",function(e){
+  if(document.getElementById('menubox_bg').style.display != 'none'){
+    showMenuBox(-width);
+    e.stopPropagation();
     document.addEventListener("mousewheel",wheelPage,false);
-    startrun(menubox, "right", -width, function () {
-      startrun(menubox, "opacity", "100");
-    });
-    EPUB.SHOWMENU = true;
   }
 });
 

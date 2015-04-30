@@ -218,7 +218,6 @@ EPUB.Book.prototype.createToc = function (doc) {
           document.addEventListener("mousewheel",wheelPage,false);
           document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
           document.getElementsByClassName("menubox")[0].style.display = "none";
-          EPUB.SHOWMENU = true;
         });
         a.textContent = item.label;
         li.appendChild(a);
@@ -348,7 +347,6 @@ EPUB.Book.prototype.createNote = function (notelist) {
         document.addEventListener("mousewheel",wheelPage,false);
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
-        EPUB.SHOWMENU = true;
       });
       div.appendChild(p);
 
@@ -443,7 +441,6 @@ EPUB.Book.prototype.createMark = function (marklist) {
         document.addEventListener("mousewheel",wheelPage,false);
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
-        EPUB.SHOWMENU = true;
       });
       markListDiv.appendChild(markListP);
     });
