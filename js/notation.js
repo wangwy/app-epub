@@ -37,6 +37,10 @@ EPUB.Notation.prototype.show = function (x, y) {
   y = y > ym ? ym : y < wy ? wy : y;
   this.node.style.left = x + "px";
   this.node.style.top = y + "px";
+
+  this.embedNode.style.left = x + "px";
+  this.embedNode.style.top = y + "px";
+  this.embedNode.style.display = "block";
 };
 
 /**
@@ -63,6 +67,10 @@ EPUB.Notation.prototype.showHasDel = function (x, y) {
   y = y > ym ? ym : y < wy ? wy : y;
   this.nodeHasDel.style.left = x + "px";
   this.nodeHasDel.style.top = y + "px";
+
+  this.embedNode.style.left = x + "px";
+  this.embedNode.style.top = y + "px";
+  this.embedNode.style.display = "block";
 };
 
 /**
@@ -72,6 +80,10 @@ EPUB.Notation.prototype.hideHasNote = function () {
   this.node.style.left = "0px";
   this.node.style.top = "0px";
   this.node.style.display = "none";
+
+  this.embedNode.style.left = "0px";
+  this.embedNode.style.top = "0px";
+  this.embedNode.style.display = "none";
 };
 
 /**
@@ -81,6 +93,10 @@ EPUB.Notation.prototype.hideHasDel = function () {
   this.nodeHasDel.style.left = "0px";
   this.nodeHasDel.style.top = "0px";
   this.nodeHasDel.style.display = "none";
+
+  this.embedNode.style.left = "0px";
+  this.embedNode.style.top = "0px";
+  this.embedNode.style.display = "none";
 };
 
 /**
@@ -89,6 +105,7 @@ EPUB.Notation.prototype.hideHasDel = function () {
 EPUB.Notation.prototype.initialDialog = function () {
   var that = this;
 
+  this.embedNode = document.getElementById("embed");
   //有笔记功能的功能框
   this.node = document.getElementById("noteSearch");
   this.node.addEventListener("click", function (e) {
@@ -346,7 +363,7 @@ EPUB.Notation.prototype.sendNotation = function () {
 
       that.createUnderline(r.note_id);
 
-      that.createTextCircle(r.note_id, document.getElementById("comment-content").value);
+      that.createTextCircle(r.note_id, data.note_content);
 
       that.render.book.getNotes().then(function () {
         that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
