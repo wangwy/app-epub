@@ -37,10 +37,6 @@ EPUB.Notation.prototype.show = function (x, y) {
   y = y > ym ? ym : y < wy ? wy : y;
   this.node.style.left = x + "px";
   this.node.style.top = y + "px";
-
-  this.embedNode.style.left = x + "px";
-  this.embedNode.style.top = y + "px";
-  this.embedNode.style.display = "block";
 };
 
 /**
@@ -67,10 +63,6 @@ EPUB.Notation.prototype.showHasDel = function (x, y) {
   y = y > ym ? ym : y < wy ? wy : y;
   this.nodeHasDel.style.left = x + "px";
   this.nodeHasDel.style.top = y + "px";
-
-  this.embedNode.style.left = x + "px";
-  this.embedNode.style.top = y + "px";
-  this.embedNode.style.display = "block";
 };
 
 /**
@@ -80,10 +72,6 @@ EPUB.Notation.prototype.hideHasNote = function () {
   this.node.style.left = "0px";
   this.node.style.top = "0px";
   this.node.style.display = "none";
-
-  this.embedNode.style.left = "0px";
-  this.embedNode.style.top = "0px";
-  this.embedNode.style.display = "none";
 };
 
 /**
@@ -93,10 +81,6 @@ EPUB.Notation.prototype.hideHasDel = function () {
   this.nodeHasDel.style.left = "0px";
   this.nodeHasDel.style.top = "0px";
   this.nodeHasDel.style.display = "none";
-
-  this.embedNode.style.left = "0px";
-  this.embedNode.style.top = "0px";
-  this.embedNode.style.display = "none";
 };
 
 /**
@@ -104,8 +88,6 @@ EPUB.Notation.prototype.hideHasDel = function () {
  */
 EPUB.Notation.prototype.initialDialog = function () {
   var that = this;
-
-  this.embedNode = document.getElementById("embed");
   //有笔记功能的功能框
   this.node = document.getElementById("noteSearch");
   this.node.addEventListener("click", function (e) {
@@ -132,11 +114,23 @@ EPUB.Notation.prototype.initialDialog = function () {
   img.addEventListener("click", function () {
     that.hideDialog();
   });
+
+  var commentContent = document.getElementById("comment-content");
+  commentContent.addEventListener("blur",function(){
+    if(commentContent.value == ""){
+      commentContent.value = "留下你的笔记";
+    }
+  });
+  commentContent.addEventListener("focus",function(){
+    if(commentContent.value == "留下你的笔记"){
+      commentContent.value = "";
+    }
+  });
   var saveButton = document.getElementById("noteSave");
   saveButton.addEventListener("click", function () {
     if(that.getString(that.svgSelected).length > 255){
       alert("选择内容过大");
-    }else if(document.getElementById("comment-content").value.length > 255){
+    }else if(commentContent.value.length > 255){
       alert("笔记内容过大");
     } else{
       that.sendNotation();
@@ -186,11 +180,13 @@ EPUB.Notation.prototype.initNotation = function () {
     showDialog.addEventListener('click', function () {
       that.showDialog();
     });
+    document.removeEventListener("mousewheel", that.render.book.wheelPage, false);
   } else {
     this.hideHasNote();
     this.hideHasDel();
     this.hideShareNode();
     this.hideText();
+    document.addEventListener("mousewheel", that.render.book.wheelPage, false);
   }
 };
 
@@ -216,12 +212,14 @@ EPUB.Notation.prototype.getString = function (node) {
  * @param text
  */
 EPUB.Notation.prototype.showText = function (x, y, text) {
+  var that = this;
+  document.removeEventListener("mousewheel", that.render.book.wheelPage, false);
   this.textNode.getElementsByTagName("p")[0].textContent = text;
-  var height = EPUB.Utils.getCss(this.textNode, "height").slice(0, -2);
+  this.textNode.style.display = "block";
+  var height = this.textNode.offsetHeight;
   y + parseInt(height) > this.render.height ? y = y - height : y;
   this.textNode.style.left = x + "px";
   this.textNode.style.top = y + "px";
-  this.textNode.style.display = "block";
 };
 
 /**
@@ -237,6 +235,8 @@ EPUB.Notation.prototype.showDialog = function () {
  * 隐藏笔记内容窗口
  */
 EPUB.Notation.prototype.hideText = function () {
+  var that = this;
+  document.addEventListener("mousewheel", that.render.book.wheelPage, false);
   this.textNode.style.left = "0px";
   this.textNode.style.top = "0px";
   this.textNode.style.display = "none";

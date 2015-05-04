@@ -1288,8 +1288,12 @@ g,circle{
 	position:absolute;
 	top:0;
 	left:0;
-	width:145px;
-	height:200px;
+	max-width:145px;
+	min-width:15px;
+	width:auto;
+	height:auto;
+	min-height:15px;
+	max-height:180px;
 	border:solid 1px #c2c2c2;
 	background:#fbf6ec;
 	color:#7d3a08;
