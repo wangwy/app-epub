@@ -129,7 +129,8 @@ EPUB.Format.prototype.formatManifest = function (xml) {
 EPUB.Format.prototype.formatSpine = function (spineNode, manifest) {
   var spine = [];
   this.spineIndex = {};
-  var selected = spineNode.getElementsByTagName("itemref"),
+//  var selected = spineNode.getElementsByTagName("itemref"),
+  var selected = spineNode.querySelectorAll("itemref"),
       items = Array.prototype.slice.call(selected);
   items.forEach(function (item, index) {
     var id = item.getAttribute("idref"),
