@@ -248,7 +248,7 @@ EPUB.Notation.prototype.showDialog = function () {
       notesSelectedPosition = notesSelectedPosition.concat(value.position.split(","));
     });
     notesSelectedPosition = notesSelectedPosition.concat([this.selectedOffset().startOffset.toString(), this.selectedOffset().endOffset.toString()]);
-    this.svgSelected = svgArray.slice(Math.min.apply(this, notesSelectedPosition), Math.max.apply(this, notesSelectedPosition))
+    this.svgSelected = svgArray.slice(Math.min.apply(this, notesSelectedPosition)-that.render.position, Math.max.apply(this, notesSelectedPosition)-that.render.position);
   }
   this.dialogNode.getElementsByClassName("pup_hight")[0].textContent = this.getString(this.svgSelected);
   if(notesSelectedString != ""){
