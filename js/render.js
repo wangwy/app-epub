@@ -85,7 +85,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
       this.currentLine = new Array();
       this.currentPage.push(this.currentLine);
       if (node.nodeName == "img") {
-        this.currentPositionY -= this.lineGap/2;
+        this.currentPositionY -= this.lineGap / 2;
         this.imageSetting(node);
       }
     }
@@ -105,7 +105,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
 EPUB.Render.prototype.imageSetting = function (ele) {
   var url = EPUB.Utils.parseUrl(ele.getAttribute("src"));
   var img = this.imagesAll[url.filename];
-  var hScale = img.height / (this.height - this.currentPositionY - this.lineGap*2);
+  var hScale = img.height / (this.height - this.currentPositionY - this.lineGap * 2);
   var wScale = img.width / this.width;
   var image;
   var maxScale = Math.max(hScale, wScale);
@@ -120,8 +120,8 @@ EPUB.Render.prototype.imageSetting = function (ele) {
     this.currentLine.push(image);
     this.currentLine = new Array();
     this.currentPage.push(this.currentLine);
-    this.currentPositionY += (height+this.lineGap * 1.5)
-  }else if(hScale > 5){
+    this.currentPositionY += (height + this.lineGap * 1.5)
+  } else if (hScale > 5) {
     hScale = img.height / this.height;
     wScale = img.width / this.width;
     maxScale = Math.max(hScale, wScale);
@@ -147,7 +147,7 @@ EPUB.Render.prototype.imageSetting = function (ele) {
     this.currentLine.push(image);
     this.currentLine = new Array();
     this.currentPage.push(this.currentLine);
-    this.currentPositionY += (height+this.lineGap * 1.5);
+    this.currentPositionY += (height + this.lineGap * 1.5);
   }
 };
 
@@ -162,16 +162,9 @@ EPUB.Render.prototype.typeSetting = function (ele) {
     var charCode = txt.charCodeAt(i);
     var rect, glyph, xOffset;
     this.changeLineOrPage(this.width, this.height, eleStyle, charCode);
-    if (this.paragraph.isDbcCase(charCode)) {
-      if (this.paragraph.isSpace(charCode) && this.currentPositionX == 0) {
-        rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, 0, eleStyle.fontSize);
-      } else {
-        xOffset = this.getXOffsetByCharCode(eleStyle, charCode);
-        rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, xOffset, eleStyle.fontSize);
-        this.currentPositionX += xOffset;
-      }
-    }
-    else {
+    if (this.paragraph.isSpace(charCode) && this.currentPositionX == 0) {//去掉每行最开始时空格
+      rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, 0, eleStyle.fontSize);
+    } else {
       xOffset = this.getXOffsetByCharCode(eleStyle, charCode);
       rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, xOffset, eleStyle.fontSize);
       this.currentPositionX += xOffset;
@@ -185,15 +178,17 @@ EPUB.Render.prototype.typeSetting = function (ele) {
  * 换行，换页计算
  * @param width
  * @param height
- * @param length
+ * @param eleStyle
+ * @param charCode
  */
 EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, charCode) {
   var offset = eleStyle.fontSize;
   //换行计算
   if ((this.currentPositionX + offset > width) && ((this.paragraph.isPunctuation(charCode)) || this.paragraph.isEnglish(charCode))) {
-
+    //当行尾为标点符号或者是英文时不换行
   } else {
     if (this.currentPositionX + offset > width) {
+      this.changeLine = [];//用于存储当缩小比例小于0.8时要截取每行最后的英文字符换
       if (this.currentPositionX >= width) {
         this.reSettingLine(width);
       }
@@ -201,6 +196,17 @@ EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, char
       this.currentPositionX = 0;
       this.currentLine = new Array();
       this.currentPage.push(this.currentLine);
+      if (this.changeLine.length > 0) {//将里面存的值重新计算x,y坐标并将其存到另一行中
+        var glyph;
+        for (var i = 0; i < this.changeLine.length; i++) {
+          glyph = this.changeLine[i];
+          glyph.rect.px = this.currentPositionX;
+          this.currentPositionX += glyph.rect.width;
+          glyph.rect.py = this.currentPositionY;
+          this.currentLine.push(glyph);
+        }
+        this.changeLine = [];
+      }
     }
   }
   //换页计算
@@ -218,35 +224,55 @@ EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, char
  * @param width
  */
 EPUB.Render.prototype.reSettingLine = function (width) {
+  var x = this.currentLine[0].rect.px, glyph;
+  var offsetScale = this.getTextOffsetScale(width);
+  if (offsetScale >= 0.8) {
+    for (var j = 0, length = this.currentLine.length; j < length; j++) {
+      if (j == 0 && this.paragraph.isSpace(this.currentLine[0].txt.charCodeAt(0))) {
+        continue;
+      } else {
+        glyph = this.currentLine[j];
+        glyph.rect.px = x;
+        if (this.paragraph.isDbcCase(glyph.txt.charCodeAt(0))) {
+          glyph.rect.width = offsetScale * glyph.rect.width;
+          x += glyph.rect.width;
+        } else {
+          x += glyph.rect.width;
+        }
+      }
+    }
+  } else {//当缩小比例小于0.8时要截取每行最后的英文字符换到另一行
+    var oldLen = this.currentLine.length;
+    for (var len = oldLen - 1; len > 0; len--) {
+      if (this.paragraph.isEnglish(this.currentLine[len].txt.charCodeAt(0)) || oldLen - len < 4) {
+        this.changeLine.unshift(this.currentLine.pop());
+      } else {
+        break;
+      }
+    }
+    this.reSettingLine(width);
+  }
+};
+
+/**
+ * 获得每个text元素宽度改变比例（中文字符不变）
+ * @param width
+ * @returns {number}
+ */
+EPUB.Render.prototype.getTextOffsetScale = function (width) {
   var length = this.currentLine.length;
-  var enNum = 0, chLength = 0, glyph;
+  var unChLen = 0, chLen = 0, glyph;
   for (var i = 0; i < length; i++) {
     glyph = this.currentLine[i];
-    if (glyph.type == "text") {
-      if (this.paragraph.isDbcCase(glyph.txt.charCodeAt(0))) {
-        enNum++;
-      } else {
-        chLength += glyph.rect.width;
-      }
+    if (this.paragraph.isDbcCase(glyph.txt.charCodeAt(0))) {
+      chLen += glyph.rect.width;
+    } else {
+      unChLen += glyph.rect.width;
     }
   }
   var x = this.currentLine[0].rect.px;
-  var offset = (width - chLength - x) / enNum;
-  for (var j = 0, length = this.currentLine.length; j < length; j++) {
-    if (j == 0 && this.paragraph.isSpace(this.currentLine[0].txt.charCodeAt(0))) {
-      continue;
-    } else {
-      glyph = this.currentLine[j];
-      glyph.rect.px = x;
-      if (this.paragraph.isDbcCase(glyph.txt.charCodeAt(0))) {
-//        glyph.rect.fontSize = (offset / glyph.rect.width) * glyph.rect.fontSize;
-        glyph.rect.width = offset;
-        x += offset;
-      } else {
-        x += glyph.rect.width;
-      }
-    }
-  }
+  var offsetScale = (width - unChLen - x) / chLen;
+  return offsetScale;
 };
 
 /**
@@ -265,7 +291,7 @@ EPUB.Render.prototype.display = function (index) {
       if (glyph.type == "text") {
         textHTML += "<text class=\"context\"  font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
       } else if (glyph.type == "image") {
-        textHTML += "<image class=\"context\" xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "' data-height = '"+glyph.h+"'/>";
+        textHTML += "<image class=\"context\" xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "' data-height = '" + glyph.h + "'/>";
       }
     }
   }
@@ -279,7 +305,7 @@ EPUB.Render.prototype.display = function (index) {
  * @param index
  * @returns {number}
  */
-EPUB.Render.prototype.getPosition = function(index){
+EPUB.Render.prototype.getPosition = function (index) {
   var pageStartPosition = 0;
   for (var i = 0; i < index - 1; i++) {
     for (var j = 0; j < this.pages[i].length; j++) {
@@ -288,6 +314,7 @@ EPUB.Render.prototype.getPosition = function(index){
   }
   return pageStartPosition;
 };
+
 /**
  * 根据偏移量计算显示页码
  * @param offset
