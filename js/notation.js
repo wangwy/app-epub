@@ -257,7 +257,9 @@ EPUB.Notation.prototype.showDialog = function () {
     });
 
     notesSelected.forEach(function (value) {
-      notesSelectedString += value.note_content + "\n";
+      if(value.note_content != "留下你的笔记"){
+        notesSelectedString += value.note_content + "\n";
+      }
       notesSelectedPosition = notesSelectedPosition.concat(value.position.split(","));
     });
     notesSelectedPosition = notesSelectedPosition.concat([this.selectedOffset().startOffset.toString(), this.selectedOffset().endOffset.toString()]);
@@ -390,7 +392,9 @@ EPUB.Notation.prototype.saveNote = function () {
 
       that.createUnderline(r.note_id);
 
-      that.createTextCircle(r.note_id, data.note_content);
+      if(data.note_content != "留下你的笔记"){
+        that.createTextCircle(r.note_id, data.note_content);
+      }
 
       that.render.book.getNotes().then(function () {
         that.render.notes = that.render.book.getChapterNotes(that.render.book.spineNum);
@@ -572,14 +576,20 @@ EPUB.Notation.prototype.showNotation = function () {
         svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
-        that.createTextCircle(value.id, value.note_content);
+
+        if(value.note_content != "留下你的笔记"){
+          that.createTextCircle(value.id, value.note_content);
+        }
       } else if (pageStartLength <= startOffset && pageEndLength >= endOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = endOffset - pageStartLength;
         svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
-        that.createTextCircle(value.id, value.note_content);
+
+        if(value.note_content != "留下你的笔记"){
+          that.createTextCircle(value.id, value.note_content);
+        }
       } else if (pageStartLength <= startOffset && pageEndLength < endOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = pageEndLength - pageStartLength;
