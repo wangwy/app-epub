@@ -46,11 +46,7 @@ RSVP.on('error', function (reason) {
       if (document.getElementById('menubox_bg').style.display == 'none') {
         book.showMenuBox(0);
         e.stopPropagation();
-        if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
-          document.removeEventListener("DOMMouseScroll",book.wheelPage,false);
-        }else{
-          document.removeEventListener("mousewheel", book.wheelPage, false);
-        }
+        book.remPageListener();
       }
     });
 
@@ -60,19 +56,11 @@ RSVP.on('error', function (reason) {
         var width = getComputedStyle(document.getElementsByClassName("menubox")[0])["width"].slice(0, -2);
         book.showMenuBox(-width);
         e.stopPropagation();
-        if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
-          document.addEventListener("DOMMouseScroll",book.wheelPage,false);
-        }else{
-          document.addEventListener("mousewheel", book.wheelPage, false);
-        }
+        book.addPageListener();
       }
     });
 
-    if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
-      document.addEventListener("DOMMouseScroll",book.wheelPage,false);
-    }else{
-      document.addEventListener("mousewheel", book.wheelPage, false);
-    }
+    book.addPageListener();
 
     return book;
   }

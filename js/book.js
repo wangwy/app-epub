@@ -216,11 +216,7 @@ EPUB.Book.prototype.createToc = function (doc) {
             that.render.display(1);
           });
 
-          if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
-            document.addEventListener("DOMMouseScroll",that.wheelPage,false);
-          }else{
-            document.addEventListener("mousewheel", that.wheelPage, false);
-          }
+          that.addPageListener();
           document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
           document.getElementsByClassName("menubox")[0].style.display = "none";
         });
@@ -350,11 +346,7 @@ EPUB.Book.prototype.createNote = function (notelist) {
           that.render.display(num);
         });
 
-        if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
-          document.addEventListener("DOMMouseScroll",that.wheelPage,false);
-        }else{
-          document.addEventListener("mousewheel", that.wheelPage, false);
-        }
+        that.addPageListener();
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
       });
@@ -449,11 +441,7 @@ EPUB.Book.prototype.createMark = function (marklist) {
           that.render.display(num);
         });
 
-        if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
-          document.addEventListener("DOMMouseScroll",that.wheelPage,false);
-        }else{
-          document.addEventListener("mousewheel", that.wheelPage, false);
-        }
+        that.addPageListener();
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
       });
@@ -508,13 +496,13 @@ EPUB.Book.prototype.getChapterMarks = function (spineNum) {
 };
 
 /**
- * 鼠标滚动时翻页函数
+ * 鼠标滚动、按键盘方向键时翻页函数
  * @param e
  */
-EPUB.Book.prototype.wheelPage = function(e){
-  if(e.wheelDelta > 0 || e.detail < 0){
+EPUB.Book.prototype.pageHandle = function (e) {
+  if (e.wheelDelta > 0 || e.detail < 0 || e.keyCode == 37 || e.keyCode == 38) {
     book.prevPage();
-  }else{
+  } else if (e.wheelDelta < 0 || e.detail > 0 || e.keyCode == 39 || e.keyCode == 40) {
     book.nextPage();
   }
 };
@@ -523,8 +511,8 @@ EPUB.Book.prototype.wheelPage = function(e){
  * 取消全屏
  * @param el
  */
-EPUB.Book.prototype.cancelFullScreen = function(el){
-  var requestMethod = el.cancelFullScreen||el.webkitCancelFullScreen||el.mozCancelFullScreen||el.msExitFullscreen;
+EPUB.Book.prototype.cancelFullScreen = function (el) {
+  var requestMethod = el.cancelFullScreen || el.webkitCancelFullScreen || el.mozCancelFullScreen || el.msExitFullscreen;
   if (requestMethod) {
     requestMethod.call(el);
   } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
@@ -540,7 +528,7 @@ EPUB.Book.prototype.cancelFullScreen = function(el){
  * @param el
  * @returns {boolean}
  */
-EPUB.Book.prototype.requestFullScreen = function(el){
+EPUB.Book.prototype.requestFullScreen = function (el) {
   var requestMethod = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
 
   if (requestMethod) {
@@ -558,11 +546,37 @@ EPUB.Book.prototype.requestFullScreen = function(el){
  * 显示目录、书签、笔记
  * @param num
  */
-EPUB.Book.prototype.showMenuBox = function(num){
+EPUB.Book.prototype.showMenuBox = function (num) {
   document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
   document.getElementsByClassName("menubox")[0].style.display = "";
   var menubox = document.getElementsByClassName("menubox")[0];
   EPUB.Utils.startrun(menubox, "right", num, function () {
     EPUB.Utils.startrun(menubox, "opacity", "100")
   });
+};
+
+/**
+ * 添加鼠标滚动翻页、键盘翻页事件
+ */
+EPUB.Book.prototype.addPageListener = function () {
+  var that = this;
+  if (navigator.userAgent.indexOf("Firefox") !== -1) {//判断是否是火狐浏览器
+    document.addEventListener("DOMMouseScroll", that.pageHandle, false);
+  } else {
+    document.addEventListener("mousewheel", that.pageHandle, false);
+  }
+  document.addEventListener("keydown", that.pageHandle, false);
+};
+
+/**
+ * 移除鼠标滚动翻页、键盘翻页事件
+ */
+EPUB.Book.prototype.remPageListener = function () {
+  var that = this;
+  if (navigator.userAgent.indexOf("Firefox") !== -1) {//判断是否是火狐浏览器
+    document.removeEventListener("DOMMouseScroll", that.pageHandle, false);
+  } else {
+    document.removeEventListener("mousewheel", that.pageHandle, false);
+  }
+  document.removeEventListener("keydown", that.pageHandle, false);
 };
