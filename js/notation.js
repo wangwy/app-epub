@@ -181,13 +181,22 @@ EPUB.Notation.prototype.initNotation = function () {
     var client = new ZeroClipboard(copyButton);
 
     window.jiathis_config.summary = copyText;
-    document.removeEventListener("mousewheel", that.render.book.wheelPage, false);
+    if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
+      document.removeEventListener("DOMMouseScroll",that.render.book.wheelPage,false);
+    }else{
+      document.removeEventListener("mousewheel", that.render.book.wheelPage, false);
+    }
   } else {
     this.hideHasNote();
     this.hideHasDel();
     this.hideShareNode();
     this.hideText();
-    document.addEventListener("mousewheel", that.render.book.wheelPage, false);
+
+    if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
+      document.addEventListener("DOMMouseScroll",that.render.book.wheelPage,false);
+    }else{
+      document.addEventListener("mousewheel", that.render.book.wheelPage, false);
+    }
   }
 };
 
@@ -214,7 +223,11 @@ EPUB.Notation.prototype.getString = function (node) {
  */
 EPUB.Notation.prototype.showText = function (x, y, text) {
   var that = this;
-  document.removeEventListener("mousewheel", that.render.book.wheelPage, false);
+  if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
+    document.removeEventListener("DOMMouseScroll",that.render.book.wheelPage,false);
+  }else{
+    document.removeEventListener("mousewheel", that.render.book.wheelPage, false);
+  }
   this.textNode.getElementsByTagName("p")[0].textContent = text;
   this.textNode.style.display = "block";
   var height = this.textNode.offsetHeight;
@@ -263,7 +276,11 @@ EPUB.Notation.prototype.showDialog = function () {
  */
 EPUB.Notation.prototype.hideText = function () {
   var that = this;
-  document.addEventListener("mousewheel", that.render.book.wheelPage, false);
+  if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
+    document.addEventListener("DOMMouseScroll",that.render.book.wheelPage,false);
+  }else{
+    document.addEventListener("mousewheel", that.render.book.wheelPage, false);
+  }
   this.textNode.style.left = "0px";
   this.textNode.style.top = "0px";
   this.textNode.style.display = "none";

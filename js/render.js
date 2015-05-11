@@ -91,6 +91,7 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
     }
     if (nodeType == 3 && !(/^\s+$/.test(node.nodeValue))) {
       this.typeSetting(node);
+      this.reSettingLine(this.width);//每个段落结束判断一行是否重新需要排列
     } else if (nodeType == 1 || nodeType == 9 || nodeType == 11) {
       this.getAllTextNodeContextAndRender(node);
     }
@@ -161,7 +162,7 @@ EPUB.Render.prototype.typeSetting = function (ele) {
     var char = txt.charAt(i);
     var charCode = txt.charCodeAt(i);
     var rect, glyph, xOffset;
-    this.changeLineOrPage(this.width, this.height, eleStyle, charCode);
+    this.changeLineOrPage(this.width, this.height, eleStyle, charCode, char);
     if (this.paragraph.isSpace(charCode) && this.currentPositionX == 0) {//去掉每行最开始时空格
       rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, 0, eleStyle.fontSize);
     } else {
@@ -181,10 +182,11 @@ EPUB.Render.prototype.typeSetting = function (ele) {
  * @param eleStyle
  * @param charCode
  */
-EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, charCode) {
+EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, charCode, char) {
   var offset = eleStyle.fontSize;
+
   //换行计算
-  if ((this.currentPositionX + offset > width) && ((this.paragraph.isPunctuation(charCode)) || this.paragraph.isEnglish(charCode))) {
+  if ((this.currentPositionX + offset > width) && (this.paragraph.isEnglish(charCode) || this.paragraph.isNotChPu(charCode))) {
     //当行尾为标点符号或者是英文时不换行
   } else {
     if (this.currentPositionX + offset > width) {
@@ -224,33 +226,36 @@ EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, char
  * @param width
  */
 EPUB.Render.prototype.reSettingLine = function (width) {
-  var x = this.currentLine[0].rect.px, glyph;
-  var offsetScale = this.getTextOffsetScale(width);
-  if (offsetScale >= 0.8) {
-    for (var j = 0, length = this.currentLine.length; j < length; j++) {
-      if (j == 0 && this.paragraph.isSpace(this.currentLine[0].txt.charCodeAt(0))) {
-        continue;
-      } else {
-        glyph = this.currentLine[j];
-        glyph.rect.px = x;
-        if (this.paragraph.isDbcCase(glyph.txt.charCodeAt(0))) {
-          glyph.rect.width = offsetScale * glyph.rect.width;
-          x += glyph.rect.width;
+  if(this.currentPositionX > width){
+    var x = this.currentLine[0].rect.px, glyph;
+    var offsetScale = this.getTextOffsetScale(width);
+    if (offsetScale >= 0.8) {
+      for (var j = 0, length = this.currentLine.length; j < length; j++) {
+        if (j == 0 && this.paragraph.isSpace(this.currentLine[0].txt.charCodeAt(0))) {
+          continue;
         } else {
-          x += glyph.rect.width;
+          glyph = this.currentLine[j];
+          glyph.rect.px = x;
+          if (this.paragraph.isDbcCase(glyph.txt.charCodeAt(0))) {
+            glyph.rect.width = offsetScale * glyph.rect.width;
+            x += glyph.rect.width;
+          } else {
+            x += glyph.rect.width;
+          }
         }
       }
-    }
-  } else {//当缩小比例小于0.8时要截取每行最后的英文字符换到另一行
-    var oldLen = this.currentLine.length;
-    for (var len = oldLen - 1; len > 0; len--) {
-      if (this.paragraph.isEnglish(this.currentLine[len].txt.charCodeAt(0)) || oldLen - len < 4) {
-        this.changeLine.unshift(this.currentLine.pop());
-      } else {
-        break;
+    } else {//当缩小比例小于0.8时要截取每行最后的英文字符换到另一行
+      var oldLen = this.currentLine.length;
+      for (var len = oldLen - 1; len > 0; len--) {
+        if (this.paragraph.isEnglish(this.currentLine[len].txt.charCodeAt(0)) || this.paragraph.isNotChPu(this.currentLine[len].txt.charCodeAt(0))) {
+          this.changeLine.unshift(this.currentLine.pop());
+        } else {
+          this.changeLine.unshift(this.currentLine.pop());
+          break;
+        }
       }
+      this.reSettingLine(width);
     }
-    this.reSettingLine(width);
   }
 };
 
@@ -346,69 +351,6 @@ EPUB.Render.prototype.getXOffsetByCharCode = function (elem, charCode) {
   }
   return xOffset;
 };
-/*EPUB.Render.prototype.display = function (index) {
- this.el.innerHTML = "";
- this.displayedPage = index;
- localStorage.setItem("pageIndex", index);
- var page = this.pages[this.displayedPage - 1];
- var textHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"" + this.el.style.width + "\" height=\"" + this.el.style.height + "\">";
- for (var i = 0; i < page.length; i++) {
- var glyph = page[i];
- if (glyph.type == "text") {
- if(index-1 == this.notationPage && i >= this.notationStart-1 && i < this.notationEnd-1){
- textHTML += "<rect   height='2' width = '"+glyph.rect.width+"' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "' fill='red'></rect>";
- textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
- }else{
- textHTML += "<text   font-family=\"" + glyph.rect.fontFamily + "\" font-size='" + glyph.rect.fontSize + "' data-width = '" + glyph.rect.width + "' data-height = '" + glyph.rect.height + "' x='" + glyph.rect.px + "' y='" + glyph.rect.py + "'>" + glyph.txt + "</text>";
- }
- } else if (glyph.type == "image") {
- textHTML += "<image xlink:href='" + glyph.src + "' x='" + glyph.x + "' y='" + glyph.y + "'  height='" + glyph.h + "' width='" + glyph.w + "'/>";
- }
- }
- textHTML += "</svg>";
- this.el.innerHTML = textHTML;
- this.selections.initSelection();
- };*/
-
-/*EPUB.Render.prototype.display = function(index){
- this.el.innerHTML = "";
- this.displayedPage = index;
- localStorage.setItem("pageIndex", index);
- var page = this.pages[this.displayedPage - 1];
- var svgElem = document.createElement("svg");
- this.el.appendChild(svgElem);
- svgElem.setAttribute("xmlns","http://www.w3.org/2000/svg");
- svgElem.setAttribute("version","1.1");
- svgElem.setAttribute("width",this.el.style.width);
- svgElem.setAttribute("height",this.el.style.height);
- for(var i = 0; i < page.length; i++){
- var glyph = page[i];
- var textElem = document.createElement("text");
- textElem.setAttribute("font-family",glyph.rect.fontFamily);
- textElem.setAttribute("font-size",glyph.rect.fontSize);
- textElem.setAttribute("x",glyph.rect.px);
- textElem.setAttribute("y",glyph.rect.py);
- textElem.textContent = glyph.txt;
- svgElem.appendChild(textElem);
- }
- };*/
-
-/*EPUB.Render.prototype.isNotation = function () {
- var startOffset = localStorage.getItem("startOffset");
- var endOffset = localStorage.getItem("endOffset");
- var pageLength = 0;
- for(var i = 0, length = this.pages.length; i < length; i++){
- pageLength += this.pages[i].length;
- if(pageLength > startOffset) {
- pageLength -= this.pages[i].length;
- this.notationPage = i;
- this.notationStart = startOffset - pageLength;
- this.notationEnd = endOffset - pageLength;
- break;
- }
- }
-
- };*/
 
 /**
  * 下一页

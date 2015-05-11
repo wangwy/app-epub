@@ -45,27 +45,11 @@ EPUB.Paragraph.prototype.isEnglish = function (c) {
 };
 
 /**
- * 判断是否是标点符号
+ * 判断是否是非换行标点
  * @param c
  * @returns {boolean}
  */
-EPUB.Paragraph.prototype.isPunctuation = function (c) {
-  if ((c >= 33 && c <= 47) || (c >= 58 && c <= 63)) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-/**
- * 判断是否为中文
- * @param c
- * @returns {boolean}
- */
-EPUB.Paragraph.prototype.isChinese = function (c) {
-  if (c >= 10000) {
-    return true;
-  } else {
-    return false;
-  }
+EPUB.Paragraph.prototype.isNotChPu = function(c){
+  var index = [33,34,39,41,44,46,58,59,63,8217,8221,8230,12289,12290,12299,12303,12305,65281,65289,65292,65306,65307,65311].indexOf(c);
+  return index == -1 ? false : true;
 };

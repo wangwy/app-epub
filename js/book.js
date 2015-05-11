@@ -215,7 +215,12 @@ EPUB.Book.prototype.createToc = function (doc) {
           }).then(function () {
             that.render.display(1);
           });
-          document.addEventListener("mousewheel",that.wheelPage,false);
+
+          if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
+            document.addEventListener("DOMMouseScroll",that.wheelPage,false);
+          }else{
+            document.addEventListener("mousewheel", that.wheelPage, false);
+          }
           document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
           document.getElementsByClassName("menubox")[0].style.display = "none";
         });
@@ -344,7 +349,12 @@ EPUB.Book.prototype.createNote = function (notelist) {
           var num = that.render.calculateDisplayNum(parseInt(item.position.split(",")[0]));
           that.render.display(num);
         });
-        document.addEventListener("mousewheel",that.wheelPage,false);
+
+        if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
+          document.addEventListener("DOMMouseScroll",that.wheelPage,false);
+        }else{
+          document.addEventListener("mousewheel", that.wheelPage, false);
+        }
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
       });
@@ -438,7 +448,12 @@ EPUB.Book.prototype.createMark = function (marklist) {
           var num = that.render.calculateDisplayNum(parseInt(value.position));
           that.render.display(num);
         });
-        document.addEventListener("mousewheel",that.wheelPage,false);
+
+        if(navigator.userAgent.indexOf("Firefox") !== -1){//判断是否是火狐浏览器
+          document.addEventListener("DOMMouseScroll",that.wheelPage,false);
+        }else{
+          document.addEventListener("mousewheel", that.wheelPage, false);
+        }
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
       });
@@ -497,7 +512,7 @@ EPUB.Book.prototype.getChapterMarks = function (spineNum) {
  * @param e
  */
 EPUB.Book.prototype.wheelPage = function(e){
-  if(e.wheelDelta > 0){
+  if(e.wheelDelta > 0 || e.detail < 0){
     book.prevPage();
   }else{
     book.nextPage();
