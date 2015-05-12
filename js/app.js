@@ -25,6 +25,7 @@ RSVP.on('error', function (reason) {
 
     //全屏
     var iconZoom = document.getElementById("iconZoom");
+
     iconZoom.addEventListener("click", function (e) {
       e.stopPropagation();
       var elem = document.body;
@@ -34,9 +35,11 @@ RSVP.on('error', function (reason) {
       if (isInFullScreen) {
         book.cancelFullScreen(document);
         iconZoom.setAttribute("class", "icon-gernal icon_zoom");
+        iconZoom.setAttribute("title", "全屏");
       } else {
         book.requestFullScreen(elem);
         iconZoom.setAttribute("class", "icon-gernal icon_zoomout");
+        iconZoom.setAttribute("title", "取消全屏");
       }
     });
 

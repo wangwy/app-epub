@@ -165,6 +165,12 @@ EPUB.Notation.prototype.initialDialog = function () {
   showDialog.addEventListener('click', function () {
     that.showDialog();
   });
+
+  document.addEventListener("keydown",function(e){
+    if(e.keyCode == 13 && that.dialogNode.style.display == "block"){
+      that.saveNote();
+    }
+  });
 };
 
 /**
@@ -414,6 +420,7 @@ EPUB.Notation.prototype.saveMark = function () {
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
     if (r.flag == "1") {
       that.markNode.setAttribute("class", "icon-gernal clicktag");
+      that.markNode.setAttribute("title", "删除书签");
 //      that.markNode.style.backgroundPosition = "-106px -70px";
       that.markNode.setAttribute("data-markid", r.bookmark_id);
       that.render.book.getMarks().then(function () {
@@ -438,6 +445,7 @@ EPUB.Notation.prototype.deleteMark = function (markid) {
   EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/delete", data).then(function (r) {
     if (r.flag == "1") {
       that.markNode.setAttribute("class", "icon-gernal icon-tag");
+      that.markNode.setAttribute("title", "保存书签");
 //      that.markNode.style.backgroundPosition = "-106px 0px";
       that.markNode.setAttribute("data-markid", "");
       that.render.book.getMarks().then(function () {
@@ -608,9 +616,11 @@ EPUB.Notation.prototype.showMark = function () {
   if (showMark) {
     that.markNode.setAttribute("class", "icon-gernal clicktag");
     that.markNode.setAttribute("data-markid", showMark.id);
+    that.markNode.setAttribute("title","删除书签");
   } else {
     that.markNode.setAttribute("class", "icon-gernal icon-tag");
     that.markNode.setAttribute("data-markid", "");
+    that.markNode.setAttribute("title","保存书签");
   }
 };
 
