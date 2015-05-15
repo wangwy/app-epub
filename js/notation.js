@@ -116,21 +116,9 @@ EPUB.Notation.prototype.initialDialog = function () {
   });
 
   var commentContent = document.getElementById("comment-content");
-  commentContent.addEventListener("blur", function () {
-    if (commentContent.value == "") {
-      commentContent.value = "留下你的笔记";
-    }
-  });
-  commentContent.addEventListener("focus", function () {
-    if (commentContent.value == "留下你的笔记") {
-      commentContent.value = "";
-    }
-  });
   var saveButton = document.getElementById("noteSave");
   saveButton.addEventListener("click", function () {
-    if (that.getString(that.svgSelected).length > 255) {
-      alert("选择内容过大");
-    } else if (commentContent.value.length > 255) {
+    if (commentContent.value.length > 255) {
       alert("笔记内容过大");
     } else {
       that.saveNote();
@@ -166,8 +154,8 @@ EPUB.Notation.prototype.initialDialog = function () {
     that.showDialog();
   });
 
-  document.addEventListener("keydown",function(e){
-    if(e.keyCode == 13 && that.dialogNode.style.display == "block"){
+  document.addEventListener("keydown", function (e) {
+    if (e.keyCode == 13 && that.dialogNode.style.display == "block") {
       that.saveNote();
     }
   });
@@ -251,20 +239,24 @@ EPUB.Notation.prototype.showDialog = function () {
     });
 
     notesSelected.forEach(function (value) {
-      if(value.note_content != "留下你的笔记"){
+      if (value.note_content != "") {
         notesSelectedString += value.note_content + "\n";
       }
       notesSelectedPosition = notesSelectedPosition.concat(value.position.split(","));
     });
     notesSelectedPosition = notesSelectedPosition.concat([this.selectedOffset().startOffset.toString(), this.selectedOffset().endOffset.toString()]);
-    this.svgSelected = svgArray.slice(Math.min.apply(this, notesSelectedPosition)-that.render.position, Math.max.apply(this, notesSelectedPosition)-that.render.position);
+    this.svgSelected = svgArray.slice(Math.min.apply(this, notesSelectedPosition) - that.render.position, Math.max.apply(this, notesSelectedPosition) - that.render.position);
   }
-  this.dialogNode.getElementsByClassName("pup_hight")[0].textContent = this.getString(this.svgSelected);
-  if(notesSelectedString != ""){
-    document.getElementById("comment-content").value = notesSelectedString;
+  if(this.svgSelected.length < 255){
+    this.dialogNode.getElementsByClassName("pup_hight")[0].textContent = this.getString(this.svgSelected);
+    if (notesSelectedString != "") {
+      document.getElementById("comment-content").value = notesSelectedString;
+    }
+    document.getElementById("back").setAttribute("class", "pup_bg");
+    this.dialogNode.style.display = "block";
+  }else{
+    alert("笔记摘要过大！");
   }
-  document.getElementById("back").setAttribute("class", "pup_bg");
-  this.dialogNode.style.display = "block";
 };
 
 /**
@@ -283,7 +275,7 @@ EPUB.Notation.prototype.hideText = function () {
  */
 EPUB.Notation.prototype.hideDialog = function () {
   document.getElementById("back").removeAttribute("class");
-  document.getElementById("comment-content").value = "留下你的笔记";
+  document.getElementById("comment-content").value = "";
   this.dialogNode.style.display = "none";
 };
 
@@ -319,7 +311,7 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
         "auth_token": EPUB.AUTHTOKEN
       };
   var deffer = new RSVP.defer();
-  EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/delete", data).then(function (r) {
+  EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/my/note/delete", data).then(function (r) {
     if (r.flag == "1") {
       var backRect = document.getElementsByClassName(noteid);
       var items = Array.prototype.slice.call(backRect);
@@ -376,13 +368,13 @@ EPUB.Notation.prototype.saveNote = function () {
         "process": that.render.book.progress
       };
   that.delSelectedNotation(that.group).then(function () {
-    return EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/save", data)
+    return EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/my/note/save", data)
   }).then(function (r) {
     if (r.flag == "1") {
 
       that.createUnderline(r.note_id);
 
-      if(data.note_content != "留下你的笔记"){
+      if (data.note_content != "") {
         that.createTextCircle(r.note_id, data.note_content);
       }
 
@@ -417,7 +409,7 @@ EPUB.Notation.prototype.saveMark = function () {
     "summary_content": summary
   };
 
-  EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
+  EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/my/bookmark/add", data).then(function (r) {
     if (r.flag == "1") {
       that.markNode.setAttribute("class", "icon-gernal clicktag");
       that.markNode.setAttribute("title", "删除书签");
@@ -442,7 +434,7 @@ EPUB.Notation.prototype.deleteMark = function (markid) {
         "id": markid
       };
 
-  EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/delete", data).then(function (r) {
+  EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/my/bookmark/delete", data).then(function (r) {
     if (r.flag == "1") {
       that.markNode.setAttribute("class", "icon-gernal icon-tag");
       that.markNode.setAttribute("title", "保存书签");
@@ -569,7 +561,7 @@ EPUB.Notation.prototype.showNotation = function () {
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
 
-        if(value.note_content != "留下你的笔记"){
+        if (value.note_content != "") {
           that.createTextCircle(value.id, value.note_content);
         }
       } else if (pageStartLength <= startOffset && pageEndLength >= endOffset) {
@@ -579,7 +571,7 @@ EPUB.Notation.prototype.showNotation = function () {
         that.svgSelected = svgArray.slice(notationStart, notationEnd);
         that.createUnderline(value.id);
 
-        if(value.note_content != "留下你的笔记"){
+        if (value.note_content != "") {
           that.createTextCircle(value.id, value.note_content);
         }
       } else if (pageStartLength <= startOffset && pageEndLength < endOffset) {
@@ -616,11 +608,11 @@ EPUB.Notation.prototype.showMark = function () {
   if (showMark) {
     that.markNode.setAttribute("class", "icon-gernal clicktag");
     that.markNode.setAttribute("data-markid", showMark.id);
-    that.markNode.setAttribute("title","删除书签");
+    that.markNode.setAttribute("title", "删除书签");
   } else {
     that.markNode.setAttribute("class", "icon-gernal icon-tag");
     that.markNode.setAttribute("data-markid", "");
-    that.markNode.setAttribute("title","保存书签");
+    that.markNode.setAttribute("title", "保存书签");
   }
 };
 
