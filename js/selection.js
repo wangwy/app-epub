@@ -55,7 +55,11 @@ EPUB.Selections.prototype.initSelection = function () {
     that.notation.svgSelected = that.selectionElements;
     that.notation.bacRects = that.rects;
     that.notation.showPostion = {x: e.pageX, y: e.pageY};
-    that.notation.initNotation();
+    if(EPUB.USERID !=""){
+      that.notation.initNotation();
+    }else{
+      alert("请登录！");
+    }
   });
 };
 

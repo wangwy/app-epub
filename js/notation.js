@@ -134,8 +134,10 @@ EPUB.Notation.prototype.initialDialog = function () {
     var markid = that.markNode.getAttribute("data-markid");
     if (markid) {
       that.deleteMark(markid);
-    } else {
+    } else if(EPUB.USERID != ""){
       that.saveMark();
+    }else{
+      alert("请登录！")
     }
   });
 

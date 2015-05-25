@@ -17,7 +17,7 @@ EPUB.Render = function (book) {
  */
 EPUB.Render.prototype.initialize = function (context) {
   this.width = this.el.clientWidth;
-  this.height = this.el.clientHeight - 60;
+  this.height = this.el.clientHeight - 80;
   this.imagesAll = {};
   var that = this;
   var deffer = new RSVP.defer();
@@ -162,7 +162,7 @@ EPUB.Render.prototype.typeSetting = function (ele) {
     var char = txt.charAt(i);
     var charCode = txt.charCodeAt(i);
     var rect, glyph, xOffset;
-    this.changeLineOrPage(this.width, this.height, eleStyle, charCode, char);
+    this.changeLine(this.width, this.height, eleStyle, charCode);
     if (this.paragraph.isSpace(charCode) && this.currentPositionX == 0) {//去掉每行最开始时空格
       rect = new Rect(eleStyle.fontFamily, eleStyle.fontSize, this.currentPositionX, this.currentPositionY, 0, eleStyle.fontSize);
     } else {
@@ -182,15 +182,14 @@ EPUB.Render.prototype.typeSetting = function (ele) {
  * @param eleStyle
  * @param charCode
  */
-EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, charCode, char) {
+EPUB.Render.prototype.changeLine = function (width, height, eleStyle, charCode) {
   var offset = eleStyle.fontSize;
-
+  this.changeLineArr = [];//用于存储当缩小比例小于0.8时要截取每行最后的英文字符换
   //换行计算
   if ((this.currentPositionX + offset > width) && (this.paragraph.isEnglish(charCode) || this.paragraph.isNotChPu(charCode))) {
     //当行尾为标点符号或者是英文时不换行
   } else {
     if (this.currentPositionX + offset > width) {
-      this.changeLine = [];//用于存储当缩小比例小于0.8时要截取每行最后的英文字符换
       if (this.currentPositionX >= width) {
         this.reSettingLine(width);
       }
@@ -198,27 +197,37 @@ EPUB.Render.prototype.changeLineOrPage = function (width, height, eleStyle, char
       this.currentPositionX = 0;
       this.currentLine = new Array();
       this.currentPage.push(this.currentLine);
-      if (this.changeLine.length > 0) {//将里面存的值重新计算x,y坐标并将其存到另一行中
-        var glyph;
-        for (var i = 0; i < this.changeLine.length; i++) {
-          glyph = this.changeLine[i];
-          glyph.rect.px = this.currentPositionX;
-          this.currentPositionX += glyph.rect.width;
-          glyph.rect.py = this.currentPositionY;
-          this.currentLine.push(glyph);
-        }
-        this.changeLine = [];
-      }
     }
   }
-  //换页计算
+  this.changePage(eleStyle,height);
+  if (this.changeLineArr.length > 0) {//将里面存的值重新计算x,y坐标并将其存到另一行中
+    var glyph;
+    for (var i = 0; i < this.changeLineArr.length; i++) {
+      glyph = this.changeLineArr[i];
+      glyph.rect.px = this.currentPositionX;
+      this.currentPositionX += glyph.rect.width;
+      glyph.rect.py = this.currentPositionY;
+      this.currentLine.push(glyph);
+    }
+    this.changeLineArr = [];
+  }
+};
+
+/**
+ * 换页计算
+ * @param eleStyle
+ * @param height
+ */
+EPUB.Render.prototype.changePage = function (eleStyle, height) {
   if (this.currentPositionY + eleStyle.fontSize + this.lineGap > height) {
     this.currentPositionY = eleStyle.fontSize;
     this.currentLine = new Array();
     this.currentPage = new Array();
     this.currentPage.push(this.currentLine);
     this.pages.push(this.currentPage);
+    return true;
   }
+  return false;
 };
 
 /**
@@ -248,9 +257,9 @@ EPUB.Render.prototype.reSettingLine = function (width) {
       var oldLen = this.currentLine.length;
       for (var len = oldLen - 1; len > 0; len--) {
         if (this.paragraph.isEnglish(this.currentLine[len].txt.charCodeAt(0)) || this.paragraph.isNotChPu(this.currentLine[len].txt.charCodeAt(0))) {
-          this.changeLine.unshift(this.currentLine.pop());
+          this.changeLineArr.unshift(this.currentLine.pop());
         } else {
-          this.changeLine.unshift(this.currentLine.pop());
+          this.changeLineArr.unshift(this.currentLine.pop());
           break;
         }
       }
