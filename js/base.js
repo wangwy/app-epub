@@ -32,6 +32,18 @@ EPUB.ELEMENTS = {
   "img": {
     fontSize: 0,
     fontFamily: "Monaco,Kai,Terminal,新宋体,Monospace,文泉驿等宽正黑"
+  },
+  "svg": {
+    fontSize: 0,
+    fontFamily: "Monaco,Kai,Terminal,新宋体,Monospace,文泉驿等宽正黑"
+  },
+  "text": {
+    fontSize: 18,
+    fontFamily: "Monaco,Kai,Terminal,新宋体,Monospace,文泉驿等宽正黑"
+  },
+  "image": {
+    fontSize: 0,
+    fontFamily: "Monaco,Kai,Terminal,新宋体,Monospace,文泉驿等宽正黑"
   }
 };
 

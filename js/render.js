@@ -30,19 +30,25 @@ EPUB.Render.prototype.initialize = function (context) {
   this.pages = new Array();
   this.currentPage.push(this.currentLine);
   this.pages.push(this.currentPage);
-  var items = context.querySelectorAll("img");
+  //现将页面里的图片下载下来然后再解析内容。
+  var items = context.querySelectorAll("img,image");
   if (items.length > 0) {
     var images = Array.prototype.slice.call(items);
     var count = images.length;
     images.forEach(function (value) {
       var image = new Image();
       var htmlUrl = EPUB.Utils.parseUrl(that.chapterUrl);
-      var url = EPUB.Utils.parseUrl(value.getAttribute("src"));
+      var url;
+      if(value.tagName == "img"){
+        url = EPUB.Utils.parseUrl(value.getAttribute("src"));
+      }else{
+        url = EPUB.Utils.parseUrl(value.getAttribute("xlink:href"));
+      }
       image.onload = function () {
         count--;
         if (!that.imagesAll.hasOwnProperty(url.filename)) {
           that.imagesAll[url.filename] = {
-            src: htmlUrl.directory + value.getAttribute("src"),
+            src: htmlUrl.directory + url.path,
             height: image.height,
             width: image.width
           };
@@ -51,7 +57,7 @@ EPUB.Render.prototype.initialize = function (context) {
           deffer.resolve(documentBody);
         }
       };
-      image.src = htmlUrl.directory + value.getAttribute("src");
+      image.src = htmlUrl.directory + url.path;
     });
   } else {
     deffer.resolve(documentBody);
@@ -84,13 +90,13 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
       this.currentPositionX = EPUB.ELEMENTS[node.nodeName].fontSize * 2;
       this.currentLine = new Array();
       this.currentPage.push(this.currentLine);
-      if (node.nodeName == "img") {
+      if (node.nodeName == "img" || node.nodeName == "image") {
         this.currentPositionY -= this.lineGap / 2;
         this.imageSetting(node);
       }
     }
     if (nodeType == 3 && !(/^\s+$/.test(node.nodeValue))) {
-      this.typeSetting(node);
+      this.textSetting(node);
       this.reSettingLine(this.width);//每个段落结束判断一行是否重新需要排列
     } else if (nodeType == 1 || nodeType == 9 || nodeType == 11) {
       this.getAllTextNodeContextAndRender(node);
@@ -104,7 +110,12 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
  * @param ele
  */
 EPUB.Render.prototype.imageSetting = function (ele) {
-  var url = EPUB.Utils.parseUrl(ele.getAttribute("src"));
+  var url;
+  if(ele.tagName == "img"){
+    url = EPUB.Utils.parseUrl(ele.getAttribute("src"));
+  }else{
+    url = EPUB.Utils.parseUrl(ele.getAttribute("xlink:href"));
+  }
   var img = this.imagesAll[url.filename];
   var hScale = img.height / (this.height - this.currentPositionY - this.lineGap * 2);
   var wScale = img.width / this.width;
@@ -156,7 +167,7 @@ EPUB.Render.prototype.imageSetting = function (ele) {
  * 将文本拆分并排版
  * @param txt
  */
-EPUB.Render.prototype.typeSetting = function (ele) {
+EPUB.Render.prototype.textSetting = function (ele) {
   var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName] || EPUB.ELEMENTS["p"];
   for (var i = 0; i < txt.length; i++) {
     var char = txt.charAt(i);
@@ -175,6 +186,9 @@ EPUB.Render.prototype.typeSetting = function (ele) {
   }
 };
 
+/*EPUB.Render.prototype.svgSetting = function(elements){
+
+};*/
 /**
  * 换行，换页计算
  * @param width
