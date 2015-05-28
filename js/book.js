@@ -48,17 +48,19 @@ EPUB.Book.prototype.beforeDisplay = function () {
         book.render.display(displayNum);
       })
     });
-    window.onbeforeunload = function (event) {
-      var message = '离开此页将关闭浏览器，你的阅读进度将自动保存';
-      if (typeof event == 'undefined') {
-        event = window.event;
-      }
-      if (event) {
-        event.returnValue = message;
-        book.saveProgress();
-      }
-      return message;
-    };
+    if(EPUB.USERID != ""){
+      window.onbeforeunload = function (event) {
+        var message = '离开此页将关闭浏览器，你的阅读进度将自动保存';
+        if (typeof event == 'undefined') {
+          event = window.event;
+        }
+        if (event) {
+          event.returnValue = message;
+          book.saveProgress();
+        }
+        return message;
+      };
+    }
     var displayNum = book.render.calculateDisplayNum(book.render.position);
     book.render.display(displayNum);
   });
@@ -72,7 +74,7 @@ EPUB.Book.prototype.beforeDisplay = function () {
  * @returns {Promise.promise|*}
  */
 EPUB.Book.prototype.getBook = function (userId, bookId, authToken) {
-  var data = {"user_id": userId, "book_id": bookId, "auth_token": authToken}
+  var data = {"user_id": userId, "book_id": bookId, "auth_token": authToken, "platform": "web"};
   var deferred = new RSVP.defer();
   EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/get_epub_info", data).then(function (r) {
     deferred.resolve(r.path);
@@ -251,7 +253,8 @@ EPUB.Book.prototype.saveProgress = function () {
     "book_id": EPUB.BOOKID,
     "chapter_index": this.spineNum,
     "position": this.render.position,
-    "progress": this.progress
+    "progress": this.progress,
+    "platform": "web"
   };
   EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/my/readprogress/save", data)
 };
@@ -266,11 +269,12 @@ EPUB.Book.prototype.getProgress = function () {
       data = {
         "user_id": EPUB.USERID,
         "auth_token": EPUB.AUTHTOKEN,
-        "book_id": EPUB.BOOKID
+        "book_id": EPUB.BOOKID,
+        "platform": "web"
       };
 
   var getProgressRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    if (r.user_readprogress != "") {
+    if (r.flag != 0 && r.user_readprogress != "") {
       that.spineNum = r.user_readprogress.chapter_index;
       that.render.position = r.user_readprogress.position;
       that.progress = r.user_readprogress.progress;
@@ -292,12 +296,17 @@ EPUB.Book.prototype.getNotes = function () {
       data = {
         "user_id": EPUB.USERID,
         "auth_token": EPUB.AUTHTOKEN,
-        "book_id": EPUB.BOOKID
+        "book_id": EPUB.BOOKID,
+        "platform": "web"
       };
 
   var getNoteRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    that.notelist = r.user_note_list;
-    that.createNote(that.notelist);
+    if(r.flag != 0){
+      that.notelist = r.user_note_list;
+      that.createNote(that.notelist);
+    }else{
+      that.notelist = [];
+    }
   });
   return getNoteRet;
 };
@@ -388,12 +397,17 @@ EPUB.Book.prototype.getMarks = function () {
       data = {
         "user_id": EPUB.USERID,
         "book_id": EPUB.BOOKID,
-        "auth_token": EPUB.AUTHTOKEN
+        "auth_token": EPUB.AUTHTOKEN,
+        "platform": "web"
       };
 
   var getMarkRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    that.markList = r.user_bookmark_list;
-    that.createMark(that.markList);
+    if(r.flag != 0){
+      that.markList = r.user_bookmark_list;
+      that.createMark(that.markList);
+    }else{
+      that.markList = [];
+    }
   });
   return getMarkRet;
 };

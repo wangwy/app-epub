@@ -153,7 +153,11 @@ EPUB.Notation.prototype.initialDialog = function () {
 
   var showDialog = document.getElementById("show-dialog");
   showDialog.addEventListener('click', function () {
-    that.showDialog();
+    if(EPUB.USERID !=""){
+      that.showDialog();
+    }else{
+      alert("请登录！")
+    }
   });
 
   document.addEventListener("keydown", function (e) {
@@ -310,7 +314,8 @@ EPUB.Notation.prototype.deletNotation = function (noteid) {
       data = {
         "id": noteid,
         "user_id": EPUB.USERID,
-        "auth_token": EPUB.AUTHTOKEN
+        "auth_token": EPUB.AUTHTOKEN,
+        "platform": "web"
       };
   var deffer = new RSVP.defer();
   EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/my/note/delete", data).then(function (r) {
@@ -367,7 +372,8 @@ EPUB.Notation.prototype.saveNote = function () {
         "note_content": document.getElementById("comment-content").value,
         "summary_underline_color": "red",
         "add_time": new Date().Format("yyyy-MM-dd hh:mm:ss"),
-        "process": that.render.book.progress
+        "process": that.render.book.progress,
+        "platform": "web"
       };
   that.delSelectedNotation(that.group).then(function () {
     return EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/my/note/save", data)
@@ -408,7 +414,8 @@ EPUB.Notation.prototype.saveMark = function () {
     "chapter_name": that.render.chapterName,
     "position": pageStartPosition,
     "add_time": new Date().Format("yyyy-MM-dd hh:mm:ss"),
-    "summary_content": summary
+    "summary_content": summary,
+    "platform": "web"
   };
 
   EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/my/bookmark/add", data).then(function (r) {
@@ -433,7 +440,8 @@ EPUB.Notation.prototype.deleteMark = function (markid) {
       data = {
         "user_id": EPUB.USERID,
         "auth_token": EPUB.AUTHTOKEN,
-        "id": markid
+        "id": markid,
+        "platform": "web"
       };
 
   EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/my/bookmark/delete", data).then(function (r) {
