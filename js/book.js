@@ -31,6 +31,9 @@ EPUB.Book.prototype.beforeDisplay = function () {
     var bookData = book.format.formatOpfFile(context);
     book.manifest = bookData.manifest;
     book.spine = bookData.spine;
+    EPUB.Request.bookStoreRequest("/node/",bookData,"json").then(function(r){
+      console.log(r);
+    });
   }).then(function () {
     return book.getProgress();
   }).then(function () {

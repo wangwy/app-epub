@@ -39,13 +39,18 @@ EPUB.Request.loadFile = function (url, type) {
  * @param data
  * @returns {promise|S.promise|$$enumerator$$Enumerator.promise|deferred.promise}
  */
-EPUB.Request.bookStoreRequest = function (url, data) {
+EPUB.Request.bookStoreRequest = function (url, data, type) {
   var deferred = new RSVP.defer();
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url);
   xhr.onreadystatechange = handler;
-  xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-  xhr.send(EPUB.Utils.JsonToFormData(data));
+  if(type == "json"){
+    xhr.setRequestHeader("Content-type","application/json");
+    xhr.send(JSON.stringify(data));
+  }else{
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhr.send(EPUB.Utils.JsonToFormData(data));
+  }
 
   function handler() {
     if (this.readyState === 4) {
@@ -57,3 +62,13 @@ EPUB.Request.bookStoreRequest = function (url, data) {
   return deferred.promise;
 };
 
+/*
+EPUB.Request.nodeRequest = function(url, data){
+  var deferred = new RSVP.defer();
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", url);
+  xhr.onreadystatechange = handle;
+  xhr.setRequestHeader("Content-type","");
+  xhr.send(data);
+
+};*/
