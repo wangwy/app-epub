@@ -3,8 +3,11 @@
  */
 var http = require('http');
 var cp = require('child_process');
+var jsdom = require('jsdom');
+var Render = require('./render.js');
 var worker;
-
+var data;
+var render;
 /**
  * 守护进程，当此程序异常退出时重启子进程
  * @param server
@@ -35,7 +38,8 @@ var server = http.createServer(function (request, response) {
   });
   request.on('end',function(){
     try{
-      var data = JSON.parse(body);
+      data = JSON.parse(body);
+      render = new Render();
       var spine = data.spine;
       var manifest = data.manifest;
       getHtml(manifest,spine,0,{},function(data){
@@ -65,6 +69,7 @@ function getHtml(manifest,spine,num,data,callback){
       });
       res.on('end',function(){
         data[spine[num].id] = html;
+        parseHtml(html);
         ++num;
         getHtml(manifest,spine,num,data,callback);
       })
@@ -74,6 +79,23 @@ function getHtml(manifest,spine,num,data,callback){
   }else{
     callback(data);
   }
+}
+
+function parseHtml(html){
+  jsdom.env(html,
+      function(errors,window){
+        var chapterElem = window.document.querySelectorAll("h1,h2,h3");
+        if (chapterElem.length > 0) {
+          console.log(chapterElem[0].textContent);
+        }else{
+          console.log("title");
+        }
+        render.initialize(window.document).then(function(docBody){
+          render.getPagesNum(docBody);
+          console.log(render.pages.length);
+        });
+      }
+  )
 }
 server.listen("8088");
 console.log("Server running at http://localhost:8088");
