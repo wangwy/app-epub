@@ -28,12 +28,10 @@ EPUB.Book.prototype.beforeDisplay = function () {
     book.bookUrl = EPUB.Utils.parseUrl(path).directory;
     return book.loadOpfFile(book.bookUrl);
   }).then(function (context) {
-    var bookData = book.format.formatOpfFile(context);
-    book.manifest = bookData.manifest;
-    book.spine = bookData.spine;
-    EPUB.Request.bookStoreRequest("/node/",bookData,"json").then(function(r){
-      console.log(r);
-    });
+    book.bookData = book.format.formatOpfFile(context);
+    book.manifest = book.bookData.manifest;
+    book.spine = book.bookData.spine;
+    book.bookData.elem = {"clientWidth": book.el.clientWidth, "clientHeight": book.el.clientHeight};
   }).then(function () {
     return book.getProgress();
   }).then(function () {
@@ -49,9 +47,10 @@ EPUB.Book.prototype.beforeDisplay = function () {
       book.initialChapter(book.renderContext).then(function () {
         var displayNum = book.render.calculateDisplayNum(book.render.position);
         book.render.display(displayNum);
+        book.createBookPosition();
       })
     });
-    if(EPUB.USERID != ""){
+    if (EPUB.USERID != "") {
       window.onbeforeunload = function (event) {
         var message = '离开此页将关闭浏览器，你的阅读进度将自动保存';
         if (typeof event == 'undefined') {
@@ -66,7 +65,35 @@ EPUB.Book.prototype.beforeDisplay = function () {
     }
     var displayNum = book.render.calculateDisplayNum(book.render.position);
     book.render.display(displayNum);
+  }).then(function () {
+    return book.getbookPageNumObj();
+  })
+};
+
+/**
+ * 获取所有章节的页码
+ * @returns {*}
+ */
+EPUB.Book.prototype.getbookPageNumObj = function () {
+  var that = this;
+  return EPUB.Request.bookStoreRequest("/node/", this.bookData, "json").then(function (r) {
+    that.bookPageNumObj = r;
+    that.createBookPosition();
   });
+};
+
+/**
+ * 计算当前进度
+ */
+EPUB.Book.prototype.createBookPosition = function () {
+  var position = 0;
+  if (this.spineNum != 0) {
+    position = (this.bookPageNumObj[this.spineNum - 1].percentage + (this.render.displayedPage / this.render.pages.length) * (this.bookPageNumObj[this.spineNum].pageNum / this.bookPageNumObj.allNum)) * 100;
+  } else {
+    position = this.render.displayedPage / this.bookPageNumObj.allNum * 100;
+  }
+  position = Math.round(position);
+  document.getElementsByClassName("rdprogres")[0].textContent = position + "%";
 };
 
 /**
@@ -147,6 +174,7 @@ EPUB.Book.prototype.loadOpfFile = function (bookPath) {
  * 下一页
  */
 EPUB.Book.prototype.nextPage = function () {
+  this.createBookPosition();
   var next, that = this;
   next = this.render.nextPage();
   if (!next) {
@@ -168,6 +196,7 @@ EPUB.Book.prototype.nextPage = function () {
  * 上一页
  */
 EPUB.Book.prototype.prevPage = function () {
+  this.createBookPosition();
   var prev, that = this;
   prev = this.render.prevPage();
   if (!prev) {
@@ -304,10 +333,10 @@ EPUB.Book.prototype.getNotes = function () {
       };
 
   var getNoteRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    if(r.flag != 0){
+    if (r.flag != 0) {
       that.notelist = r.user_note_list;
       that.createNote(that.notelist);
-    }else{
+    } else {
       that.notelist = [];
     }
   });
@@ -405,10 +434,10 @@ EPUB.Book.prototype.getMarks = function () {
       };
 
   var getMarkRet = EPUB.Request.bookStoreRequest(path, data).then(function (r) {
-    if(r.flag != 0){
+    if (r.flag != 0) {
       that.markList = r.user_bookmark_list;
       that.createMark(that.markList);
-    }else{
+    } else {
       that.markList = [];
     }
   });

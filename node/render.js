@@ -17,9 +17,9 @@ EPUB.Render = function () {
  * 获取页面中的元素
  * @param context
  */
-EPUB.Render.prototype.initialize = function (context) {
-  this.width = 680;
-  this.height = 889;
+EPUB.Render.prototype.initialize = function (context,elem) {
+  this.width = elem.clientWidth;
+  this.height = elem.clientHeight - 80;
   this.imagesAll = {};
   var that = this;
   var deffer = new RSVP.defer();
