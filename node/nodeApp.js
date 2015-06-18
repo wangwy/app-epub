@@ -67,11 +67,11 @@ function readFiles(manifest, spine, callback) {
         if (err) {
           callback(err);
         } else {
-          parseHtml(data, function (pageNum) {
+          parseHtml(data, ".." + manifest[spine[i].id].url, function (pageNum) {
             if (i == 0) {
               output[i] = {"id": spine[i].id, "startNum": pageNum, "endNum": pageNum, "pageNum": pageNum};
             } else {
-              output[i] = {"id": spine[i].id, "startNum": output[i - 1]["endNum"] + 1, "endNum": pageNum + output[i - 1]["endNum"], "pageNum":pageNum};
+              output[i] = {"id": spine[i].id, "startNum": output[i - 1]["endNum"] + 1, "endNum": pageNum + output[i - 1]["endNum"], "pageNum": pageNum};
             }
             next(i + 1, len);
           });
@@ -79,11 +79,11 @@ function readFiles(manifest, spine, callback) {
       });
     } else {
       output["allNum"] = output[i - 1]["endNum"];
-      for(var j = 0; j < i; j++){
-        if(j == 0){
-          output[j]["percentage"] = output[j]["pageNum"]/output["allNum"];
-        }else{
-          output[j]["percentage"] = output[j]["pageNum"]/output["allNum"] + output[j-1]["percentage"];
+      for (var j = 0; j < i; j++) {
+        if (j == 0) {
+          output[j]["percentage"] = output[j]["pageNum"] / output["allNum"];
+        } else {
+          output[j]["percentage"] = output[j]["pageNum"] / output["allNum"] + output[j - 1]["percentage"];
         }
       }
       callback(output);
@@ -96,17 +96,16 @@ function readFiles(manifest, spine, callback) {
  * @param html
  * @param callback
  */
-function parseHtml(html, callback) {
+function parseHtml(html, url, callback) {
   jsdom.env(html,
       function (errors, window) {
-        render.initialize(window.document, bookData.elem).then(function (docBody) {
+        var docBody = render.initialize(window.document, bookData.elem, url);
           render.getPagesNum(docBody);
           callback(render.pages.length);
-        });
       }
   )
 }
-if(!module.parent){
+if (!module.parent) {
   server.listen("8088");
   console.log("Server running at http://localhost:8088");
 }

@@ -5,7 +5,7 @@
 var EPUB = require("./base.js");
 EPUB.Paragraph = require("./paragraph.js");
 EPUB.Utils = require("./utils.js");
-var RSVP = require("../bower_components/rsvp/rsvp.min.js");
+var images = require("images");
 EPUB.Render = function () {
   this.position = 0;
   this.paragraph = new EPUB.Paragraph();
@@ -17,12 +17,12 @@ EPUB.Render = function () {
  * 获取页面中的元素
  * @param context
  */
-EPUB.Render.prototype.initialize = function (context,elem) {
+EPUB.Render.prototype.initialize = function (context, elem, htmlUrl) {
   this.width = elem.clientWidth;
   this.height = elem.clientHeight - 80;
+  this.chapterUrl = htmlUrl;
   this.imagesAll = {};
   var that = this;
-  var deffer = new RSVP.defer();
   var documentBody = context.getElementsByTagName("body")[0];
   this.displayedPage = 1;
   this.currentPositionY = 18;
@@ -33,38 +33,57 @@ EPUB.Render.prototype.initialize = function (context,elem) {
   this.currentPage.push(this.currentLine);
   this.pages.push(this.currentPage);
   //现将页面里的图片下载下来然后再解析内容。
- /* var items = context.querySelectorAll("img,image");
+  /* var items = context.querySelectorAll("img,image");
+   if (items.length > 0) {
+   var images = Array.prototype.slice.call(items);
+   var count = images.length;
+   images.forEach(function (value) {
+   var image = new Image();
+   var htmlUrl = EPUB.Utils.parseUrl(that.chapterUrl);
+   var url;
+   if(value.tagName == "img"){
+   url = EPUB.Utils.parseUrl(value.getAttribute("src"));
+   }else{
+   url = EPUB.Utils.parseUrl(value.getAttribute("xlink:href"));
+   }
+   image.onload = function () {
+   count--;
+   if (!that.imagesAll.hasOwnProperty(url.filename)) {
+   that.imagesAll[url.filename] = {
+   src: htmlUrl.directory + url.path,
+   height: image.height,
+   width: image.width
+   };
+   }
+   if (count == 0) {
+   deffer.resolve(documentBody);
+   }
+   };
+   image.src = htmlUrl.directory + url.path;
+   });
+   } else {*/
+  var items = context.querySelectorAll("img,image");
   if (items.length > 0) {
-    var images = Array.prototype.slice.call(items);
-    var count = images.length;
-    images.forEach(function (value) {
-      var image = new Image();
+    var imageList = Array.prototype.slice.call(items);
+    imageList.forEach(function (value) {
       var htmlUrl = EPUB.Utils.parseUrl(that.chapterUrl);
       var url;
-      if(value.tagName == "img"){
+      if (value.tagName == "IMG") {
         url = EPUB.Utils.parseUrl(value.getAttribute("src"));
-      }else{
+      } else {
         url = EPUB.Utils.parseUrl(value.getAttribute("xlink:href"));
       }
-      image.onload = function () {
-        count--;
-        if (!that.imagesAll.hasOwnProperty(url.filename)) {
-          that.imagesAll[url.filename] = {
-            src: htmlUrl.directory + url.path,
-            height: image.height,
-            width: image.width
-          };
-        }
-        if (count == 0) {
-          deffer.resolve(documentBody);
-        }
-      };
-      image.src = htmlUrl.directory + url.path;
+      var image = images.loadFromFile(htmlUrl.directory + url.path);
+      if (!that.imagesAll.hasOwnProperty(url.filename)) {
+        that.imagesAll[url.filename] = {
+          src: htmlUrl.directory + url.path,
+          height: image.height(),
+          width: image.width()
+        };
+      }
     });
-  } else {*/
-    deffer.resolve(documentBody);
-//  }
-  return deffer.promise;
+  }
+  return documentBody;
 };
 
 /**
@@ -113,9 +132,9 @@ EPUB.Render.prototype.getAllTextNodeContextAndRender = function (elem) {
  */
 EPUB.Render.prototype.imageSetting = function (ele) {
   var url;
-  if(ele.tagName == "img"){
+  if (ele.tagName == "img") {
     url = EPUB.Utils.parseUrl(ele.getAttribute("src"));
-  }else{
+  } else {
     url = EPUB.Utils.parseUrl(ele.getAttribute("xlink:href"));
   }
   var img = this.imagesAll[url.filename];
@@ -190,7 +209,7 @@ EPUB.Render.prototype.textSetting = function (ele) {
 
 /*EPUB.Render.prototype.svgSetting = function(elements){
 
-};*/
+ };*/
 /**
  * 换行，换页计算
  * @param width
@@ -215,7 +234,7 @@ EPUB.Render.prototype.changeLine = function (width, height, eleStyle, charCode) 
       this.currentPage.push(this.currentLine);
     }
   }
-  this.changePage(eleStyle,height);
+  this.changePage(eleStyle, height);
   if (this.changeLineArr.length > 0) {//将里面存的值重新计算x,y坐标并将其存到另一行中
     var glyph;
     for (var i = 0; i < this.changeLineArr.length; i++) {
@@ -251,7 +270,7 @@ EPUB.Render.prototype.changePage = function (eleStyle, height) {
  * @param width
  */
 EPUB.Render.prototype.reSettingLine = function (width) {
-  if(this.currentPositionX > width){
+  if (this.currentPositionX > width) {
     var x = this.currentLine[0].rect.px, glyph;
     var offsetScale = this.getTextOffsetScale(width);
     if (offsetScale >= 0.8) {
