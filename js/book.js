@@ -86,14 +86,22 @@ EPUB.Book.prototype.getbookPageNumObj = function () {
  * 计算当前进度
  */
 EPUB.Book.prototype.createBookPosition = function () {
-  var position = 0;
-  if (this.spineNum != 0) {
-    position = (this.bookPageNumObj[this.spineNum - 1].percentage + (this.render.displayedPage / this.render.pages.length) * (this.bookPageNumObj[this.spineNum].pageNum / this.bookPageNumObj.allNum)) * 100;
-  } else {
-    position = this.render.displayedPage / this.bookPageNumObj.allNum * 100;
+  if(this.bookPageNumObj){
+    var position = 0;
+    if (this.spineNum != 0) {
+      position = (this.bookPageNumObj[this.spineNum - 1].percentage + (this.render.displayedPage / this.render.pages.length) * (this.bookPageNumObj[this.spineNum].pageNum / this.bookPageNumObj.allNum)) * 100;
+    } else {
+      position = this.render.displayedPage / this.bookPageNumObj.allNum * 100;
+    }
+    if(position <= 99){
+      position = Math.round(position);
+    }else if(position > 99 && position < 100){
+      position = 99;
+    }else{
+      position = 100;
+    }
+    document.getElementsByClassName("rdprogres")[0].textContent = position + "%";
   }
-  position = Math.round(position);
-  document.getElementsByClassName("rdprogres")[0].textContent = position + "%";
 };
 
 /**
@@ -174,7 +182,6 @@ EPUB.Book.prototype.loadOpfFile = function (bookPath) {
  * 下一页
  */
 EPUB.Book.prototype.nextPage = function () {
-  this.createBookPosition();
   var next, that = this;
   next = this.render.nextPage();
   if (!next) {
@@ -196,7 +203,6 @@ EPUB.Book.prototype.nextPage = function () {
  * 上一页
  */
 EPUB.Book.prototype.prevPage = function () {
-  this.createBookPosition();
   var prev, that = this;
   prev = this.render.prevPage();
   if (!prev) {
@@ -400,7 +406,9 @@ EPUB.Book.prototype.createNote = function (notelist) {
 
       var span3 = document.createElement("span");
       span3.setAttribute("class", "redcolor");
-      span3.textContent = "注：";
+      if(item.note_content != ""){
+        span3.textContent = "注：";
+      }
       span2.insertBefore(span3, span2.firstChild);
     });
   } else {
@@ -595,6 +603,7 @@ EPUB.Book.prototype.requestFullScreen = function (el) {
 EPUB.Book.prototype.showMenuBox = function (num) {
   document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
   document.getElementsByClassName("menubox")[0].style.display = "";
+  this.render.selections.notation.hideAllDialog();
   var menubox = document.getElementsByClassName("menubox")[0];
   EPUB.Utils.startrun(menubox, "right", num, function () {
     EPUB.Utils.startrun(menubox, "opacity", "100")

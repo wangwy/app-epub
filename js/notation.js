@@ -46,6 +46,7 @@ EPUB.Notation.prototype.show = function (x, y) {
  */
 EPUB.Notation.prototype.showHasDel = function (x, y) {
   var that = this;
+  that.render.book.remPageListener();
   var nodes = Array.prototype.slice.call(this.node.querySelectorAll('a[search]'));
   nodes.forEach(function (node) {
     if (node.className == "ujs_search_link_go") node.href = that.string;
@@ -108,6 +109,13 @@ EPUB.Notation.prototype.initialDialog = function () {
     }
   });
 
+  var editNode = document.getElementById("edit-note");
+  editNode.addEventListener("click",function(){
+    var editNoteid = editNode.getAttribute("data-noteid");
+    if(editNoteid){
+      that.showEditDialog(editNoteid);
+    }
+  });
   //笔记框
   this.dialogNode = document.getElementsByClassName("pup_con")[0];
   var img = this.dialogNode.getElementsByTagName("img")[0];
@@ -119,7 +127,7 @@ EPUB.Notation.prototype.initialDialog = function () {
   var saveButton = document.getElementById("noteSave");
   saveButton.addEventListener("click", function () {
     if (commentContent.value.length > 255) {
-      alert("笔记内容过大");
+      alert("笔记内容过大，请输入小于225个字！");
     } else {
       that.saveNote();
     }
@@ -182,6 +190,7 @@ EPUB.Notation.prototype.initNotation = function () {
 
     window.jiathis_config.summary = copyText;
     that.render.book.remPageListener();
+    this.hideHasDel();
   } else {
     this.hideHasNote();
     this.hideHasDel();
@@ -225,11 +234,12 @@ EPUB.Notation.prototype.showText = function (x, y, text) {
 };
 
 /**
- * 显示笔记窗口
+ * 显示添加笔记窗口
  */
 EPUB.Notation.prototype.showDialog = function () {
   this.group = [];
   var groupid, that = this;
+  that.render.book.remPageListener();
   this.svgSelected.forEach(function (value) {
     if (value.parentNode.tagName == "g") {
       groupid = value.parentNode.getAttribute("id");
@@ -261,10 +271,33 @@ EPUB.Notation.prototype.showDialog = function () {
     document.getElementById("back").setAttribute("class", "pup_bg");
     this.dialogNode.style.display = "block";
   }else{
-    alert("笔记摘要过大！");
+    alert("笔记摘要过大，请选择小于225个字！");
   }
 };
 
+/**
+ * 显示编辑笔记的窗口
+ * @param noteid
+ */
+EPUB.Notation.prototype.showEditDialog = function(noteid){
+  this.group = [];
+  var summary="";
+  var notes="";
+  this.render.book.remPageListener();
+  this.render.notes.forEach(function(value){
+    if(value.id == noteid){
+      summary = value.summary_content;
+      notes = value.note_content;
+    }
+  });
+  var items = document.getElementById(noteid).childNodes;
+  this.svgSelected = Array.prototype.slice.call(items);
+  this.dialogNode.getElementsByClassName("pup_hight")[0].textContent = summary;
+  document.getElementById("comment-content").value = notes;
+  document.getElementById("back").setAttribute("class", "pup_bg");
+  this.dialogNode.style.display = "block";
+  document.getElementById("noteSave").setAttribute("data-noteid",noteid);
+};
 /**
  * 隐藏笔记内容窗口
  */
@@ -280,6 +313,7 @@ EPUB.Notation.prototype.hideText = function () {
  * 隐藏笔记窗口
  */
 EPUB.Notation.prototype.hideDialog = function () {
+  this.render.book.addPageListener();
   document.getElementById("back").removeAttribute("class");
   document.getElementById("comment-content").value = "";
   this.dialogNode.style.display = "none";
@@ -291,6 +325,7 @@ EPUB.Notation.prototype.hideDialog = function () {
  * @param y
  */
 EPUB.Notation.prototype.showShareNode = function (x, y) {
+  this.render.book.remPageListener();
   this.shareNode.style.left = x + "px";
   this.shareNode.style.top = y + "px";
   this.shareNode.style.display = "block";
@@ -300,6 +335,7 @@ EPUB.Notation.prototype.showShareNode = function (x, y) {
  * 隐藏分享窗口
  */
 EPUB.Notation.prototype.hideShareNode = function () {
+  this.render.book.addPageListener();
   this.shareNode.style.left = 0 + "px";
   this.shareNode.style.top = 0 + "px";
   this.shareNode.style.display = "none";
@@ -375,6 +411,11 @@ EPUB.Notation.prototype.saveNote = function () {
         "process": that.render.book.progress,
         "platform": "web"
       };
+  var noteid = document.getElementById("noteSave").getAttribute("data-noteid");
+  if(noteid){
+    that.group.push(noteid);
+    document.getElementById("noteSave").setAttribute("data-noteid","");
+  }
   that.delSelectedNotation(that.group).then(function () {
     return EPUB.Request.bookStoreRequest(EPUB.BASEPATH + "/mobile/post/my/note/save", data)
   }).then(function (r) {
@@ -505,6 +546,8 @@ EPUB.Notation.prototype.createUnderline = function (noteid) {
     var delA = document.getElementById("del-note");
     delA.setAttribute("data-noteid", noteid);
 
+    var editA = document.getElementById("edit-note");
+    editA.setAttribute("data-noteid",noteid);
     that.showHasDel(e.pageX, e.pageY);
   });
 };
@@ -626,3 +669,13 @@ EPUB.Notation.prototype.showMark = function () {
   }
 };
 
+/**
+ * 隐藏所有窗口
+ */
+EPUB.Notation.prototype.hideAllDialog = function(){
+  this.hideDialog();
+  this.hideHasDel();
+  this.hideHasNote();
+  this.hideShareNode();
+  this.hideText();
+};

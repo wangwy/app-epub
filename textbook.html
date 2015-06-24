@@ -35,7 +35,7 @@
             <div class="page_header">
                 <p>
                     <span id="chapterId"></span>
-                    <span class="rdprogres">5%</span>
+                    <span class="rdprogres"></span>
                     <a id="markNode" class="icon-gernal icon-tag" title="保存书签"></a>
                 </p>
             </div>
@@ -96,7 +96,7 @@
 </search>
 
 <search id="delSearch">
-    <a id="copied-button"> 复制 </a><a id="shared">分享</a><a id="del-note" data-noteid=""> 删除 </a>
+    <a id="copied-button"> 复制 </a><a id="shared">分享</a><a id="edit-note" data-noteid="">编辑</a><a id="del-note" data-noteid=""> 删除 </a>
 </search>
 
 <!--保存笔记node-->
@@ -109,7 +109,7 @@
 
         <p class="pup_hight"></p><textarea id="comment-content" class="pup_text" placeholder="留下你的笔记"></textarea>
 
-        <p class="pup_save" id="noteSave">保存</p></div>
+        <p class="pup_save" data-noteid="" id="noteSave">保存</p></div>
 </div>
 
 <!--显示笔记内容弹出框-->
@@ -148,7 +148,7 @@
     var jiathis_config = {
         nota: true
     };
-    var book = ePub("area", "1", "27", "dfdfdf");
+    var book = ePub("area", "1", "22", "dfdfdf");
 </script>
 <script type="text/javascript" src="http://v2.jiathis.com/code/jia.js" charset="utf-8"></script>
 </html>

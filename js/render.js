@@ -325,6 +325,7 @@ EPUB.Render.prototype.display = function (index) {
   }
   textHTML += "</svg>";
   this.el.innerHTML = textHTML;
+  this.book.createBookPosition();
   this.selections.initSelection();
 };
 
