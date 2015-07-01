@@ -129,6 +129,7 @@ EPUB.Book.prototype.display = function (url, spineNum) {
   this.spineNum = spineNum || this.spineNum;
   var path = url || that.manifest[that.spine[this.spineNum].id].url;
   that.render.chapterUrl = path;
+  this.addLoading();
   EPUB.Request.loadFile(path, 'xml').then(function (context) {
     //获得章节标题
     that.render.chapterName = that.spineNum.toString();
@@ -140,6 +141,7 @@ EPUB.Book.prototype.display = function (url, spineNum) {
     chapterNode.textContent = that.render.chapterName;
     deferred.resolve(context);
     that.renderContext = context;
+    that.remLoading();
   });
   return deferred.promise;
 };
@@ -151,7 +153,9 @@ EPUB.Book.prototype.display = function (url, spineNum) {
  */
 EPUB.Book.prototype.initialChapter = function (context) {
   var that = this;
+  that.addLoading();
   var retru = this.render.initialize(context).then(function (docBody) {
+    that.remLoading();
     that.render.spineNum = that.spineNum;
     that.render.getPagesNum(docBody);
     that.render.notes = that.getChapterNotes(that.spineNum);
@@ -259,6 +263,7 @@ EPUB.Book.prototype.createToc = function (doc) {
           that.addPageListener();
           document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
           document.getElementsByClassName("menubox")[0].style.display = "none";
+          document.getElementById("btnMenu").setAttribute("class","icon-gernal icon-menu");
         });
         a.textContent = item.label;
         li.appendChild(a);
@@ -396,6 +401,7 @@ EPUB.Book.prototype.createNote = function (notelist) {
         that.addPageListener();
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
+        document.getElementById("btnMenu").setAttribute("class","icon-gernal icon-menu");
       });
       div.appendChild(p);
 
@@ -498,6 +504,7 @@ EPUB.Book.prototype.createMark = function (marklist) {
         that.addPageListener();
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
+        document.getElementById("btnMenu").setAttribute("class","icon-gernal icon-menu");
       });
       markListDiv.appendChild(markListP);
     });
@@ -634,4 +641,51 @@ EPUB.Book.prototype.remPageListener = function () {
     document.removeEventListener("mousewheel", that.pageHandle, false);
   }
   document.removeEventListener("keydown", that.pageHandle, false);
+};
+
+/**
+ * 添加加载锁定屏幕效果
+ */
+EPUB.Book.prototype.addLoading = function(){
+  var div = document.createElement("div");
+  div.setAttribute("id","loadingEffect");
+
+  var overlayDiv = document.createElement("div");
+  overlayDiv.style.position = "absolute";
+  overlayDiv.style.top = 0;
+  overlayDiv.style.left = 0;
+  overlayDiv.style.bottom = 0;
+  overlayDiv.style.right = 0;
+  overlayDiv.style.backgroundColor = "#000";
+  overlayDiv.style.opacity = 0.7;
+  div.appendChild(overlayDiv);
+
+  var messageDiv = document.createElement("div");
+  messageDiv.textContent = "正在加载，请稍候......";
+  messageDiv.style.position="absolute";
+  messageDiv.style.width="400px";
+  messageDiv.style.height="100px";
+  messageDiv.style.lineHeight="100px";
+  messageDiv.style.backgroundColor="#fff"
+  messageDiv.style.textAlign="center";
+  messageDiv.style.fontSize="1.2em";
+  messageDiv.style.left="50%";
+  messageDiv.style.top="50%";
+  messageDiv.style.marginLeft="-200px";
+  messageDiv.style.marginTop="-50px";
+  div.appendChild(messageDiv);
+
+  document.getElementsByTagName("body")[0].appendChild(div);
+  this.remPageListener();
+};
+
+/**
+ * 移除加载锁定屏幕效果
+ */
+EPUB.Book.prototype.remLoading = function(){
+  var elem = document.getElementById("loadingEffect");
+  if(elem){
+    document.getElementsByTagName("body")[0].removeChild(elem);
+  }
+  this.addPageListener();
 };

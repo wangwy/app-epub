@@ -1,14 +1,18 @@
 /*@charset "utf-8";*/
 /* CSS Document */
-@font-face {
-    font-family:"方正准圆简体";
-    font-style: normal;
-    font-weight: normal;
-    src:url(../fonts/FZY3JW--GB1-0.eot) format("eot"),url(../fonts/FZY3JW--GB1-0.woff) format("woff"),
-	 url(../fonts/FZY3JW--GB1-0.ttf) format("truetype"), url(../fonts/FZY3JW--GB1-0.svg) format("svg");
-}
-
-body{margin:0px;padding:0px;font:12px/1 Arial, Helvetica, sans-serif;background:#F7F2E8;width:100%;height:100%;min-width:1200px;}
+html{
+	min-height:100%;
+	position:relative;
+	}
+body{
+	margin:0px;
+	padding:0px;
+	padding-bottom:125px;
+	font:12px/1 Arial, Helvetica, sans-serif;
+	background:#F7F2E8;
+	width:100%;
+	min-width:1200px;
+	}
 /*index*/
 img{vertical-align:top;border:0px;}
 h3,p,input,ul,figure{margin:0px;padding:0px;}
@@ -232,9 +236,16 @@ ul{list-style-type:none;}
 .top{float:right;}
 #totop{margin-left:-90px;position:fixed;top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight)-80+"px");bottom:150px;cursor:pointer;}
 /*mfoter*/
-.mfoter{margin:0px auto;clear:both;width:100%;min-width:1200px;text-align:center;background:#eae6dd;padding-top:20px;}
+.mfoter{
+	width:100%;
+	min-width:1200px;
+	text-align:center;
+	background:#eae6dd;
+	position:absolute;
+	bottom:0px;
+	}
 .mfoter ul{padding-bottom:20px;}
-.mfoter li{margin-top:10px;color:#838383;font:12px/1 "方正准圆简体";}
+.mfoter li{margin-top:10px;color:#838383;font:12px/1 "微软雅黑";}
 .copy{font:12px/1 Arial, Helvetica, sans-serif;}
 .mfoterp{background:#18181e;padding:12px 0px;color:#838383;}
 
@@ -716,6 +727,12 @@ ul{list-style-type:none;}
 /*我的书架  -  近期阅读*/
 .mybook{width:1200px;margin:0px auto;text-align:center;}
 .mybookleft{width:239px;margin:10px 0px;float:left;height:630px;border-right:#c4bfb6 solid 1px;color:#4c4c4c;font:16px/1 "Microsoft YaHei";}
+/*.userhp{
+	width:80px;
+	height:80px;
+	margin:auto;
+	border:solid 1px #CACACA;
+	}*/
 .mybookname{font:12px/1 "黑体";margin-top:10px;}
 .mybookshelf1{padding:10px 0px;background:url(../images/mybook1.png) no-repeat 23px 8px;background-color:#1cb177;margin:20px 0px 0px 20px;color:#fff;}
 .mybookshelf{padding:10px 0px;background:url(../images/mybook.png) no-repeat 23px 8px;margin:20px 0px 0px 20px;color:#4c4c4c;text-decoration:none;}
@@ -735,17 +752,37 @@ ul{list-style-type:none;}
 .mymenu2{margin:0px 20px 0px 0px;text-decoration:none;color:#4c4c4c;}
 .mymenu1{margin:0px 20px 0px 0px;text-decoration:none;color:#fff;}
 .mybookright{float:right;text-align:left;margin:10px 0px 80px 10px;width:940px;}
-.mybookrighttitle1{margin:0px 0px 0px 10px;font:14px/1 "Microsoft YaHei";padding:10px 0px;}
+.mybookrighttitle1{margin:0px 0px 0px 10px;font:14px/1 "Microsoft YaHei";padding:10px 0px;position:relative;}
 .titletxt1{color:#1cb177;text-decoration:none;}
 .titletxt2{font-size:12px;margin:0px 17px;color:#c4bfb6;}
 .titletxt3{color:#4c4c4c;text-decoration:none;}
-.mybookseach{background:transparent;border:1px solid #c4bfb6;width:120px;height:18px;float:right;padding-left:10px;color:#c8c3b8;}
-.mybookseach1{padding:0px 4px 1px 4px;float:right;background-color:#3b3b51;color:#fff;border:#3b3b51 solid 1px;margin-right:20px;border-bottom:hidden;}
+.mybookseach{
+	background:transparent;
+	border:1px solid #c4bfb6;
+	width:120px;
+	height:20px;
+	box-sizing:border-box;
+	float:right;
+	margin-right:51px;
+	padding-left:10px;
+	color:#c8c3b8;
+	outline:none;
+	}
+.mybookseach1{
+	padding:4px 4px;
+	background-color:#3b3b51;
+	color:#fff;
+	font:12px/1 Arial, Helvetica, sans-serif;
+	border:none;
+	position:absolute;
+	top:10px;
+	right:20px;
+	}
 .arrow1{border-bottom:#c4bfb6 solid 1px;maigin-top:10px;width:940px}
-.arrow2{display:inline-block;width:0px;height:0px;border:6px solid transparent;border-bottom:6px solid #c4bfb6;font-size:0px;position:absolute;top:215px;margin-left:28px;}
-.arrow3{display:inline-block;width:0px;height:0px;border:6px solid transparent;border-bottom:6px solid #f7f2e8;font-size:0px;position:absolute;top:216px;margin-left:28px;}
-.arrow4{display:inline-block;width:0px;height:0px;border:6px solid transparent;border-bottom:6px solid #c4bfb6;font-size:0px;position:absolute;top:215px;margin-left:118px;}
-.arrow5{display:inline-block;width:0px;height:0px;border:6px solid transparent;border-bottom:6px solid #f7f2e8;font-size:0px;position:absolute;top:216px;margin-left:118px;}
+.arrow2{display:inline-block;width:0px;height:0px;border:6px solid transparent;border-bottom:6px solid #c4bfb6;font-size:0px;position:absolute;top:215px;margin-left:32px;}
+.arrow3{display:inline-block;width:0px;height:0px;border:6px solid transparent;border-bottom:6px solid #f7f2e8;font-size:0px;position:absolute;top:216px;margin-left:32px;}
+.arrow4{display:inline-block;width:0px;height:0px;border:6px solid transparent;border-bottom:6px solid #c4bfb6;font-size:0px;position:absolute;top:215px;margin-left:125px;}
+.arrow5{display:inline-block;width:0px;height:0px;border:6px solid transparent;border-bottom:6px solid #f7f2e8;font-size:0px;position:absolute;top:216px;margin-left:125px;}
 .mbrnrh{margin:20px 0px 10px 0px;}
 .mbrn{margin:20px 0px 20px 40px;font-family:"宋体";width:255px;float:left;}
 .mbrninfo{margin:-130px 0px 0px 108px;line-height:15px;width:120px;}
@@ -769,7 +806,18 @@ ul{list-style-type:none;}
 	text-align:left;
 	}
 .suinput{width:280px;border:1px solid #e7e7e7;color:#949494;height:25px;line-height:25px;margin:0px 0px 20px 10px;padding-left:10px;outline:none;}
-.setremind{color:#f30909;background:url(../images/remind.png) no-repeat 0px center;font:12px/1 "黑体";padding-left:15px;margin:0px 0px 0px 10px;}
+.setremind{
+	color:#f30909;
+	background:url(../images/remind.png) no-repeat 0px center;
+	font:12px/1 "黑体";
+	padding-left:15px;
+	margin-left:10px;
+	}
+.lognamex{
+	width:75px;
+	display:inline-block;
+	text-align:right;
+	}
 .myattent{
 	margin:40px 0px 0px 120px;
 	border-top:solid 1px #CBC6BD;
@@ -816,13 +864,60 @@ ul{list-style-type:none;}
 
 /*客户端*/
 .client{min-width:1200px;position:relative;}
-.download{z-index:99999;position:absolute;left:33%;margin-top:19.2%;right:47.2%;}
-.dliphone{width:100%;height:100%;}
-.dlandroid{width:100%;height:100%;margin-top:5%;}
+.twocodebox{
+	position:absolute;
+	margin-top:12%;
+	left:30%;
+	right:55%;
+	}		
+.twocode{
+	width:100%;
+	height:100%;
+	}
+.download{
+	position:absolute;
+	margin-top:16%;
+	left:49%;
+	right:28%;
+	}
+.dliphone{
+	width:100%;
+	height:100%;
+	}
+.dlandroid{
+	width:100%;
+	height:100%;
+	margin-top:5%;
+	}
 .cpo{width:100%;}
-.cpt{width:100%;margin:-2px 0px -1px;}
-.cph{width:100%;margin:-2px 0px -1px;}
-.cpf{width:100%;margin:-2px 0px -3px;}
+.clientbackgd{
+	width:100%;
+	background:#eaffd7;
+	height:100%;
+	text-align:center;
+	}
+.cltcon{
+	padding:40px 0px;
+	}	
+.cltconinfo{
+	display:inline-block;
+	text-align:left;
+	margin:30px 0px 0px 100px;
+	}	
+.cltconinfo h3{
+	color:#0c8c5a;
+	font:24px/1 "宋体";
+	}	
+.cltconinfo p{
+	color:#181818;
+	margin-top:20px;
+	font:14px/1.5 "微软雅黑";
+	width:475px;
+	text-indent:2em;
+	}	
+.cltconpic{
+	display:inline-block;
+	}	
 
 /*阅读器在线阅读*/
 .tbbody{
@@ -908,67 +1003,87 @@ ul{list-style-type:none;}
 .le_share{margin-bottom:10px;}
 .icon-gernal{
 	display:inline-block;
-	width:25px;
+	width:26px;
 	height:21px;
 	background:url(../images/readicon.png) no-repeat;
 	margin-bottom:20px;
-	margin-bottom:20px;
 	}
 .icon-menu{
-	background-position:-81px 0px;
+	background-position:0px 0px;
 	}	
 .icon-menu:hover{
-	background-position:-81px -23px;
+	background-position:-27px 0px;
 	}
-.icon_zoom{
-	height:25px;
+.clickmenu{
 	background-position:-55px 0px;
+	}	
+.icon_zoom{
+	height:26px;
+	background-position:0px -22px;
 	}
 .icon_zoom:hover{
-	background-position:-55px -26px;
+	background-position:-27px -22px;
 	}
 .icon_zoomout{
-	height:25px;
-	background-position:-55px -52px;
+	height:26px;
+	background-position:-55px -22px;
 	}	
 .icon_zoomout:hover{
-	background-position:-55px -79px;
+	background-position:-81px -22px;
 	}
+.icon_like{
+	width:29px;
+	height:27px;
+	background-position:0px -50px;
+	}	
+.icon_like:hover{
+	width:31px;
+	background-position:-30px -50px;
+	}	
+.clicklike{
+	width:29px;
+	height:27px;
+	background-position:-62px -50px;
+	}	
 .icon-tag{
-	height:32px;
+	width:21px;
+	height:29px;
 	position:absolute;
 	right:0px;
 	top:45px;
-	background-position:-106px 0px;
+	background-position:0px -78px;
 	cursor:pointer;
+	margin:0px;
 	}
 .icon-tag:hover{
-	background-position:-106px -35px;
+	background-position:-22px -78px;
 	}
 .clicktag{
-	height:32px;
+	width:21px;
+	height:29px;
 	position:absolute;
 	right:0px;
 	top:45px;
 	cursor:pointer;
-	background-position:-106px -70px;
+	background-position:-45px -78px;
+	margin:0px;
 	}
 .icon_pglf{
-	width:53px;
-	height:53px;
-	background-position:0px 0px;
+	width:42px;
+	height:84px;
+	background-position:0px -109px;
 	margin-top:80px;
 	}
 .icon_pglf:hover{
-	background-position:0px -109px;
+	box-shadow:3px 3px 10px #8B8B8B;
 	}	
 .icon_pgrt{
-	width:53px;
-	height:53px;
-	background-position:0px -55px;
+	width:42px;
+	height:84px;
+	background-position:0px -194px;
 	}
 .icon_pgrt:hover{
-	background-position:0px -164px;
+	box-shadow:3px 3px 10px #8B8B8B;
 	}		
 /*目录里面的样式*/
 .menubox{
