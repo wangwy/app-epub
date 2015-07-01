@@ -16,28 +16,15 @@
             //查询笔记
             $("#b01").click(function () {
                 var data = {"user_id": "1", "book_id": "22", "auth_token": "1111"};
-                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/singlebook/note/list", data).then(function (r) {
+                EPUB.Request.bookStoreRequest("/mobile/post/my/singlebook/note/list", data).then(function (r) {
                     $("#showNote").html(JSON.stringify(r));
                 });
             });
 
             //保存笔记
             $("#b02").click(function () {
-                /*var data = new FormData();
-                 data.append("user_id","1");
-                 data.append("book_id","20");
-                 data.append("auth_token","1111");
-                 data.append("chapter_index", "111");
-                 data.append("chapter_name", "2222");
-                 data.append("position", "1,20");
-                 data.append("position_offset", "1,20");
-                 data.append("summary_content", "234235234534");
-                 data.append("note_content", "565643453");
-                 data.append("summary_underline_color","red");
-                 data.append("add_time", "2014-09-01 22:11:22");
-                 data.append("process","11");*/
                 var data = {"user_id": "1", "book_id": "22", "auth_token": "1111", "chapter_index": "111", "chapter_name": "222", "position": "1,20", "position_offset": "1,20", "summary_content": "234235234534", "note_content": "565643453", "summary_underline_color": "red", "add_time": "2014-09-01 22:11:22", "process": "11"};
-                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/save", data).then(function (r) {
+                EPUB.Request.bookStoreRequest("/mobile/post/my/note/save", data).then(function (r) {
                     $("#saveNote").html(JSON.stringify(r));
                 });
             });
@@ -45,41 +32,24 @@
             //删除笔记
             $("#b03").click(function () {
                 var noteid = $("#deleNote").val();
-                /*var data = new FormData();
-                 data.append("user_id","1");
-                 data.append("auth_token","1111");
-                 data.append("id",noteid);*/
                 var data = {"user_id": "1", "book_id": "22", "id": noteid};
-                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/note/delete", data).then(function (r) {
+                EPUB.Request.bookStoreRequest("/mobile/post/my/note/delete", data).then(function (r) {
                     alert(JSON.stringify(r))
                 });
             });
 
             //查询书签
             $("#b04").click(function () {
-                /*var data = new FormData();
-                 data.append("user_id","1");
-                 data.append("auth_token","dfdfdf");
-                 data.append("book_id","20");*/
                 var data = {"user_id": "1", "book_id": "22", "auth_token": "1111"};
-                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/singlebook/bookmark/list", data).then(function (r) {
+                EPUB.Request.bookStoreRequest("/mobile/post/my/singlebook/bookmark/list", data).then(function (r) {
                     $("#showMark").html(JSON.stringify(r));
                 });
             });
 
             //保存书签
             $("#b05").click(function () {
-                /*var data = new FormData();
-                 data.append("user_id","1");
-                 data.append("auth_token","1111");
-                 data.append("book_id","20");
-                 data.append("chapter_index","3");
-                 data.append("chapter_name","111");
-                 data.append("position","10");
-                 data.append("add_time","2015-01-10 11:11:11");
-                 data.append("summary_content","322452353464356");*/
                 var data = {"user_id": "1", "book_id": "22", "auth_token": "1111", "chapter_index": "3", "chapter_name": "111", "position": "10", "add_time": "2015-01-10 11:11:11", "summary_content": "322452353464356"};
-                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/add", data).then(function (r) {
+                EPUB.Request.bookStoreRequest("/mobile/post/my/bookmark/add", data).then(function (r) {
                     $("#saveMark").html(JSON.stringify(r));
                 });
             });
@@ -87,39 +57,24 @@
             //删除书签
             $("#b06").click(function () {
                 var markid = $("#deleMark").val();
-                /* var data = new FormData();
-                 data.append("user_id","1");
-                 data.append("auth_token","1111");
-                 data.append("id",markid);*/
                 var data = {"user_id": "1", "book_id": "22", "id": markid};
-                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/bookmark/delete", data).then(function (r) {
+                EPUB.Request.bookStoreRequest("/mobile/post/my/bookmark/delete", data).then(function (r) {
                     alert(JSON.stringify(r))
                 });
             });
             $.isEmptyObject();
             //查询进度
             $("#b07").click(function () {
-                /*var data = new FormData();
-                 data.append("user_id","1");
-                 data.append("auth_token","dfdfdf");
-                 data.append("book_id","20");*/
                 var data = {"user_id": "1", "book_id": "22", "auth_token": "1111"};
-                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/singlebook/readprogress/get", data).then(function (r) {
+                EPUB.Request.bookStoreRequest("/mobile/post/my/singlebook/readprogress/get", data).then(function (r) {
                     $("#showProgress").html(JSON.stringify(r));
                 });
             });
 
             //保存进度
             $("#b08").click(function () {
-                /*var data = new FormData();
-                 data.append("user_id","1");
-                 data.append("auth_token","dfdfdf");
-                 data.append("book_id","20");
-                 data.append("chapter_index","3");
-                 data.append("position","10");
-                 data.append("progress","no");*/
                 var data = {"user_id": "1", "book_id": "22", "auth_token": "1111", "chapter_index": "1", "position": "1", "progress": "no"};
-                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/my/readprogress/save", data).then(function (r) {
+                EPUB.Request.bookStoreRequest("/mobile/post/my/readprogress/save", data).then(function (r) {
                     $("#saveProgress").html(JSON.stringify(r));
                 });
 
@@ -127,9 +82,33 @@
 
             //获取书籍
             $("#b09").click(function () {
-                var data = {"user_id": "1", "book_id": "27", "auth_token": "1111"};
-                EPUB.Request.bookStoreRequest("/retech-bookstore/mobile/post/get_epub_info", data).then(function (r) {
+                var data = {"user_id": "1", "book_id": "22", "auth_token": "1111"};
+                EPUB.Request.bookStoreRequest("/mobile/post/get_epub_info", data).then(function (r) {
                     $("#getBook").html(JSON.stringify(r));
+                });
+            });
+
+            //获取node端口
+            $("#b10").click(function () {
+                var data = {"user_id": "1", "book_id": "22", "auth_token": "1111"};
+                EPUB.Request.bookStoreRequest("/node/", data, "json").then(function (r) {
+                    $("#getNode").html(JSON.stringify(r));
+                })
+            });
+
+            //添加收藏
+            $("#b11").click(function () {
+                var data = {"user_id": "1", "book_id": "22", "auth_token": "1111", "platform": "web"};
+                EPUB.Request.bookStoreRequest("/mobile/post/my/collect/add",data).then(function(r){
+                    $("#addCollect").html(JSON.stringify(r));
+                })
+            });
+
+            //删除收藏
+            $("#b12").click(function () {
+                var data = {"user_id": "1", "book_id": "22", "auth_token": "1111","platform": "web"};
+                EPUB.Request.bookStoreRequest("/mobile/post/my/collect/delete",data).then(function(r){
+                    $("#remCollect").html(JSON.stringify(r));
                 });
             });
         });
@@ -204,6 +183,27 @@
 </div>
 <button id="b09" type="button">
     获取书籍
+</button>
+
+<div id="getNode">
+    获取node接口
+</div>
+<button id="b10" type="button">
+    node接口
+</button>
+
+<div id="addCollect">
+    添加收藏
+</div>
+<button id="b11" type="button">
+    添加收藏
+</button>
+
+<div id="remCollect">
+    删除收藏
+</div>
+<button id="b12" type="button">
+    删除收藏
 </button>
 <hr/>
 <!-- JiaThis Button BEGIN -->
