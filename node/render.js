@@ -189,7 +189,7 @@ EPUB.Render.prototype.imageSetting = function (ele) {
  * @param txt
  */
 EPUB.Render.prototype.textSetting = function (ele) {
-  var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName] || EPUB.ELEMENTS["p"];
+  var txt = ele.textContent, eleStyle = EPUB.ELEMENTS[ele.parentNode.tagName] || EPUB.ELEMENTS["P"];
   for (var i = 0; i < txt.length; i++) {
     var char = txt.charAt(i);
     var charCode = txt.charCodeAt(i);

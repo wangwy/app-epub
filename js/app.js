@@ -70,20 +70,26 @@ RSVP.on('error', function (reason) {
     var iconlike = document.getElementById("iconlike");
     //添加或删除收藏
     iconlike.addEventListener("click", function (e) {
-      var data = {"user_id": userid, "book_id": bookid, "auth_token": authtoken, "platform": "web"};
-      var classList = iconlike.getAttribute("class");
-      if (classList == "icon-gernal icon_like") {
-        EPUB.Request.bookStoreRequest("/mobile/post/my/collect/add", data).then(function (r) {
-          if (r.flag == "1") {
-            iconlike.setAttribute("class", "icon-gernal clicklike");
-          }
-        })
-      } else {
-        EPUB.Request.bookStoreRequest("/mobile/post/my/collect/delete", data).then(function (r) {
-          if (r.flag == "1") {
-            iconlike.setAttribute("class", "icon-gernal icon_like");
-          }
-        });
+      if(userid != ""){
+        var data = {"user_id": userid, "book_id": bookid, "auth_token": authtoken, "platform": "web"};
+        var classList = iconlike.getAttribute("class");
+        if (classList == "icon-gernal icon_like") {
+          EPUB.Request.bookStoreRequest("/mobile/post/my/collect/add", data).then(function (r) {
+            if (r.flag == "1") {
+              iconlike.setAttribute("class", "icon-gernal clicklike");
+              iconlike.setAttribute("title", "取消收藏");
+            }
+          })
+        } else {
+          EPUB.Request.bookStoreRequest("/mobile/post/my/collect/delete", data).then(function (r) {
+            if (r.flag == "1") {
+              iconlike.setAttribute("class", "icon-gernal icon_like");
+              iconlike.setAttribute("title", "添加收藏");
+            }
+          });
+        }
+      }else{
+        alert("请登录！")
       }
     });
 
@@ -92,10 +98,21 @@ RSVP.on('error', function (reason) {
       if(r.flag == "1"){
         if(r.is_collect){
           iconlike.setAttribute("class", "icon-gernal clicklike");
+          iconlike.setAttribute("title", "取消收藏");
         }
       }
     });
 
+    //20分钟刷新依次页面防止session丢失
+    setInterval(function(){
+      EPUB.Request.bookStoreRequest("/mobile/post/my/collect/is_collect",{"user_id":userid,"book_id":bookid,"auth_token":authtoken,"platform":"web"}).then(function(r){
+        if(r.flag == "1"){
+          if(r.is_collect){
+            iconlike.setAttribute("class", "icon-gernal clicklike");
+          }
+        }
+      });
+    },120000);
     return book;
   }
 })(window);

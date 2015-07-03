@@ -163,12 +163,6 @@ EPUB.Notation.prototype.initialDialog = function () {
       alert("请登录！")
     }
   });
-
-  document.addEventListener("keydown", function (e) {
-    if (e.keyCode == 13 && that.dialogNode.style.display == "block") {
-      that.saveNote();
-    }
-  });
 };
 
 /**
@@ -595,9 +589,9 @@ EPUB.Notation.prototype.showNotation = function () {
   var that = this;
   if (that.render.notes.length > 0) {
     var pageEndLength = 0, pageStartLength = 0;
-    pageStartLength = this.render.position;
-    for (var j = 0; j < this.pages[this.pageIndex - 1].length; j++) {
-      pageEndLength += this.pages[this.pageIndex - 1][j].length;
+    pageStartLength = that.render.position;
+    for (var j = 0; j < that.pages[that.pageIndex - 1].length; j++) {
+      pageEndLength += that.pages[that.pageIndex - 1][j].length;
     }
     pageEndLength += pageStartLength;
     that.render.notes.forEach(function (value) {
@@ -623,7 +617,7 @@ EPUB.Notation.prototype.showNotation = function () {
         if (value.note_content != "") {
           that.createTextCircle(value.id, value.note_content);
         }
-      } else if (pageStartLength <= startOffset && pageEndLength < endOffset) {
+      } else if (pageStartLength <= startOffset && pageEndLength < endOffset && pageEndLength > startOffset) {
         notationStart = startOffset - pageStartLength;
         notationEnd = pageEndLength - pageStartLength;
         svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));

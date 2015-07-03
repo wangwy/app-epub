@@ -1,0 +1,62 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'install', 'giflib' ]
+2 info using npm@1.3.10
+3 info using node@v0.10.25
+4 verbose readDependencies using package.json deps
+5 verbose cache add [ 'giflib', null ]
+6 verbose cache add name=undefined spec="giflib" args=["giflib",null]
+7 verbose parsed url { protocol: null,
+7 verbose parsed url   slashes: null,
+7 verbose parsed url   auth: null,
+7 verbose parsed url   host: null,
+7 verbose parsed url   port: null,
+7 verbose parsed url   hostname: null,
+7 verbose parsed url   hash: null,
+7 verbose parsed url   search: null,
+7 verbose parsed url   query: null,
+7 verbose parsed url   pathname: 'giflib',
+7 verbose parsed url   path: 'giflib',
+7 verbose parsed url   href: 'giflib' }
+8 silly lockFile ee147e23-giflib giflib
+9 verbose lock giflib /home/wangwy/.npm/ee147e23-giflib.lock
+10 silly lockFile ee147e23-giflib giflib
+11 silly lockFile ee147e23-giflib giflib
+12 verbose addNamed [ 'giflib', '' ]
+13 verbose addNamed [ null, '*' ]
+14 silly lockFile 44d093b2-giflib giflib@
+15 verbose lock giflib@ /home/wangwy/.npm/44d093b2-giflib.lock
+16 silly addNameRange { name: 'giflib', range: '*', hasData: false }
+17 verbose url raw giflib
+18 verbose url resolving [ 'https://registry.npmjs.org/', './giflib' ]
+19 verbose url resolved https://registry.npmjs.org/giflib
+20 info trying registry request attempt 1 at 15:27:33
+21 http GET https://registry.npmjs.org/giflib
+22 http 404 https://registry.npmjs.org/giflib
+23 silly registry.get cb [ 404,
+23 silly registry.get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+23 silly registry.get     'content-type': 'application/json',
+23 silly registry.get     'cache-control': 'max-age=0',
+23 silly registry.get     'content-length': '51',
+23 silly registry.get     'accept-ranges': 'bytes',
+23 silly registry.get     date: 'Thu, 18 Jun 2015 07:27:37 GMT',
+23 silly registry.get     via: '1.1 varnish',
+23 silly registry.get     age: '0',
+23 silly registry.get     connection: 'keep-alive',
+23 silly registry.get     'x-served-by': 'cache-sjc3134-SJC',
+23 silly registry.get     'x-cache': 'MISS',
+23 silly registry.get     'x-cache-hits': '0',
+23 silly registry.get     'x-timer': 'S1434612457.346082,VS0,VE43' } ]
+24 silly lockFile 44d093b2-giflib giflib@
+25 silly lockFile 44d093b2-giflib giflib@
+26 error 404 'giflib' is not in the npm registry.
+26 error 404 You should bug the author to publish it
+26 error 404
+26 error 404 Note that you can also install from a
+26 error 404 tarball, folder, or http url, or git url.
+27 error System Linux 3.13.0-55-generic
+28 error command "/usr/bin/nodejs" "/usr/bin/npm" "install" "giflib"
+29 error cwd /home/wangwy/WebstormProjects/app-epub
+30 error node -v v0.10.25
+31 error npm -v 1.3.10
+32 error code E404
+33 verbose exit [ 1, true ]

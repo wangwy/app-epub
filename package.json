@@ -18,5 +18,8 @@
   },
   "scripts": {
     "start": "node server.js"
+  },
+  "dependencies": {
+    "images": "~2.1.6"
   }
 }

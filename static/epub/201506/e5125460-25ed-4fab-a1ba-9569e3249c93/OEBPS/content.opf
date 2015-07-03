@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no' ?>
+<opf:package version="2.0" unique-identifier="BookId" xmlns:opf="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <opf:metadata>
+    <dc:identifier id="BookId" opf:scheme="uuid">2487</dc:identifier>
+    <dc:title>《南吕羽舞》</dc:title>
+    <dc:subject>《南吕羽舞》</dc:subject>
+    <dc:description>《南吕羽舞》</dc:description>
+    <dc:publisher>COAY.COM</dc:publisher>
+    <dc:creator opf:role="aut" opf:file-as="藤萍, "> 藤萍</dc:creator>
+    <dc:contributor opf:role="aut" opf:file-as="[http://www.coay.com], COAY.COM">COAY.COM [http://www.coay.com]</dc:contributor>
+    <dc:date></dc:date>
+    <dc:language>zh-cn</dc:language>
+    <opf:meta name="generator" content="EPUBLib version 3.0" />
+  </opf:metadata>
+  <opf:manifest>
+    <opf:item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
+    <opf:item id="ad" href="coay.jpg" media-type="image/jpeg" />
+    <opf:item id="catalog" href="catalog.html" media-type="application/xhtml+xml" />
+    <opf:item id="cover" href="cover.jpg" media-type="image/jpeg" />
+    <opf:item id="css" href="stylesheet.css" media-type="text/css" />
+    <opf:item id="id2487_1" href="article_2487_1.html" media-type="application/xhtml+xml" />
+    <opf:item id="page" href="page.xhtml" media-type="application/xhtml+xml" />
+    <opf:item id="titlepage" href="titlepage.xhtml" media-type="application/xhtml+xml" />
+  </opf:manifest>
+  <opf:spine toc="ncx">
+    <opf:itemref idref="titlepage" />
+    <opf:itemref idref="page" />
+    <opf:itemref idref="catalog" />
+    <opf:itemref idref="id2487_1" />
+  </opf:spine>
+  <opf:guide />
+</opf:package>

@@ -17,6 +17,7 @@ EPUB.Selections.prototype.initSelection = function () {
   this.notation.svg = this.svg;
   this.notation.pages = this.render.pages;
   this.notation.pageIndex = this.render.displayedPage;
+  this.notation.hideAllDialog();
   this.notation.showNotation();
   this.notation.showMark();
   //禁用浏览器选重
