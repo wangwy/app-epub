@@ -395,13 +395,14 @@ EPUB.Notation.prototype.saveNote = function () {
         "position": that.selectedOffset().startOffset + "," + that.selectedOffset().endOffset,
         "position_offset": that.selectedOffset().startOffset + "," + that.svgSelected.length,
         "summary_content": that.getString(that.svgSelected),
-        "note_content": document.getElementById("comment-content").value,
+        "note_content": encodeURIComponent(document.getElementById("comment-content").value),
         "summary_underline_color": "red",
         "add_time": new Date().Format("yyyy-MM-dd hh:mm:ss"),
         "process": that.render.book.progress,
         "platform": "web"
       };
   var noteid = document.getElementById("noteSave").getAttribute("data-noteid");
+  var noteContent = document.getElementById("comment-content").value;
   if (noteid) {
     that.group.push(noteid);
     document.getElementById("noteSave").setAttribute("data-noteid", "");
@@ -414,7 +415,7 @@ EPUB.Notation.prototype.saveNote = function () {
       that.createUnderline(r.note_id);
 
       if (data.note_content != "") {
-        that.createTextCircle(r.note_id, data.note_content);
+        that.createTextCircle(r.note_id, noteContent);
       }
 
       that.render.book.getNotes().then(function () {

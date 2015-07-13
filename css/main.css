@@ -1420,6 +1420,9 @@ g,circle{
 .notepup p{
 	margin:0px;
 	padding:0px;
+    word-break:break-word;
+    max-width:145px;
+    overflow:hidden;
 	}	
 	
 	
