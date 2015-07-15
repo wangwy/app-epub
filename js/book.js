@@ -127,6 +127,9 @@ EPUB.Book.prototype.display = function (url, spineNum) {
   var that = this;
   var deferred = new RSVP.defer();
   this.spineNum = spineNum || this.spineNum;
+  if(this.spineNum >= this.spine.length){
+    this.spineNum = 0;
+  }
   var path = url || that.manifest[that.spine[this.spineNum].id].url;
   that.render.chapterUrl = path;
   this.addLoading();
