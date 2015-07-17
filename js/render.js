@@ -186,9 +186,6 @@ EPUB.Render.prototype.textSetting = function (ele) {
   }
 };
 
-/*EPUB.Render.prototype.svgSetting = function(elements){
-
-};*/
 /**
  * 换行，换页计算
  * @param width

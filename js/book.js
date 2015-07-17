@@ -7,6 +7,7 @@ EPUB.Book = function (elem) {
   this.render = new EPUB.Render(this);
   this.events = new EPUB.Events(this, this.el);
   this.format = new EPUB.Format(this);
+  this.createEvent("book:progress");
   this.beforeDisplay();
 };
 
@@ -86,21 +87,22 @@ EPUB.Book.prototype.getbookPageNumObj = function () {
  * 计算当前进度
  */
 EPUB.Book.prototype.createBookPosition = function () {
-  if(this.bookPageNumObj){
-    var position = 0;
+  var position = 0;
+  if (this.bookPageNumObj) {
     if (this.spineNum != 0) {
       position = (this.bookPageNumObj[this.spineNum - 1].percentage + (this.render.displayedPage / this.render.pages.length) * (this.bookPageNumObj[this.spineNum].pageNum / this.bookPageNumObj.allNum)) * 100;
     } else {
       position = this.render.displayedPage / this.bookPageNumObj.allNum * 100;
     }
-    if(position <= 99){
+    if (position <= 99) {
       position = Math.round(position);
-    }else if(position > 99 && position < 100){
+    } else if (position > 99 && position < 100) {
       position = 99;
-    }else{
+    } else {
       position = 100;
     }
     document.getElementsByClassName("rdprogres")[0].textContent = position + "%";
+    this.tell("book:progress",position);
   }
 };
 
@@ -127,7 +129,7 @@ EPUB.Book.prototype.display = function (url, spineNum) {
   var that = this;
   var deferred = new RSVP.defer();
   this.spineNum = spineNum || this.spineNum;
-  if(this.spineNum >= this.spine.length){
+  if (this.spineNum >= this.spine.length) {
     this.spineNum = 0;
   }
   var path = url || that.manifest[that.spine[this.spineNum].id].url;
@@ -266,7 +268,7 @@ EPUB.Book.prototype.createToc = function (doc) {
           that.addPageListener();
           document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
           document.getElementsByClassName("menubox")[0].style.display = "none";
-          document.getElementById("btnMenu").setAttribute("class","icon-gernal icon-menu");
+          document.getElementById("btnMenu").setAttribute("class", "icon-gernal icon-menu");
         });
         a.textContent = item.label;
         li.appendChild(a);
@@ -404,7 +406,7 @@ EPUB.Book.prototype.createNote = function (notelist) {
         that.addPageListener();
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
-        document.getElementById("btnMenu").setAttribute("class","icon-gernal icon-menu");
+        document.getElementById("btnMenu").setAttribute("class", "icon-gernal icon-menu");
       });
       div.appendChild(p);
 
@@ -415,7 +417,7 @@ EPUB.Book.prototype.createNote = function (notelist) {
 
       var span3 = document.createElement("span");
       span3.setAttribute("class", "redcolor");
-      if(item.note_content != ""){
+      if (item.note_content != "") {
         span3.textContent = "注：";
       }
       span2.insertBefore(span3, span2.firstChild);
@@ -507,7 +509,7 @@ EPUB.Book.prototype.createMark = function (marklist) {
         that.addPageListener();
         document.getElementById('menubox_bg').style.display = (document.getElementById('menubox_bg').style.display == 'none') ? '' : 'none';
         document.getElementsByClassName("menubox")[0].style.display = "none";
-        document.getElementById("btnMenu").setAttribute("class","icon-gernal icon-menu");
+        document.getElementById("btnMenu").setAttribute("class", "icon-gernal icon-menu");
       });
       markListDiv.appendChild(markListP);
     });
@@ -649,9 +651,9 @@ EPUB.Book.prototype.remPageListener = function () {
 /**
  * 添加加载锁定屏幕效果
  */
-EPUB.Book.prototype.addLoading = function(){
+EPUB.Book.prototype.addLoading = function () {
   var div = document.createElement("div");
-  div.setAttribute("id","loadingEffect");
+  div.setAttribute("id", "loadingEffect");
 
   var overlayDiv = document.createElement("div");
   overlayDiv.style.position = "absolute";
@@ -665,17 +667,17 @@ EPUB.Book.prototype.addLoading = function(){
 
   var messageDiv = document.createElement("div");
   messageDiv.textContent = "正在加载，请稍候......";
-  messageDiv.style.position="absolute";
-  messageDiv.style.width="400px";
-  messageDiv.style.height="100px";
-  messageDiv.style.lineHeight="100px";
-  messageDiv.style.backgroundColor="#fff"
-  messageDiv.style.textAlign="center";
-  messageDiv.style.fontSize="1.2em";
-  messageDiv.style.left="50%";
-  messageDiv.style.top="50%";
-  messageDiv.style.marginLeft="-200px";
-  messageDiv.style.marginTop="-50px";
+  messageDiv.style.position = "absolute";
+  messageDiv.style.width = "400px";
+  messageDiv.style.height = "100px";
+  messageDiv.style.lineHeight = "100px";
+  messageDiv.style.backgroundColor = "#fff"
+  messageDiv.style.textAlign = "center";
+  messageDiv.style.fontSize = "1.2em";
+  messageDiv.style.left = "50%";
+  messageDiv.style.top = "50%";
+  messageDiv.style.marginLeft = "-200px";
+  messageDiv.style.marginTop = "-50px";
   div.appendChild(messageDiv);
 
   document.getElementsByTagName("body")[0].appendChild(div);
@@ -685,10 +687,37 @@ EPUB.Book.prototype.addLoading = function(){
 /**
  * 移除加载锁定屏幕效果
  */
-EPUB.Book.prototype.remLoading = function(){
+EPUB.Book.prototype.remLoading = function () {
   var elem = document.getElementById("loadingEffect");
-  if(elem){
+  if (elem) {
     document.getElementsByTagName("body")[0].removeChild(elem);
   }
   this.addPageListener();
+};
+
+/**
+ * 根据百分比获得书籍进度
+ * @param percent
+ * @returns {{spineNum: number, displayNum: number}}
+ */
+EPUB.Book.prototype.goProgressByPercent = function (percent) {
+  var spineNum = 1;
+  var displayNum = 1;
+  var that = this;
+  var pageNum = this.bookPageNumObj.allNum * percent;
+  for(var num in this.bookPageNumObj){
+    if(this.bookPageNumObj[num].endNum && (this.bookPageNumObj[num].endNum >= pageNum)){
+      spineNum = num;
+      break;
+    }
+  }
+  that.display('', spineNum).then(function (context) {
+    return that.initialChapter(context);
+  }).then(function () {
+    displayNum = Math.ceil(((pageNum - that.bookPageNumObj[spineNum].startNum + 1)/that.bookPageNumObj[spineNum].pageNum)*(that.render.pages.length));
+    if(displayNum == 0){
+      displayNum = 1;
+    }
+    that.render.display(displayNum);
+  });
 };

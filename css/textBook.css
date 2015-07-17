@@ -29,3 +29,26 @@ search > a:visited {
 search > a:hover {
     text-decoration: underline !important;
 }
+
+#drag {
+    width: 10px;
+    height: 20px;
+    background: #f60;
+    border: 1px solid #f60;
+    position: absolute;
+}
+
+#message {
+    width: 100px;
+    height: 100px;
+    background: #f60;
+    position: absolute;
+    display: none;
+    left: 15px;
+}
+
+#box {
+    width: 12px;
+    background: #ffffff;
+    border: 1px solid #f60;
+}
