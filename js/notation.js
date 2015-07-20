@@ -576,7 +576,7 @@ EPUB.Notation.prototype.selectedOffset = function () {
       svgArray = Array.prototype.slice.call(document.getElementsByClassName("context"));
   startOffset += svgArray.indexOf(this.svgSelected[0]);
 
-  endOffset = startOffset + this.svgSelected.length;
+  endOffset = startOffset + this.svgSelected.length-1;
   return {
     "startOffset": startOffset,
     "endOffset": endOffset
@@ -596,7 +596,7 @@ EPUB.Notation.prototype.showNotation = function () {
     }
     pageEndLength += pageStartLength;
     that.render.notes.forEach(function (value) {
-      var startOffset = value.position.split(",")[0], endOffset = value.position.split(",")[1];
+      var startOffset = value.position.split(",")[0], endOffset = parseInt(value.position.split(",")[1])+1;
       var notationStart, notationEnd, svgArray;
       if (pageStartLength > startOffset && pageStartLength < endOffset && pageEndLength >= endOffset) {
         notationStart = 0;
