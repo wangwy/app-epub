@@ -437,7 +437,7 @@ EPUB.Notation.prototype.saveNote = function () {
 EPUB.Notation.prototype.saveMark = function () {
   var that = this;
   var pageStartPosition = this.render.position;
-  var summary = that.getString(that.svg.childNodes).slice(0, 100);
+  var summary = that.getString(that.svg.childNodes).slice(0, 100) || "图片";
   var data = {
     "user_id": EPUB.USERID,
     "auth_token": EPUB.AUTHTOKEN,

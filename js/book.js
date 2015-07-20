@@ -25,6 +25,7 @@ EPUB.Book.prototype.getEl = function (elem) {
  */
 EPUB.Book.prototype.beforeDisplay = function () {
   var book = this;
+  book.addLoading();
   book.getBook(EPUB.USERID, EPUB.BOOKID, EPUB.AUTHTOKEN).then(function (path) {
     book.bookUrl = EPUB.Utils.parseUrl(path).directory;
     return book.loadOpfFile(book.bookUrl);
@@ -33,17 +34,6 @@ EPUB.Book.prototype.beforeDisplay = function () {
     book.manifest = book.bookData.manifest;
     book.spine = book.bookData.spine;
     book.bookData.elem = {"clientWidth": book.el.clientWidth, "clientHeight": book.el.clientHeight};
-  }).then(function () {
-    return book.getProgress();
-  }).then(function () {
-    return book.getNotes();
-  }).then(function () {
-    return book.getMarks();
-  }).then(function () {
-    return book.display();
-  }).then(function (context) {
-    return book.initialChapter(context);
-  }).then(function () {
     window.addEventListener("resize", function () {
       book.initialChapter(book.renderContext).then(function () {
         var displayNum = book.render.calculateDisplayNum(book.render.position);
@@ -64,10 +54,22 @@ EPUB.Book.prototype.beforeDisplay = function () {
         return message;
       };
     }
+  }).then(function () {
+    return book.getProgress();
+  }).then(function () {
+    return book.getNotes();
+  }).then(function () {
+    return book.getMarks();
+  }).then(function () {
+    return book.display();
+  }).then(function (context) {
+    return book.initialChapter(context);
+  }).then(function () {
     var displayNum = book.render.calculateDisplayNum(book.render.position);
     book.render.display(displayNum);
   }).then(function () {
-    return book.getbookPageNumObj();
+    book.getbookPageNumObj();
+    book.remLoading();
   })
 };
 
@@ -134,7 +136,6 @@ EPUB.Book.prototype.display = function (url, spineNum) {
   }
   var path = url || that.manifest[that.spine[this.spineNum].id].url;
   that.render.chapterUrl = path;
-  this.addLoading();
   EPUB.Request.loadFile(path, 'xml').then(function (context) {
     //获得章节标题
     that.render.chapterName = that.spineNum.toString();
@@ -146,7 +147,6 @@ EPUB.Book.prototype.display = function (url, spineNum) {
     chapterNode.textContent = that.render.chapterName;
     deferred.resolve(context);
     that.renderContext = context;
-    that.remLoading();
   });
   return deferred.promise;
 };
@@ -158,9 +158,7 @@ EPUB.Book.prototype.display = function (url, spineNum) {
  */
 EPUB.Book.prototype.initialChapter = function (context) {
   var that = this;
-  that.addLoading();
   var retru = this.render.initialize(context).then(function (docBody) {
-    that.remLoading();
     that.render.spineNum = that.spineNum;
     that.render.getPagesNum(docBody);
     that.render.notes = that.getChapterNotes(that.spineNum);
@@ -223,8 +221,6 @@ EPUB.Book.prototype.prevPage = function () {
         var num = that.render.pages.length;
         that.render.display(num);
       });
-    } else {
-      alert("已经是第一页");
     }
   }
 };
