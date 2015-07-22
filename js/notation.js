@@ -141,7 +141,7 @@ EPUB.Notation.prototype.initialDialog = function () {
     } else if (EPUB.USERID != "") {
       that.saveMark();
     } else {
-      alert("请登录！")
+      EPUB.Utils.showAlert("请登录！")
     }
   });
 
@@ -160,7 +160,7 @@ EPUB.Notation.prototype.initialDialog = function () {
     if (EPUB.USERID != "") {
       that.showDialog();
     } else {
-      alert("请登录！")
+      EPUB.Utils.showAlert("请登录！")
     }
   });
 };
@@ -261,7 +261,7 @@ EPUB.Notation.prototype.showDialog = function () {
     document.getElementById("back").setAttribute("class", "pup_bg");
     this.dialogNode.style.display = "block";
   } else {
-    alert("笔记摘要过大，请选择小于225个字！");
+    EPUB.Utils.showAlert("笔记摘要过大，请选择小于225个字！");
   }
 };
 
@@ -288,6 +288,7 @@ EPUB.Notation.prototype.showEditDialog = function (noteid) {
   this.dialogNode.style.display = "block";
   document.getElementById("noteSave").setAttribute("data-noteid", noteid);
 };
+
 /**
  * 隐藏笔记内容窗口
  */
@@ -396,7 +397,7 @@ EPUB.Notation.prototype.saveNote = function () {
         "position_offset": that.selectedOffset().startOffset + "," + that.svgSelected.length,
         "summary_content": that.getString(that.svgSelected),
         "note_content": encodeURIComponent(document.getElementById("comment-content").value),
-        "summary_underline_color": "red",
+        "summary_underline_color": "#ff0000",
         "add_time": new Date().Format("yyyy-MM-dd hh:mm:ss"),
         "process": that.render.book.progress,
         "platform": "web"

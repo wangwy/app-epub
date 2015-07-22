@@ -13,7 +13,7 @@ RSVP.on('error', function (reason) {
     EPUB.AUTHTOKEN = authtoken;
 
     //创建滚动条
-    var oDrag = new Drag({backgroundId: "box", messageId: "message", dragId: "drag"});
+    var oDrag = new Drag({backgroundId: "box", messageId: "message", dragId: "drag", arrowId: "arrow"});
     var book = new EPUB.Book(ele);
 
     //翻页
@@ -92,7 +92,7 @@ RSVP.on('error', function (reason) {
           });
         }
       } else {
-        alert("请登录！")
+        EPUB.Utils.showAlert("请登录！")
       }
     });
 
@@ -132,7 +132,7 @@ RSVP.on('error', function (reason) {
           break;
         }
       }
-      document.getElementById("label").textContent = message;
+      oDrag.showMessage(percent, message);
     };
     oDrag.onStart = function (percent) {
       var spineNum = 0;
@@ -150,7 +150,7 @@ RSVP.on('error', function (reason) {
           break;
         }
       }
-      document.getElementById("label").textContent = message;
+      oDrag.showMessage(percent, message);
     };
     oDrag.onStop = function (value) {
       book.goProgressByPercent(value);
@@ -241,6 +241,7 @@ Drag.prototype = {
     });
     this.message = document.getElementById(this.options.messageId);
     this.drag = document.getElementById(this.options.dragId);
+    this.arrow = document.getElementById(this.options.arrowId);
     this._moveDrag = this.moveDrag.bind(this);
     this._stopDrag = this.stopDrag.bind(this);
     this.drag.style.cursor = "move";
@@ -258,7 +259,8 @@ Drag.prototype = {
       iTop = this.options.maxContainer.clientHeight - this.drag.offsetHeight;
     }
     this.drag.style.top = iTop + "px";
-    this.showMessage(iTop / (this.options.maxContainer.clientHeight - this.drag.offsetHeight));
+    this.arrow.style.top = iTop + "px";
+//    this.showMessage(iTop / (this.options.maxContainer.clientHeight - this.drag.offsetHeight));
     this.onMove(iTop / (this.options.maxContainer.clientHeight - this.drag.offsetHeight));
     event.preventDefault && event.preventDefault();
   },
@@ -266,6 +268,7 @@ Drag.prototype = {
     document.removeEventListener("mousemove", this._moveDrag, false);
     document.removeEventListener("mouseup", this._stopDrag, false);
     this.message.style.display = "none";
+    this.arrow.style.display = "none";
     this.onStop(this.drag.offsetTop / (this.options.maxContainer.clientHeight - this.drag.offsetHeight));
     this.drag.releaseCapture && this.drag.releaseCapture();
   },
@@ -273,7 +276,8 @@ Drag.prototype = {
     var event = event || window.event;
     document.addEventListener("mousemove", this._moveDrag, false);
     document.addEventListener("mouseup", this._stopDrag, false);
-    this.showMessage(this.drag.offsetTop / (this.options.maxContainer.clientHeight - this.drag.offsetHeight));
+//    this.showMessage(this.drag.offsetTop / (this.options.maxContainer.clientHeight - this.drag.offsetHeight));
+    this.arrow.style.display = "inline-block";
     event.preventDefault && event.preventDefault();
     this.onStart(this.drag.offsetTop / (this.options.maxContainer.clientHeight - this.drag.offsetHeight));
     this.drag.setCapture && this.drag.setCapture();
@@ -301,8 +305,24 @@ Drag.prototype = {
     }
     var top = (this.options.maxContainer.clientHeight - this.drag.offsetHeight) * (percent / 100);
     this.drag.style.top = top + "px";
+    this.arrow.style.top = top + "px";
   },
-  showMessage: function (percent) {
+  showMessage: function (percent, message) {
+    var position = percent * 100;
+    if (position <= 99) {
+      position = Math.round(position);
+    } else if (position > 99 && position < 100) {
+      position = 99;
+    } else {
+      position = 100;
+    }
+    var info = message.trim();
+    if (info.length > 19) {
+      info = info.slice(0, 19);
+      info = info + "...";
+    }
+    this.message.getElementsByTagName("p")[0].textContent = info;
+    this.message.getElementsByTagName("p")[1].textContent = position + "%";
     this.message.style.display = "block";
     var messageTop = (this.options.maxContainer.clientHeight - this.drag.offsetHeight) * percent - this.message.offsetHeight / 2 + this.drag.offsetHeight / 2;
     if (messageTop < 0) {
@@ -310,8 +330,16 @@ Drag.prototype = {
     } else if ((messageTop + this.message.offsetHeight) > this.options.maxContainer.clientHeight) {
       messageTop = this.options.maxContainer.clientHeight - this.message.offsetHeight;
     }
-    document.getElementById("percent").textContent = percent * 100 + "%";
-//    this.message.textContent = percent * 100 + "%";
     this.message.style.top = messageTop + "px";
   }
 };
+
+function CustomEvent ( event, params ) {
+  params = params || { bubbles: false, cancelable: false, detail: undefined };
+  var evt = document.createEvent( 'CustomEvent' );
+  evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+  return evt;
+};
+
+CustomEvent.prototype = window.Event.prototype;
+window.CustomEvent = CustomEvent;

@@ -19,7 +19,7 @@ EPUB.Render = function () {
  */
 EPUB.Render.prototype.initialize = function (context, elem, htmlUrl) {
   this.width = elem.clientWidth;
-  this.height = elem.clientHeight - 200;
+  this.height = elem.clientHeight - 80;
   this.chapterUrl = htmlUrl;
   this.imagesAll = {};
   var that = this;

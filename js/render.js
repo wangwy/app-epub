@@ -17,7 +17,7 @@ EPUB.Render = function (book) {
  */
 EPUB.Render.prototype.initialize = function (context) {
   this.width = this.el.clientWidth;
-  this.height = this.el.clientHeight - 200;
+  this.height = this.el.clientHeight - 80;
   this.imagesAll = {};
   var that = this;
   var deffer = new RSVP.defer();

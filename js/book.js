@@ -201,7 +201,7 @@ EPUB.Book.prototype.nextPage = function () {
       });
     } else {
       that.progress = "yes";
-      alert("已经是最后一页");
+      EPUB.Utils.showAlert("已经是最后一页");
     }
   }
 };
@@ -658,25 +658,39 @@ EPUB.Book.prototype.addLoading = function () {
   overlayDiv.style.bottom = 0;
   overlayDiv.style.right = 0;
   overlayDiv.style.backgroundColor = "#000";
-  overlayDiv.style.opacity = 0.7;
+  overlayDiv.style.opacity = 0;
   div.appendChild(overlayDiv);
 
   var messageDiv = document.createElement("div");
-  messageDiv.textContent = "正在加载，请稍候......";
+  /*messageDiv.textContent = "正在加载，请稍候......";
   messageDiv.style.position = "absolute";
   messageDiv.style.width = "400px";
   messageDiv.style.height = "100px";
   messageDiv.style.lineHeight = "100px";
-  messageDiv.style.backgroundColor = "#fff"
+  messageDiv.style.backgroundColor = "#fff";
   messageDiv.style.textAlign = "center";
   messageDiv.style.fontSize = "1.2em";
   messageDiv.style.left = "50%";
   messageDiv.style.top = "50%";
   messageDiv.style.marginLeft = "-200px";
-  messageDiv.style.marginTop = "-50px";
+  messageDiv.style.marginTop = "-50px";*/
+  messageDiv.style.position = "absolute";
+  messageDiv.style.maxWidth = "200px";
+  messageDiv.style.width = "auto";
+  messageDiv.textContent = "正在加载，请稍候......";
+  messageDiv.style.background = "#333";
+  messageDiv.style.font = "14px/20px '宋体','Arail'";
+  messageDiv.style.color = "#fff";
+  messageDiv.style.padding = "10px";
+  messageDiv.style.display = "block";
+  messageDiv.style.opacity = 1;
+  messageDiv.style.top = '50%';
+  messageDiv.style.left = '50%';
+  messageDiv.style.border = "none";
   div.appendChild(messageDiv);
-
   document.getElementsByTagName("body")[0].appendChild(div);
+  messageDiv.style.marginLeft = -(messageDiv.getBoundingClientRect().width/2) + "px";
+  messageDiv.style.marginTop = -(messageDiv.getBoundingClientRect().height/2) + "px";
   this.remPageListener();
 };
 
