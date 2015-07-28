@@ -3,6 +3,7 @@
  */
 var cluster = require('cluster');
 var os = require('os');
+var fs = require('fs');
 
 //获取CPU数量
 var numCPUs = os.cpus().length;
@@ -31,4 +32,8 @@ process.on('SIGTERM',function(){
     process.kill(pid);
   }
   process.exit(0);
+});
+
+process.on('uncaughtException',function(err){
+  fs.appendFile('error.log', '[' + new Date() + ']' + err.stack + '\n');
 });

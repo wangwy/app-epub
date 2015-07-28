@@ -33,9 +33,10 @@ RSVP.on('error', function (reason) {
       e.stopPropagation();
       var elem = document.body;
 
-      var isInFullScreen = (document.msFullscreenElement && document.msFullscreenElement !== null) || (document.mozFullScreen || document.webkitIsFullScreen);
+     // var isInFullScreen = (document.msFullscreenElement && document.msFullscreenElement !== null) || (document.mozFullScreen || document.webkitIsFullScreen);
+      var isInFullScreen = iconZoom.getAttribute("title");
 
-      if (isInFullScreen) {
+      if (isInFullScreen == "取消全屏") {
         book.cancelFullScreen(document);
         iconZoom.setAttribute("class", "icon-gernal icon_zoom");
         iconZoom.setAttribute("title", "全屏");
@@ -244,11 +245,22 @@ Drag.prototype = {
     this.arrow = document.getElementById(this.options.arrowId);
     this._moveDrag = this.moveDrag.bind(this);
     this._stopDrag = this.stopDrag.bind(this);
+    this._clickBack = this.clickBack.bind(this);
     this.drag.style.cursor = "move";
     this.onStart = this.options.onStart;
     this.onMove = this.options.onMove;
     this.onStop = this.options.onStop;
     this.drag.addEventListener("mousedown", this.startDrag.bind(this), false);
+    this.background.addEventListener("click",this.clickBack.bind(this), false);
+  },
+  clickBack: function (event){
+    var event = event || window.event;
+    var iTop = event.clientY;
+    if(iTop + this.drag.offsetHeight > this.options.maxContainer.clientHeight){
+      iTop = this.options.maxContainer.clientHeight - this.drag.offsetHeight;
+    }
+    this.drag.style.top = iTop + "px";
+    this.onStop(this.drag.offsetTop / (this.options.maxContainer.clientHeight - this.drag.offsetHeight));
   },
   moveDrag: function (event) {
     var event = event || window.event;

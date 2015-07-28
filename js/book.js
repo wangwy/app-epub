@@ -129,6 +129,7 @@ EPUB.Book.prototype.getBook = function (userId, bookId, authToken) {
  */
 EPUB.Book.prototype.display = function (url, spineNum) {
   var that = this;
+  that.addLoading();
   var deferred = new RSVP.defer();
   this.spineNum = spineNum || this.spineNum;
   if (this.spineNum >= this.spine.length) {
@@ -147,6 +148,7 @@ EPUB.Book.prototype.display = function (url, spineNum) {
     chapterNode.textContent = that.render.chapterName;
     deferred.resolve(context);
     that.renderContext = context;
+    that.remLoading();
   });
   return deferred.promise;
 };
@@ -158,11 +160,13 @@ EPUB.Book.prototype.display = function (url, spineNum) {
  */
 EPUB.Book.prototype.initialChapter = function (context) {
   var that = this;
+  that.addLoading();
   var retru = this.render.initialize(context).then(function (docBody) {
     that.render.spineNum = that.spineNum;
     that.render.getPagesNum(docBody);
     that.render.notes = that.getChapterNotes(that.spineNum);
     that.render.marks = that.getChapterMarks(that.spineNum);
+    that.remLoading();
   });
   return retru;
 };
@@ -662,18 +666,6 @@ EPUB.Book.prototype.addLoading = function () {
   div.appendChild(overlayDiv);
 
   var messageDiv = document.createElement("div");
-  /*messageDiv.textContent = "正在加载，请稍候......";
-  messageDiv.style.position = "absolute";
-  messageDiv.style.width = "400px";
-  messageDiv.style.height = "100px";
-  messageDiv.style.lineHeight = "100px";
-  messageDiv.style.backgroundColor = "#fff";
-  messageDiv.style.textAlign = "center";
-  messageDiv.style.fontSize = "1.2em";
-  messageDiv.style.left = "50%";
-  messageDiv.style.top = "50%";
-  messageDiv.style.marginLeft = "-200px";
-  messageDiv.style.marginTop = "-50px";*/
   messageDiv.style.position = "absolute";
   messageDiv.style.maxWidth = "200px";
   messageDiv.style.width = "auto";
@@ -683,7 +675,7 @@ EPUB.Book.prototype.addLoading = function () {
   messageDiv.style.color = "#fff";
   messageDiv.style.padding = "10px";
   messageDiv.style.display = "block";
-  messageDiv.style.opacity = 1;
+  messageDiv.style.opacity = 0;
   messageDiv.style.top = '50%';
   messageDiv.style.left = '50%';
   messageDiv.style.border = "none";
@@ -691,6 +683,14 @@ EPUB.Book.prototype.addLoading = function () {
   document.getElementsByTagName("body")[0].appendChild(div);
   messageDiv.style.marginLeft = -(messageDiv.getBoundingClientRect().width/2) + "px";
   messageDiv.style.marginTop = -(messageDiv.getBoundingClientRect().height/2) + "px";
+  var x = 0;
+  var t = setInterval(function () {
+    if (x > 1) {
+      clearInterval(t);
+    }
+    x += 0.05;
+    messageDiv.style.opacity = x;
+  }, 25);
   this.remPageListener();
 };
 
